@@ -23,7 +23,7 @@
 \newcommand{\its}[1]{\mbox{\textbf{toStr}($#1$)}}
 \newcommand{\varn}{\mbox{$\mathbb{V}_n$}}
 \newcommand{\vars}{\mbox{$\mathbb{V}_s$}}
-\newcommand{\cvar}{\mbox{$\mathbb{X}$}}
+\newcommand{\cvar}{\mbox{$\mathbb{C}$}}
 \newcommand{\modelof}[1]{[\![#1]\!]}
 \newcommand{\true}{\mbox{$\mathsf{true}$}}
 
@@ -81,9 +81,12 @@ $k\leq 21$.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 We use $\mathbb{N}$ and $\mathbb{Z}$ to denote the sets of natural numbers and 
 integers. For a set $A$, we use $|A|$ to denote its size. For a string $w$, we 
-use $|w|$ to denote its length. We $\epsilon$ to denote an empty string and use $w_1\cdot w_2$ to denote the concatenation of strings $w_1$ and $w_2$. Let $S$ be a finite set of symbols. We use $S^+$ to denote the set of string over $S$ and $S^* = S^+\cup \{\epsilon\}$. We define $S_\epsilon =S\cup\{\epsilon\}$. A language 
-$L$ over $S$ is a set of strings in $S^*$. 
+use $|w|$ to denote its length and $|w|_a$ to denote the number of occurrences of $a$ in $w$. We $\epsilon$ to denote an empty string and use $w_1\cdot w_2$ to denote the concatenation of strings $w_1$ and $w_2$. Let $S$ be a finite set of symbols. We use $S^+$ to denote the set of string over $S$ and $S^* = S^+\cup \{\epsilon\}$. We define $S_\epsilon =S\cup\{\epsilon\}$. A language 
+$L$ over $S$ is a set of strings in $S^*$.
 
+A \emph{finite-state automaton} (FA) is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of states, $T\subseteq Q\times \Sigma\times Q $ is the set of transition relation, $\Sigma$ is the alphabet, $q_0$ is the initial state, and $q_m$ is the final state. The semantics of FSA is defined in the standard manner. We use $L(A)$ to denote the regular language, i.e., set of accepted strings, of a FA $A$.
+
+Given a FA $A$ over $\{a_1,a_2,\ldots,a_n\}$, the Parikh image of $L$ is the set $\{(|w|_{a_1},\ldots, |w|_{a_n}) \mid w \in  L(A) \}$. Moreover, one can construct from $A$ in linear time a Presburger formula $\phi_A(v_1, \ldots,v_n)$ such that $\phi(c_1, \ldots,c_n) \iff (c_1, \ldots,c_n)$ in the Parikh image of $L$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{String Constraints} \label{section:sc}
@@ -107,17 +110,16 @@ We define  $\modelof{\phi}= \{I \mid I(\phi)= \true \}$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Symbolic Flat Automata} \label{section:sfa}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-A \emph{finite-state automaton} (FA) is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of states, $T\subseteq Q\times \Sigma\times Q $ is the set of transition relation, $\Sigma$ is the alphabet, $q_0$ is the initial state, and $q_m$ is the final state. The semantics of FSA is defined in the standard manner. We use $L(A)$ to denote the language, i.e., set of accepted strings, of a FA $A$.
 
 Fix a finite set of character variables $\cvar$ ranging over $\Sigma_\epsilon$.
 We call a string over $\cvar$ a symbolic string.
 A interpretation $I$ over $\cvar$ is a mapping from $\cvar$ to $\Sigma_\epsilon$.
-For a symbolic string $x= x_1x_2\cdots x_k$ over $\cvar$, $I(x)$ is defined as $I(x_1)\cdot I(x_2)\cdot \ldots \cdot I(x_k)$.
+For a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 
 We introduce \emph{symbolic flat automata} (SFA) $(Q,T,\cvar_\epsilon,q_0,q_m)$ that will be used to define patterns for the variable domain restriction. SFA is a finite-state automaton operating over the alphabet $\cvar_\epsilon$ and with additional structural constraints.
 \begin{enumerate}
-	\item the initial state $q_0$ and final state $q_m$ are connected by a straight-line structure, i.e., $(q_i,x_i,q_i+1) \in T$ and states $q_i \in Q$  for $i\in[0,m-1]$.
-	\item  each state $q_i$ may be included to an unique simple cycle, i.e. $q_i^j \in Q$ and $(q_i, x_i^0, q_i^1), (q_j, x_i^j, q_i^{j+1}), (q_i^l, x_i^l, q_i) \in T$ for $i\in [0,n]$ and $j\in [1,l-1]$. 
+	\item the initial state $q_0$ and final state $q_m$ are connected by a straight-line structure, i.e., $(q_i,v_i,q_i+1) \in T$ and states $q_i \in Q$ for $i\in[0,m-1]$.
+	\item  each state $q_i$ may be included to an unique simple cycle, i.e. $q_i^j \in Q$ and $(q_i, v_i^0, q_i^1), (q_j, v_i^j, q_i^{j+1}), (q_i^l, v_i^l, q_i) \in T$ for $i\in [0,n]$ and $j\in [1,l-1]$. 
 	\item each variable in $\cvar$ appears in at most one transition (but $\epsilon$ transition can appear multiple times). 
 \end{enumerate} 
 Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
@@ -143,32 +145,33 @@ Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
 		\node[state] (qm2) [above = 1cm of qm] {$q_m^2$};
 		\node[state] (qm3) [above right = 0.6cm of qm] {$q_m^3$};
 
-  		\draw[->] (q0) edge [bend left] node [left]{$x_0^0$} (q01) ;
-  		\draw[->] (q01) edge [bend left] node [left]{$x_0^1$} (q02) ;
-  		\draw[->] (q02) edge [bend left] node [right]{$x_0^2$} (q03) ;
-  		\draw[->] (q03) edge [bend left] node [right]{$x_0^3$} (q0) ;
+  		\draw[->] (q0) edge [bend left] node [left]{$v_0^0$} (q01) ;
+  		\draw[->] (q01) edge [bend left] node [left]{$v_0^1$} (q02) ;
+  		\draw[->] (q02) edge [bend left] node [right]{$v_0^2$} (q03) ;
+  		\draw[->] (q03) edge [bend left] node [right]{$v_0^3$} (q0) ;
   		
-  		\draw[->] (q0) edge node [below]{$x_0$} (q1) ;
-  		\draw[->] (q1) edge node [below]{$x_1$} (q2) ;
+  		\draw[->] (q0) edge node [below]{$v_0$} (q1) ;
+  		\draw[->] (q1) edge node [below]{$v_1$} (q2) ;
   		\draw[dotted] (q2) edge (q3) ;
-  		\draw[->] (q3) edge node [below]{$x_{m-1}$} (qm) ;
+  		\draw[->] (q3) edge node [below]{$v_{m-1}$} (qm) ;
 
-  		\draw[->] (qm) edge [bend left] node [left]{$x_m^0$} (qm1) ;
-		\draw[->] (qm1) edge [bend left] node [left]{$x_m^1$} (qm2) ;
-		\draw[->] (qm2) edge [bend left] node [right]{$x_m^2$} (qm3) ;
-		\draw[->] (qm3) edge [bend left] node [right]{$x_m^3$} (qm) ;
+  		\draw[->] (qm) edge [bend left] node [left]{$v_m^0$} (qm1) ;
+		\draw[->] (qm1) edge [bend left] node [left]{$v_m^1$} (qm2) ;
+		\draw[->] (qm2) edge [bend left] node [right]{$v_m^2$} (qm3) ;
+		\draw[->] (qm3) edge [bend left] node [right]{$v_m^3$} (qm) ;
 
-  		\draw[->] (q1) edge [bend left] node [left]{$x_1^0$} (q11) ;
-		\draw[->] (q11) edge [bend left] node [above]{$x_1^1$} (q12) ;
-		\draw[->] (q12) edge [bend left] node [right]{$x_1^2$} (q1) ;
+  		\draw[->] (q1) edge [bend left] node [left]{$v_1^0$} (q11) ;
+		\draw[->] (q11) edge [bend left] node [above]{$v_1^1$} (q12) ;
+		\draw[->] (q12) edge [bend left] node [right]{$v_1^2$} (q1) ;
 	\end{tikzpicture} 
+	\label{fig:sfa_def}
 	\caption{An example of a symbolic flat automaton}
 \end{figure}
 
-We say the FA $D=(Q,T',\Sigma_\epsilon,q_0,q_m)$ is an \emph{instance} of a SFA $S=(Q,T,\cvar_\epsilon,q_0,q_m)$, if there exists an interpretation $I: \cvar_\epsilon \rightarrow \Sigma_\epsilon$ satisfying $I(\epsilon)=\epsilon$ and $T'=\{(q,I(c),q')\mid (q,c,q')\in T\}$. We write $I(S)$ to denote the instance of $S$ wrt. $I$. The language of $S$ is defined as $L(S)= \cup\{L(D) \mid D \mbox{ is an instance of } S\}$. Notice that $L(S)$ is regular because every SFA has only finitely many instance and the finite union of regular languages are also regular.
+A FA $D=(Q,T',\Sigma_\epsilon,q_0,q_m)$ is an \emph{instance} of a SFA $S=(Q,T,\cvar_\epsilon,q_0,q_m)$, if there exists an interpretation $I: \cvar_\epsilon \rightarrow \Sigma_\epsilon$ satisfying $I(\epsilon)=\epsilon$ and $T'=\{(q,I(c),q')\mid (q,c,q')\in T\}$. We write $I(S)$ to denote the instance of $S$ wrt. $I$. The language of $S$ is defined as $L(S)= \cup\{L(D) \mid D \mbox{ is an instance of } S\}$. Notice that $L(S)$ is regular because every SFA has only finitely many instance and the finite union of regular languages are also regular.
 
 
-For such kind of automata, the number of occurrence of each symbol in $\cvar$ uniquely characterize an accepting string. For example, if the string $x_1x_2x_1x_2$ is accepted, then all other strings with $\#(x_1)=\#(x_2)=2$ are not accepted. Moreover, from $\#(x_1)=\#(x_2)=2$, we can derive the accepted string $x_1x_2x_1x_2$ by exploring the automata structure. \todo{add Presburger constraints to allow more expressive power.}
+For such kind of automata, the number of occurrence of each symbol in $\cvar$ uniquely characterize an accepting string. For example, in the example of Figure~\ref{fig:sfa_def}, if the string $v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ is accepted, then all other strings $w$ with $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and also $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$ are not accepted. Moreover, from $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$, we can derive $w=v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ by exploring the automata structure. \todo{add Presburger constraints to allow more expressive power.}
 
 \begin{lemma}
 	Symbolic flat automata are closed under concatenation.
@@ -181,10 +184,9 @@ For such kind of automata, the number of occurrence of each symbol in $\cvar$ un
 \todo{Mention NDD when talk about our practical bounded encoding for str2int}
 
 \section{Handling Equality and Disequality Constraint} \label{section:eq}
-Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some SFA with disjunct alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. 
+Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some SFA with disjoint alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. We rename the variables on the transitions of SFA's for different occurrences of the same variable in one equality constraint. Later we will use some arithmetic constraints to enforce that all occurrences of the variants of the same variable will be assigned the same value. For notational convenience, the renaming is done by adding a version number to the variable. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, $\ldots$.
 
-For example, for the constraint $xy = yx$, if we restrict the domains of $x$ and $y$ to the SFA in Figure~\ref{fig:sfa} (a) and (b), respectively. We can then construct the SFA for $xy$ (Figure~\ref{fig:sfa} (c)) and $yx$ (Figure~\ref{fig:sfa} (d)).
-
+For the constraint $xy = yx$, we first restrict the domains of $x$ and $y$ to the SFA in Figure~\ref{fig:sfa} (a) and (b), respectively. In the construction of the SFA for $xy$ and $yx$ (Figure~\ref{fig:sfa} (c) and (d)), we rename the variables on the SFA of $X$ and $Y$ to some fresh variable for each different occurrence of $x$ and $y$ in $xy = yx$.
 
 \begin{figure}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
@@ -194,124 +196,111 @@ For example, for the constraint $xy = yx$, if we restrict the domains of $x$ and
 	\begin{tikzpicture}
 	\node[state,initial,accepting] (q0)  {$q_0$};
 	
-	\node[state] (q01) [above = 0.5cm of q0] {$q_0^1$};
+	\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
 
-	\draw[->] (q0) edge [bend left] node [left]{$x_0^0$} (q01) ;
-	\draw[->] (q01) edge [bend left] node [right]{$x_0^1$} (q0) ;
+	\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
+	\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
 	\end{tikzpicture} 
 	
 	\centering
-	(a) $x$
+	(a) $A_x$
 	\end{minipage}
  	\begin{minipage}[t]{0.15\textwidth} 
 	\begin{tikzpicture} 
-	\node[state,initial,accepting] (q0)  {$q_1$};
+	\node[state,initial,accepting] (q0)  {$p_0$};
 	
-	\node[state] (q01) [above = 0.5cm of q0] {$q_1^1$};
+	\node[state] (q01) [above = 0.5cm of q0] {$p_1$};
 	
-	\draw[->] (q0) edge [bend left] node [left]{$y_0^0$} (q01) ;
-	\draw[->] (q01) edge [bend left] node [right]{$y_0^1$} (q0) ;
+	\draw[->] (q0) edge [bend left] node [left]{$v_2$} (q01) ;
+	\draw[->] (q01) edge [bend left] node [right]{$v_3$} (q0) ;
 	\end{tikzpicture} 
 	
 	\centering
-	(b) $y$
+	(b) $A_y$
 	\end{minipage}
-	\ \ \ \ \ \ \ 
 	\begin{minipage}[t]{0.28\textwidth}
 	\begin{tikzpicture} 
 	\node[state,initial] (q0)  {$q_0$};
-	\node[state,accepting] (q1) [right = 1cm of q0] {$q_1$};
+	\node[state,accepting] (q1) [right = 1.3cm of q0] {$p_0$};
 	
-	\node[state] (q01) [above = 0.5cm of q0] {$q_0^1$};
+	\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
 
-	\draw[->] (q0) edge [bend left] node [left]{$x_0^0$} (q01) ;
-	\draw[->] (q01) edge [bend left] node [right]{$x_0^1$} (q0) ;
+	\draw[->] (q0) edge [bend left] node [left]{$v_0^{(0)}$} (q01) ;
+	\draw[->] (q01) edge [bend left] node [right]{$v_1^{(0)}$} (q0) ;
 	
-	\node[state] (q11) [above = 0.5cm of q1] {$q_1^1$};
+	\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
 	
-	\draw[->] (q1) edge [bend left] node [left]{$y_0^0$} (q11) ;
-	\draw[->] (q11) edge [bend left] node [right]{$y_0^1$} (q1) ;
+	\draw[->] (q1) edge [bend left] node [left]{$v_2^{(0)}$} (q11) ;
+	\draw[->] (q11) edge [bend left] node [right]{$v_3^{(0)}$} (q1) ;
 	\draw[->] (q0) edge  node [below]{$\epsilon$} (q1) ;
 	\end{tikzpicture}
 	
 	\centering
-	(c) $xy$
+	(c) $A_{xy}$
 	\end{minipage}
+	\ \ \ 
 	\begin{minipage}[t]{0.28\textwidth}
 	\begin{tikzpicture} 
 	\node[state,accepting] (q0)  {$q_0$};
-	\node[state,initial] (q1) [left = 1cm of q0] {$q_1$};
+	\node[state,initial] (q1) [left = 1.3cm of q0] {$p_0$};
 	
-	\node[state] (q01) [above = 0.5cm of q0] {$q_0^1$};
+	\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
 	
-	\draw[->] (q0) edge [bend left] node [left]{$x_0^0$} (q01) ;
-	\draw[->] (q01) edge [bend left] node [right]{$x_0^1$} (q0) ;
+	\draw[->] (q0) edge [bend left] node [left]{$v_0^{(1)}$} (q01) ;
+	\draw[->] (q01) edge [bend left] node [right]{$v_1^{(1)}$} (q0) ;
 	
-	\node[state] (q11) [above = 0.5cm of q1] {$q_1^1$};
+	\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
 	
-	\draw[->] (q1) edge [bend left] node [left]{$y_0^0$} (q11) ;
-	\draw[->] (q11) edge [bend left] node [right]{$y_0^1$} (q1) ;
+	\draw[->] (q1) edge [bend left] node [left]{$v_2^{(1)}$} (q11) ;
+	\draw[->] (q11) edge [bend left] node [right]{$v_3^{(1)}$} (q1) ;
 	\draw[->] (q1) edge  node [below]{$\epsilon$} (q0) ;
 	\end{tikzpicture}
 	
 	\centering
-	(d) $yx$
+	(d) $A_{yx}$
 	\end{minipage}
 
 	\caption{Symbolic flat automata of $x$, $y$, $xy$ and $yx$}
 	\label{fig:sfa}
 \end{figure}
 
-Assume that $S_n=(Q,T,\cvar_\epsilon,q_i,q_f)$ is the SFA of $x_1\cdot x_2 \cdots x_n$ and $S_m=(Q',T',\cvar_\epsilon,q'_i,q'_f)$ is the SFA of $x_{n+1}\cdot x_{n+2} \cdots x_m$. Our next task is to find a model for $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$ under the domain restriction specified by $S_n$ and $S_m$. 
+Assume that $S_n=(Q,T,\cvar^1_\epsilon,q_i,q_f)$ is the SFA of $x_1\cdot x_2 \cdots x_n$ and $S_m=(P,T',\cvar^2_\epsilon,p_i,p_f)$ is the SFA of $x_{n+1}\cdot x_{n+2} \cdots x_m$. Our next task is to find a model for $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$ under the domain restriction specified by $S_n$ and $S_m$. 
 
-This is equivalent to finding a common interpretation $I$ such that the languages of $I(S_n)$ and $I(S_m)$ are not disjoint. In order to find such an interpretation $I$, we first build a ``product'' automaton of $S_n$ and $S_m$ and then add some additional linear arithmetic constraints to force the two input automata sharing the same interpretation. 
+This is equivalent to finding a pair of symbolic strings $(w_n,w_m) \in L(S_n)\times L(S_m)$ and a common interpretation $I$ such that 
+\begin{enumerate}
+	\item $I(w_n)=I(w_m)$
+	\item $I$ assign to variants of the same variable the same value. For example, in Figure~\ref{fig:sfa} (c) and (d), $v_0^{(0)}$ and $v_0^{(1)}$ should be assigned the same value.
+	\item variants of the same variable should occurs equally often in $w_n\cdot w_m$. For example, in Figure~\ref{fig:sfa} (c) and (d), $v_0^{(0)}v_1^{(0)}v_0^{(0)}v_1^{(0)}$ and $v_0^{(1)}v_1^{(1)}v_0^{(1)}v_1^{(1)}$ is a pair of symbolic strings satisfying this condition. The number of occurrences of $v_i^{(0)}$ is the same to $v_i^{(1)}$ for $i\in[0,1]$ in the concatenation of the two symbolic strings .
+	But the pair $v_0^{(0)}v_1^{(0)}v_0^{(0)}v_1^{(0)}$ and $v_2^{(0)}v_3^{(0)}v_2^{(0)}v_3^{(0)}$ does not satisfy the condition. Observe that $v_0^{(0)}$ occurs twice, but $v_0^{(1)}$ is not there.
+\end{enumerate}
 
-Such product automaton uses $Q\times Q'$ as the set of states and $\cvar_\epsilon \times \cvar_\epsilon$ as the alphabet. If a transition $((q_1,q'_1), (x_1,x'_1),(q_2,q'_2))$ is taken, it means the character variable $x_1$ and $x'_1$ should be assigned the same value and this value leads $S_n$ from state $q_1$ to state $q_2$ and $S_m$ from $q'_1$ to $q'_2$.
+In order to find such a pair of symbolic strings $(w_n,w_m) \in L(S_n)\times L(S_m)$ and an interpretation $I$, we first build a ``product'' automaton of $S_n$ and $S_m$ and then add some additional linear arithmetic constraints to enforce the above conditions.
 
-More precisely, the product automaton $P$ is a tuple $(Q\times Q', T^2, \cvar_\epsilon \times \cvar_\epsilon, (q_i,q'_i),(q_f,q'_f))$, where the transition relation $T'$ is the minimal set satisfying the following.
+Such product automaton uses $Q\times P$ as the set of states and $\cvar^1_\epsilon \times \cvar^2_\epsilon$ as the alphabet. If a transition $((q_1,p_1), (x_{i,j},x'_{i',j'}),(q_2,p_2))$ is taken, for some $i,j,i',j' \in \mathbb{N}$, it means the character variable $x_{i,j}$ and $y_{i',j'}$ should be assigned the same value and this value leads $S_n$ from state $q_1$ to state $q_2$ and $S_m$ from $p_1$ to $p_2$.
+
+More precisely, the product automaton is a tuple $(Q\times P, T^2, \cvar^1_\epsilon \times \cvar^2_\epsilon, (q_i,p_i),(q_f,p_f))$, where the transition relation $T^2$ is the minimal set satisfying the following.
 
 \begin{itemize}
-\item If $(q_1,x,q_2) \in T$, then for all $q'\in Q',((q_1,q'),(x,\epsilon),(q_2,q'))\in T^2$.
-\item If $(q'_1,x,q'_2) \in T'$, then for all $q\in Q,((q,q'_1),(\epsilon,x),(q,q'_2))\in T^2$.
-\item If $(q_1,x,q_2) \in T$ and $(q'_1,x',q'_2) \in T'$, then $((q_1,q'_1),(x,x'),(q_2,q'_2))\in T^2$.
+\item If $(q_1,x_{i,j},q_2) \in T$, then for all $p\in P,((q_1,p),(x_{i,j},\epsilon),(q_2,p))\in T^2$.
+\item If $(p_1,x_{i,j},p_2) \in T'$, then for all $q\in Q,((q,p_1),(\epsilon,x_{i,j}),(q,p_2))\in T^2$.
+\item If $(q_1,x_{i,j},q_2) \in T$ and $(p_1,x'_{i',j'},p_2) \in T'$, then $((q_1,p_1),(x_{i,j},x'_{i',j'}),(q_2,p_2))\in T^2$.
 \end{itemize}	
-The first two cases correspond to the situation when the character variable $x$ is assigned $\epsilon$. In such cases, only one automaton changes its state.
+The first two cases correspond to the situation when the character variable $x_{i,j}$ is assigned $\epsilon$. In such cases, only one automaton changes its state.
 
-The product automaton corresponds to $xy=yx$ can be found in Figure~\ref{}. 
+For example, in the product automaton $A_{xy=yx}$ corresponds to $xy=yx$, we have the following transitions
+\begin{itemize}
+	\item $((q_0,p_0), (x_{0,0},\epsilon),(q_1,p_0))$, because $(q_0,x_{0,0},q_1)$ is a transition of $A_{xy}$.
+	\item $((q_0,p_0), (\epsilon,y_{1,0}),(q_0,p_1))$, because $(p_0,y_{1,0},p_1)$ is a transition of $A_{yx}$.
+	\item $((q_0,p_0), (x_{0,0},y_{1,0}),(q_1,q_1))$, because $(q_0,x_{0,0},q_1)$ is a transition of $A_{xy}$ and $(p_0,y_{1,0},p_1)$ is a transition of $A_{yx}$.
+\end{itemize}
 
+Recall that for flat automata, the number of occurrences of each symbol uniquely characterizes an accepting string (Section\ref{section:sfa}) and for any FA we can construct a Presburger formula characterizing its Parikh image (Section\ref{section:preliminary}). For a product automaton $A$ computed from the previous step, we compute a Presburger formula $\phi(A)$ over the set of variables $\{v_{(x,y)}\mid (x,y) \in \cvar_\epsilon \times \cvar_\epsilon\}$ characterizing the Parikh image of $A$. Then we add the following linear constraints.
 
-\todo{This end of stable writing, the thing below is not consistent yet.}
-
-\begin{figure}
-	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
-			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
-
-	\begin{minipage}[t]{0.28\textwidth}
-		\begin{tikzpicture} 
-		\node[state,initial] (q0)  {$q_0,q_1$};
-		\node[state,accepting] (q1) [right = 1cm of q0] {$q_1$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$q_0^1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$x_0^0$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$x_0^1$} (q0) ;
-		
-		\node[state] (q11) [above = 0.5cm of q1] {$q_1^1$};
-		
-		\draw[->] (q1) edge [bend left] node [left]{$y_0^0$} (q11) ;
-		\draw[->] (q11) edge [bend left] node [right]{$y_0^1$} (q1) ;
-		\draw[->] (q0) edge  node [below]{$\epsilon$} (q1) ;
-		\end{tikzpicture}
-	\end{minipage}
-	
-	\caption{Product automaton of $xy=yx$}
-	\label{fig:sfa}
-\end{figure}
-
-
-
-
-Recall that for flat automata, the number of occurrences of each symbol uniquely characterizes an accepting string. 
+\begin{enumerate}
+	\item for any $(x_{i,j},y_{i',j'}) \in \cvar^1_\epsilon \times \cvar^2_\epsilon$, $v_{(x_{i,j},y_{i',j'})}>0 \rightarrow (x_j=y_{j})$. We use $-1$ to encode $\epsilon$.
+	\item for all $x \in \cvar$, $|x| =\sum_{y \in \cvar_\epsilon} (v_{(x,y)}+v_{(y,x)})$
+\end{enumerate}
+Those constraints enforce that the two size of the equality of the word equation sharing the same interpretation.
 
 
 
