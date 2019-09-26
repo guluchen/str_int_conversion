@@ -26,10 +26,10 @@
 \newcommand{\cvar}{\mbox{$\mathbb{C}$}}
 \newcommand{\modelof}[1]{[\![#1]\!]}
 \newcommand{\true}{\mbox{$\mathsf{true}$}}
+\newcommand{\false}{\mbox{$\mathsf{false}$}}
 
 
-\newcommand{\enc}[1]{Enc(#1)}
-\newcommand{\ch}[1]{\mbox{`#1'}}
+
 \maketitle
 
 
@@ -45,7 +45,20 @@ ASCII string, then XXX boolean variables are required. Or we can just propose
 an example that all major solver fails. Maybe we still say our approach is still over-approximation + under-approximation, in this case, need to think how to present the over-approximation part. Maybe no CEGAR is fine.}
 
 
-In this paper, we propose an approach that handles string constraints with string-number conversion efficiently. The approach combines techniques from both automata theory and SMT solving to explore the model space of a string constraint systematically. More specifically, instead of allowing the variable domain to be arbitrary strings from a finite alphabet, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{symbolic flat automata}, the automata are very expressive yet allows very efficiently manipulation. For example, it avoids the alphabet 
+In this paper, we propose an approach that handles string constraints with string-number conversion efficiently. From a theoretical point of view, this problem is already proven to be undecidable~\cite{vijay_rp}, and in practice, in our experiments, all of the state-of-the-art string constraint solvers do not support string-number conversion correctly. Some of them handles such constraints with only over-approximation of the original formula, and is known to have one-side error (see Section~\ref{section:experiment} for detailed explanation). Here we propose a strategy that uses both over and under-approximation of the string constraints. The over-approximation is for proving UNSAT and the under-approximation is for proving SAT of the string constraint. Both over and under-approximation should fail in a decidable fragment of string constraints and can be efficiently solved. 
+
+For over-approximation, there are a few existing algorithms~\cite{atva2019,z3}, our strategy does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult and many approaches can handle all of them almost perfectly. The battle field is in fact those SAT instances. 
+
+
+
+
+
+
+
+
+
+
+More specifically, instead of allowing the variable domain to be arbitrary strings from a finite alphabet, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{symbolic flat automata}, the automata are very expressive yet allows very efficiently manipulation. For example, it avoids the alphabet 
 explosion problem that the approach in~\cite{PLDI2017} suffers.
 
 
@@ -68,7 +81,17 @@ Under this domain, we can convert the string-number conversion constraints to
 linear integer constraints, which is much easier to solve. In our experience, 
 usually, it suffices to find a solution using a small $k$ for a satisfiable 
 constraint. Note that a 64-bit integer number corresponds to a string with 
-$k\leq 21$.}
+$k\leq 21$.
+
+Given a formula that is a boolean combination of different types of string constraints, e.g., $\phi=(|x| = |y| \vee \sti{x} = \sti{y})\wedge x = y$, an SMT solver based on the DPLL(T) algorithm~\cite{} treats each string constraint $|x| = |y|$, $\sti{x} = \sti{y}$, $xy=yx$ as a boolean variable, and systematically guesses possible solutions without considering their semantics as string constraints. E.g., the solver may guess $\neg(|x| = |y|)$, $(\sti{x} = \sti{y})$, and $(x =y)$. This is a valid guess if all the string constraints are just interpreted as boolean variables, but invalid when their semantics as string constraints are considered, because it cannot be the case that $x$ and $y$ are the same string $(x =y)$, but they are of different lengths $( \neg (|x| = |y|))$.
+
+
+The approach combines techniques from both automata theory and SMT solving to explore the model space of a string constraint systematically. More specifically, an SMT solver based on the DPLL(T) algorithm~\cite{} is used to convert the satisfiability of a string constraint, which is an arbitrary boolean combination of string predicates, to the satisfiability problem of a set of string constraints in the form of conjunctions of string predicates.
+
+
+
+
+}
 
 
 
@@ -326,17 +349,35 @@ One can construct $w_m$ in a similar way.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Handling String-Integer Conversion} \label{section:s2i}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-We begin the discussion with the conversion between bounded integers (e.g., 64-bits) and strings. Notice that even for bounded integer, the corresponding string can be of unbounded length. For example, the formula $\sti{x}=10 \wedge |x|=5$ is in fact satisfiable when $x=``00010"$. To handle the bounded integer case $y=\sti{x}$, we propose to restrict the domain of $x$ to a SFA of the form $(\{q_0,\ldots,q_k\},T,\cvar, q_0,q_k)$, where $k$ is the number of digits allowed in the bounded integer, $T = \{(q_0,x_0,q_0)\} \cup \{(q_i,x_{i+1},q_{i+1})\mid 0\leq i <k\}$, with additional numerical constraints $\enc{x_0}=\enc{\ch{0}}$ and $\wedge_{i\in [1,9]} \enc{\ch{0}}\leq \enc{x_i} \leq \enc{\ch{9}}$ to force the domain of the string to those corresponding to positive integers. Under this domain restriction, we obtain $y=\Sigma_{i\in [1,9]} 10^{k-i}\times (\enc{x_i}-\enc{\ch{0}})$.
+We begin the discussion with the conversion between bounded integers (e.g., 64-bits) and strings. Notice that even for bounded integer, the corresponding string can be of unbounded length. For example, the formula $\sti{x}=10 \wedge |x|=5$ is in fact satisfiable when $x=``00010"$. To handle the bounded integer case $y=\sti{x}$, we propose to restrict the domain of $x$ to a SFA of the form $(\{q_0,\ldots,q_k\},T,\{v_0,\ldots,v_k\}, q_0,q_k)$, where $k$ is the number of digits allowed in the bounded integer, $T = \{(q_0,v_0,q_0)\} \cup \{(q_i,v_{i+1},q_{i+1})\mid 0\leq i <k\}$, with additional numerical constraints $v_0=0$ and $\wedge_{i\in [1,k]} 0 \leq v_i \leq 9$ to force the domain of the string to those corresponding to positive integers. Under this domain restriction, we obtain $y=\Sigma_{i\in [1,k]} 10^{k-i}\times v_i$. 
+
+\todo{Add a figure of the SFA above.}
 
 \todo{Add an example: $\sti{x}=\sti{y} \wedge x= y\cdot y$. Do product construction informally here.}
 
-This approach can be extended to unbounded string using more sophisticated pattern. For example, we can extend the bounded pattern that uses two loops, by changing the transition relation $T$ to $\{(q_0,x_0,q_0), (q_0,\epsilon,q_1), (q_k,x_1,q_1)\} \cup \{(q_i,x_{i+1},q_{i+1})\mid 0< i <k\}$. In this pattern, one can describe string that corresponds arbitrarily large integer. Taking the case $k=2$, $\enc{x_2}=\enc{\ch{3}}$, $\enc{x_1}=\enc{\ch{5}}$ as an example, any number in the form of $353535\ldots35$ can be expressed. Formally, the relation between $y$ and $x$ can be described in the following formula:
-$$y= (10*(\enc{x_2}-\enc{\ch{0}})+(\enc{x_1}-\enc{\ch{0}}))\times \frac{100^{\#(x_1)}-1}{100-1}$$
+This approach can be extended to unbounded string using more sophisticated pattern. For example, we can extend the bounded pattern that uses two loops, by changing the transition relation $T$ to $\{(q_0,v_0,q_0), (q_0,\epsilon,q_1), (q_1,v_1,q_1)\}$. In this pattern, one can describe string that corresponds arbitrarily large integer. More specifically, any number in the form of $v_1v_1\ldots v_1$ can be expressed. Formally, if $y=\sti{x}$ or $x=\its{y}$ the relation between $y$ and $x$ can be described in the following formula:
+$$y= (v_1)\times \frac{10^{P(v_1)}-1}{10-1}$$
 
-where $\#(x_1)$ is the number of occurrence of $x_1$ in the corresponding symbolic string and is treated as a variable in this case. To solve the satisfiability of this formula, one need to solve an exponential constraint. From the results of POPL2019, this problem is decidable if ....
+If we consider a more general form, e.g., using the flat automata in Figure~\ref{fig:sfa_def} to restrict the domain of $x$, then we should add integer constraints to restrict the character variables domain to be in $[0,9]$ and then using the formula below to describe the relation between $x$ and $y$.
+
+\[\begin{array}{lcl}
+	y & = & (v_m^0\times 10^3 + v_m^1 \times 10^2 + v_m^2 \times 10 +v_m^3 )\times \frac{10000^{P(v_m^0)}-1}{10000-1}+v_{m-1}\times 10000^{P(v_m^0)}\\
+	
+	  &   &+\ldots+ \\
+	  
+	  &   &v_1\times10000^{P(v_m^0)} \times \ldots \times 1000^{P(v_1^0)}+\\
+	  &   &(v_0^0\times 10^3 + v_0^1 \times 10^2 + v_0^2 \times 10 +v_0^3 )\times \frac{10000^{P(v_0^0)}-1}{10000-1} \times 10000^{P(v_m^0)} \times \ldots \times \\
+	  &   &1000^{P(v_1^0)} \times 10
+\end{array}\]
 
 
+Recall that $P(x_1)$ is the number of occurrence of $v_1$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
 
+
+From the results of POPL2019, this problem is decidable if ....
+
+
+Recall that for equality constraint, we allow to restrict the domain of variables to arbitrary SFA. Under this framework, if $\sti{x}$ has occurred as a part of the formulae, then we always choose the SFAs described in this section to restrict the domain of $x$.
 
 \end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
