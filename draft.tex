@@ -1,4 +1,4 @@
-\documentclass{llncs}
+\documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
 
 \usepackage{xcolor}
 \usepackage{amssymb} 
@@ -10,7 +10,6 @@
 
 \title{Handling String-Number Conversion in String Constraint Solving}
 \author{}
-\institute{}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -162,7 +161,7 @@ We introduce \emph{symbolic flat automata} (SFA) $(Q,T,\cvar,\st{0}{0},\st{m}{0}
 \end{enumerate} 
 Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
 
-\begin{figure}
+\begin{figure*}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 	\begin{tikzpicture} 
@@ -204,7 +203,7 @@ Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
 	\end{tikzpicture} 
 	\label{fig:sfa_def}
 	\caption{An example of a symbolic flat automaton}
-\end{figure}
+\end{figure*}
 
 A finite automaton $D=(Q,T',\Sigma,q_0,q_m)$ is an \emph{instance} of a SFA $S=(Q,T,\cvar,q_0,q_m)$, if there exists an interpretation $I: \cvar \cup \{\epsilon\} \rightarrow \Sigma_\epsilon$ satisfying $I(\epsilon)=\epsilon$ and $T'=\{(q,I(c),q')\mid (q,c,q')\in T\}$. We write $I(S)$ to denote the instance of $S$ wrt. $I$. The language of $S$ is defined as $L(S)= \cup\{L(D) \mid D \mbox{ is an instance of } S\}$. Notice that $L(S)$ is regular because every SFA has only finitely many instance and the finite union of regular languages are also regular.
 
@@ -226,7 +225,7 @@ Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cd
 
 For the constraint $xy = yx$, we first restrict the domains of $x$ and $y$ to the SFA in Figure~\ref{fig:sfa} (a) and (b), respectively. In the construction of the SFA for $xy$ and $yx$ (Figure~\ref{fig:sfa} (c) and (d)), we rename the variables on the SFA of $X$ and $Y$ to some fresh variable for each different occurrence of $x$ and $y$ in $xy = yx$.
 
-\begin{figure}
+\begin{figure*}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 		
@@ -300,7 +299,7 @@ For the constraint $xy = yx$, we first restrict the domains of $x$ and $y$ to th
 
 	\caption{Symbolic flat automata of $x$, $y$, $xy$ and $yx$}
 	\label{fig:sfa}
-\end{figure}
+\end{figure*}
 
 Assume that $S_n=(Q,T,\cvarone,q_i,q_f)$ is the SFA of $x_1\cdot x_2 \cdots x_n$ and $S_m=(P,T',\cvartwo,p_i,p_f)$ is the SFA of $x_{n+1}\cdot x_{n+2} \cdots x_m$. Our next task is to find a model for $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$ under the domain restriction specified by $S_n$ and $S_m$. 
 Note that $\cvarone \cap \cvartwo =\emptyset$, because all variables will be renamed to some fresh variable. 
@@ -321,9 +320,9 @@ Such product automaton uses $Q\times P$ as the set of states and $(\cvarone \cup
 More precisely, the product automaton is a tuple $(Q\times P, T^2, (\cvarone \cup \{\epsilon\}) \times (\cvartwo \cup \{\epsilon\} ), (q_i,p_i),(q_f,p_f))$, where the transition relation $T^2$ is the minimal set satisfying the following.
 
 \begin{itemize}
-\item If $(q_1,v_i^{(j)},q_2) \in T$, then for all $p\in P,((q_1,p),(v_i^{(j)},\epsilon),(q_2,p))\in T^2$.
-\item If $(p_1,v_i^{(j)},p_2) \in T'$, then for all $q\in Q,((q,p_1),(\epsilon,v_i^{(j)}),(q,p_2))\in T^2$.
-\item If $(q_1,v_i^{(j)},q_2) \in T$ and $(p_1,v_{i'}^{(j')},p_2) \in T'$, then $((q_1,p_1),(v_i^{(j)},v_{i'}^{(j')}),(q_2,p_2))\in T^2$.
+\item If $(q_1,v_i^{(j)},q_2) \in T$, then for all states $p\in P$, we have $((q_1,p),(v_i^{(j)},\epsilon),(q_2,p))\in T^2$.
+\item If $(p_1,v_i^{(j)},p_2) \in T'$, then for all states $q\in Q,((q,p_1)$, we have $(\epsilon,v_i^{(j)}),(q,p_2))\in T^2$.
+\item If $(q_1,v_i^{(j)},q_2) \in T$ and $(p_1,v_{i'}^{(j')},p_2) \in T'$, then we have $((q_1,p_1),(v_i^{(j)},v_{i'}^{(j')}),(q_2,p_2))\in T^2$.
 \end{itemize}	
 The first two cases correspond to the situation when the character variable $v_i^{(j)}$ is assigned $\epsilon$. In such cases, only one automaton changes its state.
 
@@ -367,9 +366,8 @@ Note that $\#(v_0^0)=\#(v_0^1)=\#(v_0^2)=\#(v_0^3)$, so we just use $\#(v_0^0)$ 
 
 In this section, we discuss how to handle the constraint $n=\sti{x}$ by restrict the domain of $x$ to some SFA. Let us begin with a simple example, assume that we use the SFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee n=-1 $.
 
-For the case that $n$ is a positive integer, the value of $n$ can be characterized by a linear constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})$.
-Observe that when $\#(v_0)=1$, the loop is taken only once and we have $n=v_0\times 10+ v_1$. When $\#(v_0)=2$, the loop is taken twice and we have 
-$n=(v_0\times 10+ v_1) + ( v_0\times 10+ v_1)\times 100$.
+For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)}}{100-1}$. 
+The constraint uses $\#(v_0)$ to capture the total number of loop traversal.
 
 We begin the discussion with the conversion between bounded integers (e.g., 64-bits) and strings. Notice that even for bounded integer, the corresponding string can be of unbounded length. For example, the formula $\sti{x}=10 \wedge |x|=5$ is satisfiable when $x=``00010"$. To handle the bounded integer case $y=\sti{x}$, we propose to restrict the domain of $x$ to a SFA of the form $(\{q_0,\ldots,q_k\},T,\{v_0,\ldots,v_k\}, q_0,q_k)$, where $k$ is the number of digits allowed in the bounded integer, $T = \{(q_0,v_0,q_0)\} \cup \{(q_i,v_{i+1},q_{i+1})\mid 0\leq i <k\}$, with additional numerical constraints $v_0=0$ and $\wedge_{i\in [1,k]} 0 \leq v_i \leq 9$ to force the domain of the string to those corresponding to positive integers. Under this domain restriction, we obtain $y=\Sigma_{i\in [1,k]} 10^{k-i}\times v_i$. 
 
