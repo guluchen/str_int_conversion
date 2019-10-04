@@ -54,7 +54,7 @@ In our prototype tool, we implement the algorithm presented in~\cite{atva2019}, 
 For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{symbolic flat automata} (SFA), the automata are very expressive yet allows very efficiently manipulation. For example, it avoids the alphabet 
 explosion problem that the approach in~\cite{PLDI2017} suffers.
 
-Based on the SFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary symbolic flat automata, one can convert the a string constraint with string-number function to a integer constraint consisting of both polynomials and exponentials (formula~\ref{formula:str_int}). To the best of our knowledge, the satisfiability prolem of integer constraints with a mix of polynomials and exponentials is still open. 
+Based on the SFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary symbolic flat automata, one can convert the a string constraint with string-number function to a integer constraint consisting of both polynomials and exponentials (formula~\ref{formula:str_int}). To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. 
 
 For the particular case with only one integer variable, the satisfiability can be decided using the algorithm in~\cite{POPL2019}. However, the algorithm involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances.  
 
@@ -366,8 +366,30 @@ Note that $\#(v_0^0)=\#(v_0^1)=\#(v_0^2)=\#(v_0^3)$, so we just use $\#(v_0^0)$ 
 
 In this section, we discuss how to handle the constraint $n=\sti{x}$ by restrict the domain of $x$ to some SFA. Let us begin with a simple example, assume that we use the SFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee n=-1 $.
 
-For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)}}{100-1}$. 
+For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)+1}-1}{100-1}$. 
 The constraint uses $\#(v_0)$ to capture the total number of loop traversal.
+
+However, this constraint contains an exponential component $100^{\#(v_0)}$. To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. For a more general form, if we restrict the domain of $x$ to the SFA in Figure~\ref{fig:sfa_def}, for the case when $n$ is positive, we have the following relation.
+
+\[\begin{array}{lcl}
+y & = & (v_m^0\times 10^3 + v_m^1 \times 10^2 + v_m^2 \times 10 +v_m^3 )\times\\
+&   & \frac{10000^{\#(v_m^0)+1}-1}{10000-1}+\\
+&  & v_{m-1}\times 10000^{\#(v_m^0)+1}\\
+
+&   &+\ldots+ \\
+
+&   &v_1\times10000^{\#(v_m^0)} \times \ldots \times 10000^{\#(v_1^0)}+\\
+&   &(v_0^0\times 10^3 + v_0^1 \times 10^2 + v_0^2 \times 10 +v_0^3 )\times\\
+&   &\frac{10000^{\#(v_0^0)}-1}{10000-1} \times 10000^{\#(v_m^0)} \times \ldots \times  10000^{\#(v_1^0)} \times 10
+\end{array}\]
+
+
+Recall that $\#(x_1)$ is the number of occurrence of $v_1$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
+
+For the particular case with only one integer variable, the satisfiability of integer constraints with a mix of polynomials and exponentials can be decided using the algorithm in~\cite{POPL2019}. However, the algorithm involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances. 
+
+
+
 
 We begin the discussion with the conversion between bounded integers (e.g., 64-bits) and strings. Notice that even for bounded integer, the corresponding string can be of unbounded length. For example, the formula $\sti{x}=10 \wedge |x|=5$ is satisfiable when $x=``00010"$. To handle the bounded integer case $y=\sti{x}$, we propose to restrict the domain of $x$ to a SFA of the form $(\{q_0,\ldots,q_k\},T,\{v_0,\ldots,v_k\}, q_0,q_k)$, where $k$ is the number of digits allowed in the bounded integer, $T = \{(q_0,v_0,q_0)\} \cup \{(q_i,v_{i+1},q_{i+1})\mid 0\leq i <k\}$, with additional numerical constraints $v_0=0$ and $\wedge_{i\in [1,k]} 0 \leq v_i \leq 9$ to force the domain of the string to those corresponding to positive integers. Under this domain restriction, we obtain $y=\Sigma_{i\in [1,k]} 10^{k-i}\times v_i$. 
 
@@ -379,19 +401,6 @@ This approach can be extended to unbounded string using more sophisticated patte
 $$y= (v_1)\times \frac{10^{P(v_1)}-1}{10-1}$$
 
 If we consider a more general form, e.g., using the flat automata in Figure~\ref{fig:sfa_def} to restrict the domain of $x$, then we should add integer constraints to restrict the character variables domain to be in $[0,9]$ and then using the formula below to describe the relation between $x$ and $y$.
-
-\[\begin{array}{lcl}
-	y & = & (v_m^0\times 10^3 + v_m^1 \times 10^2 + v_m^2 \times 10 +v_m^3 )\times \frac{10000^{P(v_m^0)}-1}{10000-1}+v_{m-1}\times 10000^{P(v_m^0)}\\
-	
-	  &   &+\ldots+ \\
-	  
-	  &   &v_1\times10000^{P(v_m^0)} \times \ldots \times 1000^{P(v_1^0)}+\\
-	  &   &(v_0^0\times 10^3 + v_0^1 \times 10^2 + v_0^2 \times 10 +v_0^3 )\times \frac{10000^{P(v_0^0)}-1}{10000-1} \times 10000^{P(v_m^0)} \times \ldots \times \\
-	  &   &1000^{P(v_1^0)} \times 10
-\end{array}\]
-
-
-Recall that $P(x_1)$ is the number of occurrence of $v_1$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
 
 
 From the results of POPL2019, this problem is decidable if ....
