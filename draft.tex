@@ -54,7 +54,7 @@ In our prototype tool, we implement the algorithm presented in~\cite{atva2019}, 
 For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{symbolic flat automata} (SFA), the automata are very expressive yet allows very efficiently manipulation. For example, it avoids the alphabet 
 explosion problem that the approach in~\cite{PLDI2017} suffers.
 
-Based on the SFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary symbolic flat automata, one can convert the a string constraint with string-number function to a integer constraint consisting of both polynomials and exponentials (formula~\ref{formula:str_int}). To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. 
+Based on the SFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary symbolic flat automata, one can convert the a string constraint with string-number function to a integer constraint consisting of both polynomials and exponentials. To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. 
 
 For the particular case with only one integer variable, the satisfiability can be decided using the algorithm in~\cite{POPL2019}. However, the algorithm involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances.  
 
@@ -124,7 +124,7 @@ An \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 The \emph{string-number conversion function} $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $x \cdot a \in [0,9]^+$, $\sti{x\cdot a} = 10\times \sti{x}+a$. For $x\notin [0,9]^+$, $\sti{x}=-1$. 
 
-Notice that only positive integer is supported in this semantics. This is the semantics used by most of the SMT solvers, and hence we follow it in this paper. The encoding has a benefit that only can also handle the case where $x$ is ``not a number'', using the condition $sti{x} = -1$.
+Notice that only positive integer is supported in this semantics. This is the semantics used by most of the SMT solvers, and hence we follow it in this paper. The encoding has a benefit that only can also handle the case where $x$ is ``not a number'', using the condition $\sti{x} = -1$.
 
 Supporting only positive integer is not a strong restriction, since conversing from negative integer can still be encoded using the positive only version. More specifically, if we want to say $n \in \varn$ is the integer value of the string $x \in \Sigma^*$, we can write the following constraint (ignore the case that $x$ is ``not a number'', which can also be encoded using more conditions):
 
@@ -201,8 +201,9 @@ Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
 		\draw[->] (q11) edge [bend left] node [above]{$\sym{1}{1}$} (q12) ;
 		\draw[->] (q12) edge [bend left] node [right]{$\sym{1}{2}$} (q1) ;
 	\end{tikzpicture} 
-	\label{fig:sfa_def}
+
 	\caption{An example of a symbolic flat automaton}
+	\label{fig:sfa_def}
 \end{figure*}
 
 A finite automaton $D=(Q,T',\Sigma,q_0,q_m)$ is an \emph{instance} of a SFA $S=(Q,T,\cvar,q_0,q_m)$, if there exists an interpretation $I: \cvar \cup \{\epsilon\} \rightarrow \Sigma_\epsilon$ satisfying $I(\epsilon)=\epsilon$ and $T'=\{(q,I(c),q')\mid (q,c,q')\in T\}$. We write $I(S)$ to denote the instance of $S$ wrt. $I$. The language of $S$ is defined as $L(S)= \cup\{L(D) \mid D \mbox{ is an instance of } S\}$. Notice that $L(S)$ is regular because every SFA has only finitely many instance and the finite union of regular languages are also regular.
@@ -368,45 +369,63 @@ In this section, we discuss how to handle the constraint $n=\sti{x}$ by restrict
 
 For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)+1}-1}{100-1}$. 
 The constraint uses $\#(v_0)$ to capture the total number of loop traversal.
+Notice that the constraint above contains an exponential component $100^{\#(v_0)}$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
 
-However, this constraint contains an exponential component $100^{\#(v_0)}$. To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. For a more general form, if we restrict the domain of $x$ to the SFA in Figure~\ref{fig:sfa_def}, for the case when $n$ is positive, we have the following relation.
+For a more general form, if we restrict the domain of $x$ to the SFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0^{(0)}\times 10+ v_1^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{v_0^{(0)}-1})\times 100^{v_2^{(0)}}+(v_2^{(0)}\times 10+ v_3^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{v_2^{(0)}-1}) =  (v_0^{(0)}\times 10+ v_1^{(0)}) \times \frac{100^{\#(v_0^{(0)})+1}-1}{100-1}\times 100^{v_2^{(0)}} + (v_2^{(0)}\times 10+ v_3^{(0)}) \times \frac{100^{\#(v_2^{(0)})+1}-1}{100-1}$. Observe that the formula has even more exponential components.
 
-\[\begin{array}{lcl}
-y & = & (v_m^0\times 10^3 + v_m^1 \times 10^2 + v_m^2 \times 10 +v_m^3 )\times\\
-&   & \frac{10000^{\#(v_m^0)+1}-1}{10000-1}+\\
-&  & v_{m-1}\times 10000^{\#(v_m^0)+1}\\
-
-&   &+\ldots+ \\
-
-&   &v_1\times10000^{\#(v_m^0)} \times \ldots \times 10000^{\#(v_1^0)}+\\
-&   &(v_0^0\times 10^3 + v_0^1 \times 10^2 + v_0^2 \times 10 +v_0^3 )\times\\
-&   &\frac{10000^{\#(v_0^0)}-1}{10000-1} \times 10000^{\#(v_m^0)} \times \ldots \times  10000^{\#(v_1^0)} \times 10
-\end{array}\]
-
-
-Recall that $\#(x_1)$ is the number of occurrence of $v_1$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
+To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. 
 
 For the particular case with only one integer variable, the satisfiability of integer constraints with a mix of polynomials and exponentials can be decided using the algorithm in~\cite{POPL2019}. However, the algorithm involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances. 
 
+In order to handle the under-approximation of string-integer conversion efficiently, we propose to restrict the domain of $x$ to a SFA in Figure~\ref{fig:sfa_its}. 
 
+The SFA has a self-loop transition labeled $v_0$ at $q_0$ and we always add a constraint $v_0=0$ for such SFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Notice that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. For example, the formula $\sti{x}=10 \wedge |x|=5$ is satisfiable when $x=``00010"$. 
 
+\begin{figure}
+	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
+			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
+	\begin{tikzpicture} 
+	\node[state,initial] (q0)  {$q_0$};
+	\node[state] (q1) [right = 1cm of q0] {$q_1$};
+	\node (q2) [right = 0.8cm of q1]{};
+	\node (q3) [right = 1cm of q2]{};
+	\node[state,accepting] (qm) [right = 1cm of q3] {$q_m$};
+	
+	\draw[->] (q0) edge node [below]{$v_1$} (q1) ;
+	\draw[->] (q1) edge node [below]{$v_2$} (q2) ;
+	\draw[dotted] (q2) edge (q3) ;
+	\draw[->] (q3) edge node [below]{$v_m$} (qm) ;
+	\path (q0) edge [loop above] node {$v_0$} (q0);
+	\end{tikzpicture} 
+	
+	\caption{An example of a symbolic flat automaton}
+	\label{fig:sfa_its}
+\end{figure}
 
-We begin the discussion with the conversion between bounded integers (e.g., 64-bits) and strings. Notice that even for bounded integer, the corresponding string can be of unbounded length. For example, the formula $\sti{x}=10 \wedge |x|=5$ is satisfiable when $x=``00010"$. To handle the bounded integer case $y=\sti{x}$, we propose to restrict the domain of $x$ to a SFA of the form $(\{q_0,\ldots,q_k\},T,\{v_0,\ldots,v_k\}, q_0,q_k)$, where $k$ is the number of digits allowed in the bounded integer, $T = \{(q_0,v_0,q_0)\} \cup \{(q_i,v_{i+1},q_{i+1})\mid 0\leq i <k\}$, with additional numerical constraints $v_0=0$ and $\wedge_{i\in [1,k]} 0 \leq v_i \leq 9$ to force the domain of the string to those corresponding to positive integers. Under this domain restriction, we obtain $y=\Sigma_{i\in [1,k]} 10^{k-i}\times v_i$. 
+Such SFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
+Remember that the character variables can be assigned $\epsilon$. In order to handle such cases efficiently, we use an encoding that if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j,m]$, i.e., we shift all the $\epsilon$-transitions to the least significant digits. More specifically, we first define two functions:
 
-\todo{Add a figure of the SFA above.}
+$$\mathsf{epsAfter(k)}::= (0\leq v_0,\ldots, v_k\leq 9) \wedge v_{k+1}=\ldots =v_m = -1$$
+$$\mathsf{toNumber(k)}::= (n = v_0\times 10^{k} + v_1\times 10^{k-1} + \ldots + v_{k})$$
+
+Then we can specify the relation between $n$ and the character variables as follows:
+$$(n=-1 \vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(k)} ) )$$
+
+The length of $x$ can be specified by the following formula.
+
+$\begin{array}{ccc}
+	(|x|&=& \#(v_0)+1 \wedge 0\leq v_1 \leq 9 \wedge v_2 = -1)\wedge \\
+	(|x|&=& \#(v_0)+2 \wedge 0\leq v_2 \leq 9 \wedge v_3 = -1)\wedge \\
+	& &\ldots\\
+	(|x|&=& \#(v_0)+(m-1) \wedge 0\leq v_{m-1} \leq 9 \wedge v_m = -1)\wedge\\
+	(|x|&=& \#(v_0)+m \wedge 0\leq v_m \leq 9 )
+\end{array}$
 
 \todo{Add an example: $\sti{x}=\sti{y} \wedge x= y\cdot y$. Do product construction informally here.}
 
-This approach can be extended to unbounded string using more sophisticated pattern. For example, we can extend the bounded pattern that uses two loops, by changing the transition relation $T$ to $\{(q_0,v_0,q_0), (q_0,\epsilon,q_1), (q_1,v_1,q_1)\}$. In this pattern, one can describe string that corresponds arbitrarily large integer. More specifically, any number in the form of $v_1v_1\ldots v_1$ can be expressed. Formally, if $y=\sti{x}$ or $x=\its{y}$ the relation between $y$ and $x$ can be described in the following formula:
-$$y= (v_1)\times \frac{10^{P(v_1)}-1}{10-1}$$
+\section{Evaluation}
 
-If we consider a more general form, e.g., using the flat automata in Figure~\ref{fig:sfa_def} to restrict the domain of $x$, then we should add integer constraints to restrict the character variables domain to be in $[0,9]$ and then using the formula below to describe the relation between $x$ and $y$.
-
-
-From the results of POPL2019, this problem is decidable if ....
-
-
-Recall that for equality constraint, we allow to restrict the domain of variables to arbitrary SFA. Under this framework, if $\sti{x}$ has occurred as a part of the formulae, then we always choose the SFAs described in this section to restrict the domain of $x$.
+\todo{copy a few tables from our test site to here}
 
 \end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
