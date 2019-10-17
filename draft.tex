@@ -4,6 +4,7 @@
 \usepackage{amssymb} 
 \usepackage{tikz}
 \usepackage[autostyle]{csquotes}
+\usepackage{listings}
 
 \usetikzlibrary{positioning}
 \usetikzlibrary{arrows,automata}
@@ -34,19 +35,63 @@
 \maketitle
 
 
+\lstdefinelanguage{JavaScript}{
+	keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, if, in, while, do, else, case, break},
+	keywordstyle=\color{blue}\bfseries,
+	ndkeywords={class, export, boolean, throw, implements, import, this},
+	ndkeywordstyle=\color{darkgray}\bfseries,
+	identifierstyle=\color{black},
+	sensitive=false,
+	comment=[l]{//},
+	morecomment=[s]{/*}{*/},
+	commentstyle=\color{purple}\ttfamily,
+	stringstyle=\color{red}\ttfamily,
+	morestring=[b]',
+	morestring=[b]"
+}
+
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} \label{section:introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\todo{Why this problem is important? Need to say it is used often, e.g., read 
+\hide{Why this problem is important? Need to say it is used often, e.g., read 
 from text file or user input. Why this problem is challenging? It is undecidable. Some tricky cases 
 using string as array index. Bounded SAT-based encoding might not work even for 
 very simple constraints. e.g., $y=str2int(x) \wedge y>9999999$, if $x$ is a 
 ASCII string, then XXX Boolean variables are required. Or we can just propose 
 an example that all major solver fails. Maybe we still say our approach is still over-approximation + under-approximation, in this case, need to think how to present the over-approximation part. Maybe no CEGAR is fine.}
 
+String data type is omnipresent in modern programming languages. In such programs, \textit{string-number conversion function} is frequently used. For example, often that programs read plain string input from text files (e.g., in csv format), partition it according to some predefined separator symbols (e.g., the comma symbol), and then convert each string partition to the desired data type (often integers). In the reverse direction, programs also convert values in other data type back to string and store them as text files. 
 
-In this paper, we propose an approach that handles string constraints with string-number conversion efficiently. This is a very challenging problem. From the theoretical point of view, this problem is already proven to be undecidable~\cite{vijay_rp}. In practice, in our experiments, all of the state-of-the-art string constraint solvers do not support string-number conversion correctly. Some of them handles such constraints with only over-approximation of the original formula, and is known to have one-side error (see Section~\ref{section:experiment} for detailed explanation). Here we propose a framework that uses both over and under-approximation of the string constraints. The over-approximation is for proving UNSAT and the under-approximation is for proving SAT of the string constraint. Both over and under-approximation should fail in a decidable fragment of string constraints that can be efficiently solved. 
+Incorrect handling of string-number conversion can cause very subtle bugs.
+For example, in JavaScript, variables are untyped and (implicit) type conversion happens automatically to the stored values. Consider the program below
+
+
+\begin{lstlisting}[breaklines=true,language=JavaScript]
+var arr = [1,...,M];
+var input = //from user
+if(0<=input<M-1){
+	document.write(arr[input])
+}
+\end{lstlisting}
+
+The program reads input value from users and use it as the array index. This program works perfectly no matter the input is in string form (e.g., ``1'', ``3'') or numerical form (e.g., $1$, $3$). Both of them can pass though the range test (when the input is a string, it will be first convert to integer and then compared with $0$ and $M$). However, the programmer may find later that he wants to shift the index value by one, say, change \texttt{document.write(arr[input])} to \texttt{document.write(arr[input+1])}. In such case, the program will behave incorrectly if the type of the value stored in \texttt{input} is string. For example, when \texttt{input=="5"}, the \texttt{+} operator in \texttt{input+1} will be interpreted as string concatenation and the value $1$ will be converted to a string. Therefore, the program will output \texttt{arr["51"]} instead of \texttt{arr["6"]}. If one searches CVE (Common Vulnerabilities and Exposures), he/she can find a number of vulnerabilities (e.g., clauses array-out-of-bound) due to incorrect handling of string-number conversion.
+
+For the example above, we can detect the potential array-out-of-bound problem that happens when \texttt{input} stores a string value by checking the satisfiability of the string constraint below (the case \texttt{input} stores a integer value can be check by another formula). 
+
+$$
+\begin{array}{c}
+0 \leq \sti{input}<M-1 \wedge \\
+\neg(index = input\cdot \its{1} \wedge 0 \leq \sti{index} <M-1)
+\end{array}
+$$
+
+Such constraint contains \textit{string-number conversion} functions (e.g., $\sti{input}$ and $\sti{index}$), \textit{equality constraints} (e.g., $index = input\cdot \its{1}$), and \textit{integer constraints} (e.g., $0 \leq \sti{input}<M$). Solving constraint of this kind is a very challenging problem. From the theoretical point of view, this problem is already proven to be undecidable~\cite{vijay_rp}. In practice, in our experiments, all of the state-of-the-art string constraint solvers do not support string-number conversion correctly. Some of them handles such constraints with only over-approximation of the original formula, and is known to have one-side error (see Section~\ref{section:experiment} for detailed explanation). 
+In this paper, we propose a framework that handles string constraints with string-number conversion efficiently. Our framework uses both over and under-approximation of the string constraints. The over-approximation is for proving UNSAT and the under-approximation is for proving SAT of the string constraint. Both over and under-approximation should fail in a decidable fragment of string constraints that can be efficiently solved. 
 
 For over-approximation, there are a few existing algorithms~\cite{atva2019,z3}, our framework does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult and many approaches can handle all of them almost perfectly. The battle field is in fact those SAT instances. 
 In our prototype tool, we implement the algorithm presented in~\cite{atva2019}, in addition with some additional axioms, to handle the over-approximation of string constraints with number-string conversion. 
@@ -144,6 +189,11 @@ We define  $\modelof{\phi}= \{I \mid I(\phi)= \true \}$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Over-Approximation and Under-Approximation Framework} \label{section:framework}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+For proving UNSAT, our strategy first over-approximates string-number conversion function $n=\its{x}$ as an uninterpreted function with an additional axiom $n\leq 0 \rightarrow \sti{\its{n}}=n$. 
+
+
+and then solve the entire constraint with a procedure that is similar to the one in ATVA 2019.
+
 
 
 
