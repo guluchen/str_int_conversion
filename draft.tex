@@ -65,10 +65,13 @@ very simple constraints. e.g., $y=str2int(x) \wedge y>9999999$, if $x$ is a
 ASCII string, then XXX Boolean variables are required. Or we can just propose 
 an example that all major solver fails. Maybe we still say our approach is still over-approximation + under-approximation, in this case, need to think how to present the over-approximation part. Maybe no CEGAR is fine.}
 
-String data type is omnipresent in modern programming languages. In such programs, \textit{string-number conversion function} is frequently used. For example, often that programs read plain string input from text files (e.g., in csv format), partition it according to some predefined separator symbols (e.g., the comma symbol), and then convert each string partition to the desired data type (often integers). In the reverse direction, programs also convert values in other data type back to string and store them as text files. 
+String data type is omnipresent in modern programming languages. Various infamous security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values. As a results, in the past, a significant amount of research efforts have been investigated to symbolic execution and test case generation of string manipulating programs~\cite{saxena2010symbolic,artzi2011framework,huang2004securing,sen2013jalangi}. The core enabling technology for these approaches is string constraint solving~\cite{kiezun2009hampi,zheng2013z3,abdulla2015norn,abdulla2017flatten,wang2016string,abdulla2018trau,chen2019decision,zheng2017z3str2}. However, all these modern solvers fall short when \textit{string-number conversion function} occurs in the program.
+
+
+String-number conversion function is very frequently used in string-manipulating programs. For example, often that programs read plain string input from text files, partition it according to some predefined separator symbol (e.g., the comma symbol), and then convert each string partition to the desired data type (often integers). In the reverse direction, programs also convert values in numerical data type back to string and store them as text files. 
 
 Incorrect handling of string-number conversion can cause very subtle bugs.
-For example, in JavaScript, variables are untyped and (implicit) type conversion happens automatically to the stored values. Consider the program below
+For example, in JavaScript, variables are untyped and (implicit) type conversion happens automatically to the stored values. Consider the following simple program
 
 
 \begin{lstlisting}[breaklines=true,language=JavaScript]
@@ -79,9 +82,9 @@ if(0<=input<M-1){
 }
 \end{lstlisting}
 
-The program reads input value from users and use it as the array index. This program works perfectly no matter the input is in string form (e.g., ``1'', ``3'') or numerical form (e.g., $1$, $3$). Both of them can pass though the range test (when the input is a string, it will be first convert to integer and then compared with $0$ and $M$). However, the programmer may find later that he wants to shift the index value by one, say, change \texttt{document.write(arr[input])} to \texttt{document.write(arr[input+1])}. In such case, the program will behave incorrectly if the type of the value stored in \texttt{input} is string. For example, when \texttt{input=="5"}, the \texttt{+} operator in \texttt{input+1} will be interpreted as string concatenation and the value $1$ will be converted to a string. Therefore, the program will output \texttt{arr["51"]} instead of \texttt{arr["6"]}. If one searches CVE (Common Vulnerabilities and Exposures), he/she can find a number of vulnerabilities (e.g., clauses array-out-of-bound) due to incorrect handling of string-number conversion.
+The program reads input value from users and use it as the array index. This program works perfectly no matter the input is in string form (e.g., ``1'', ``3'') or numerical form (e.g., $1$, $3$). Both of them can pass though the range test (when the input is a string, it will be first convert to integer and then compared with $0$ and $M$). However, the programmer may find later that he wants to shift the index value by one, say, change \texttt{document.write(arr[input])} to \texttt{document.write(arr[input+1])}. In such case, the program is still correct if \texttt{input} is a number, but will behave incorrectly if \texttt{input} is a string. For example, when \texttt{input=="5"}, the \texttt{+} operator in \texttt{input+1} will be interpreted as string concatenation and the value $1$ will be converted to a string. Therefore, the program will output \texttt{arr["51"]} instead of \texttt{arr["6"]}. If one searches CVE (Common Vulnerabilities and Exposures), he/she can find a number of vulnerabilities (e.g., clauses array-out-of-bound) due to incorrect handling of string-number conversion.
 
-For the example above, we can detect the potential array-out-of-bound problem that happens when \texttt{input} stores a string value by checking the satisfiability of the string constraint below (the case \texttt{input} stores a integer value can be check by another formula). 
+In the example above, we can detect the array-out-of-bound problem (that happens when \texttt{input} is a string) by checking the satisfiability of the string constraint below\footnote{The case \texttt{input} stores a integer value can be check by another formula.}. 
 
 $$
 \begin{array}{c}
@@ -90,25 +93,22 @@ $$
 \end{array}
 $$
 
-Such constraint contains \textit{string-number conversion} functions (e.g., $\sti{input}$ and $\sti{index}$), \textit{equality constraints} (e.g., $index = input\cdot \its{1}$), and \textit{integer constraints} (e.g., $0 \leq \sti{input}<M$). Solving constraint of this kind is a very challenging problem. From the theoretical point of view, this problem is already proven to be undecidable~\cite{vijay_rp}. In practice, in our experiments, all of the state-of-the-art string constraint solvers do not support string-number conversion correctly. Some of them handles such constraints with only over-approximation of the original formula, and is known to have one-side error (see Section~\ref{section:experiment} for detailed explanation). 
+
+Such constraint contains \textit{string-number conversion} functions (e.g., $\sti{input}$ and $\sti{index}$), \textit{equality constraints} (e.g., $index = input\cdot \its{1}$), and \textit{integer constraints} (e.g., $0 \leq \sti{input}<M$). Solving constraint of this kind is a very challenging problem. From the theoretical point of view, this problem is already proven to be undecidable~\cite{day2018satisfiability}. In practice, in our experiments, all of the state-of-the-art string constraint solvers do not support string-number conversion correctly. Some of them handles such constraints with only over-approximation of the original formula, and is known to have one-side error (see Section~\ref{section:evaluation} for detailed explanation). 
 In this paper, we propose a framework that handles string constraints with string-number conversion efficiently. Our framework uses both over and under-approximation of the string constraints. The over-approximation is for proving UNSAT and the under-approximation is for proving SAT of the string constraint. Both over and under-approximation should fail in a decidable fragment of string constraints that can be efficiently solved. 
 
-For over-approximation, there are a few existing algorithms~\cite{atva2019,z3}, our framework does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult and many approaches can handle all of them almost perfectly. The battle field is in fact those SAT instances. 
-In our prototype tool, we implement the algorithm presented in~\cite{atva2019}, in addition with some additional axioms, to handle the over-approximation of string constraints with number-string conversion. 
+For over-approximation, there are a few existing algorithms~\cite{parosh2019chain,z3}, our framework does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult and many approaches can handle all of them almost perfectly. The battle field is in fact those SAT instances. 
+In our prototype tool, we implement the algorithm presented in~\cite{parosh2019chain}, in addition with some additional axioms, to handle the over-approximation of string constraints with number-string conversion. 
 
-For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{symbolic flat automata} (SFA), the automata are very expressive yet allows very efficiently manipulation. For example, it avoids the alphabet 
-explosion problem that the approach in~\cite{PLDI2017} suffers.
+For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{symbolic flat automata} (SFA). The approach based on SFA is very flexible yet allows very efficiently manipulation. One can pick SFA of arbitrary structure for the search space restriction and reduce the string constraint solving problem to an integer constraint solving problem. For efficiency, it avoids the alphabet 
+explosion problem that the approach in~\cite{abdulla2017flatten} suffers.
 
-Based on the SFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary symbolic flat automata, one can convert the a string constraint with string-number function to a integer constraint consisting of both polynomials and exponentials. To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. 
-
-For the particular case with only one integer variable, the satisfiability can be decided using the algorithm in~\cite{POPL2019}. However, the algorithm involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances.  
-
-For efficiency reason, we propose to use \emph{SFA with only one loop} to handle string-number conversion function. That is, if we encountered a constraint $y=\sti{x}$, then we always restrict the domain of $x$ to some SFA with one loop, instead of arbitrary SFAs. This allows us to convert a string constraint with string-number conversion function to a equisatisfiable linear integer constraint, which can be solved very efficiently. 
+Based on the SFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary symbolic flat automata, one can convert the a string constraint with string-number function to an integer constraint consisting of both polynomials and exponentials. Solving such kind of constraints is a very difficult task. For simpler cases where the variables are real numbers, decision procedures for different subclass polynomial-exponential equations exists~\cite{gan2015decidability,kincaid2019closed,achatz2008deciding}. To the best of our knowledge, the satisfiability problem of polynomial-exponential equations is still open. For efficiency reason, we propose to use \emph{SFA with only one loop} to handle string-number conversion function. That is, if we encountered a constraint $y=\sti{x}$, then we always restrict the domain of $x$ to some SFA with one loop, instead of arbitrary SFAs. This allows us to convert a string constraint with string-number conversion function to a equisatisfiable linear integer constraint, which can be solved very efficiently. 
 
 \todo{Talk about experiments}
 
 
-To ease presentation, in the main text, we only consider string constraints consisting of \emph{equality constraints (a.k.a. word equation)}, \emph{length constraints}, and \emph{string-number conversion} functions. We describe the extension to support transducer and membership constraints in the appendix. 
+To ease presentation, in the paper, we only consider string constraints consisting of \emph{equality constraints (a.k.a. word equation)}, \emph{length constraints}, and \emph{string-number conversion} functions. In fact, the approach can be easily extended to support transducer and membership constraints. The extension is implemented in our prototype tool \textsf{z3-Trau}. 
 
 
 \hide{
@@ -474,8 +474,10 @@ $\begin{array}{ccc}
 \todo{Add an example: $\sti{x}=\sti{y} \wedge x= y\cdot y$. Do product construction informally here.}
 
 \section{Evaluation}
-
+ \label{section:evaluation}
 \todo{copy a few tables from our test site to here}
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{refs}
 
 \end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
