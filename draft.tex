@@ -65,7 +65,7 @@ very simple constraints. e.g., $y=str2int(x) \wedge y>9999999$, if $x$ is a
 ASCII string, then XXX Boolean variables are required. Or we can just propose 
 an example that all major solver fails. Maybe we still say our approach is still over-approximation + under-approximation, in this case, need to think how to present the over-approximation part. Maybe no CEGAR is fine.}
 
-String data type is omnipresent in modern programming languages. Various infamous security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values. As a results, in the past, a significant amount of research efforts have been investigated to symbolic execution and test case generation of string manipulating programs~\cite{saxena2010symbolic,artzi2011framework,huang2004securing,sen2013jalangi}. The core enabling technology for these approaches is string constraint solving~\cite{kiezun2009hampi,zheng2013z3,abdulla2015norn,abdulla2017flatten,wang2016string,abdulla2018trau,chen2019decision,zheng2017z3str2}. However, all these modern solvers fall short when \textit{string-number conversion function} occurs in the program.
+String data type is omnipresent in modern programming languages. Various infamous security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values. As a results, in the past, a significant amount of research efforts have been investigated to symbolic execution and test case generation of string manipulating programs~\cite{saxena2010symbolic,artzi2011framework,huang2004securing,sen2013jalangi}. The core enabling technology for these approaches is string constraint solving~\cite{kiezun2009hampi,abdulla2014string,zheng2013z3,abdulla2015norn,abdulla2017flatten,wang2016string,abdulla2018trau,chen2019decision,zheng2017z3str2}. However, all these modern solvers fall short when \textit{string-number conversion function} occurs in the program.
 
 
 String-number conversion function is very frequently used in string-manipulating programs. For example, often that programs read plain string input from text files, partition it according to some predefined separator symbol (e.g., the comma symbol), and then convert each string partition to the desired data type (often integers). In the reverse direction, programs also convert values in numerical data type back to string and store them as text files. 
@@ -271,7 +271,10 @@ For such kind of automata, the number of occurrence of each symbol in $\cvar$ un
 
 \todo{Mention NDD when talk about our practical bounded encoding for str2int}
 
-\section{Handling Equality and Disequality Constraint} \label{section:eq}
+\section{Handling Equality and Disequality Constraint Symbolically} \label{section:eq}
+
+
+
 Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some SFA with disjoint alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. We rename the variables on the transitions of SFA's for different occurrences of the same variable in one equality constraint. Later we will use some arithmetic constraints to enforce that all occurrences of the variants of the same variable will be assigned the same value. For notational convenience, the renaming is done by adding a version number to the variable. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, $\ldots$.
 
 For the constraint $xy = yx$, we first restrict the domains of $x$ and $y$ to the SFA in Figure~\ref{fig:sfa} (a) and (b), respectively. In the construction of the SFA for $xy$ and $yx$ (Figure~\ref{fig:sfa} (c) and (d)), we rename the variables on the SFA of $X$ and $Y$ to some fresh variable for each different occurrence of $x$ and $y$ in $xy = yx$.
@@ -402,6 +405,24 @@ From the model $M$ of the linear constraints, we can obtain $w_n$, $w_m$, and $I
 More specifically, assume that the SFA $S_n$ is the one in Figure~\ref{fig:sfa_def}, then $$w_n = (v_0^0v_0^1v_0^2v_0^3)^{\#(v_0^0)}v_0(v_1^0v_1^1v_1^2)^{\#(v_1^0)}v_1\ldots(v_m^0v_m^1v_m^2v_m^3)^{\#(v_m^0)}$$
 Note that $\#(v_0^0)=\#(v_0^1)=\#(v_0^2)=\#(v_0^3)$, so we just use $\#(v_0^0)$ to denote the number of times of first loop traversal. One can construct $w_m$ in a similar way. Using the same approach, one can derive the assignment to variables in $\vars$ using the corresponding count and values of variables in $\cvar$.
 
+Disquality constraint $x_1\cdot x_2 \cdots x_n \neq x_{n+1}\cdot x_{n+2} \cdots x_m$ can be converted to equal-satisfiable equality constraints in the standard way~\cite{abdulla2015norn}. We replace it with the following constraints.
+
+$$
+\begin{array}{c}
+(|x_1|+ |x_2|+ \cdots +|x_n| \neq |x_{n+1}| + |x_{n+2}|+ \cdots +|x_m|)\vee \\
+\left(
+	\begin{array}{cccc}
+	
+	 y_1\cdot y_2\cdot y_3 &=& x_1\cdot x_2 \cdots x_n &\wedge\\
+	 y_1 \cdot y'_2 \cdot y'_3 &=& x_{n+1}\cdot x_{n+2} \cdots x_m &\wedge\\
+	|y_2|&=&|y'_2|=1
+	\end{array}
+
+\right)
+\end{array}
+$$
+
+The second disjunct says that the constraints $x_1\cdot x_2 \cdots x_n$ and $x_{n+1}\cdot x_{n+2} \cdots x_m$ have a common prefix $y_1$, but the next character $y_2$ and $y'_2$ is different. In an more efficient implementation, one just project $y_2$ and $y'_2$ to a SFA that accept only symbolic words $v_1$ and $v'_1$, respectively (the SFA has no loop and only one transition). 
 
 
 
