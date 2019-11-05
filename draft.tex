@@ -24,9 +24,9 @@
 \newcommand{\its}[1]{\mbox{\textbf{toStr}($#1$)}}
 \newcommand{\varn}{\mbox{$\mathbb{V}_{\mathbb{Z}}$}}
 \newcommand{\vars}{\mbox{$\mathbb{V}_{\Sigma^*}$}}
-\newcommand{\cvar}{\mbox{$\mathbb{V}_{\Sigma_\epsilon}$}}
-\newcommand{\cvarone}{\mbox{$\mathbb{V}^1_{\Sigma_\epsilon}$}}
-\newcommand{\cvartwo}{\mbox{$\mathbb{V}^2_{\Sigma_\epsilon}$}}
+\newcommand{\cvar}{\mbox{$V_{\Sigma_\epsilon}$}}
+\newcommand{\cvarone}{\mbox{$V^1_{\Sigma_\epsilon}$}}
+\newcommand{\cvartwo}{\mbox{$V^2_{\Sigma_\epsilon}$}}
 \newcommand{\modelof}[1]{[\![#1]\!]}
 \newcommand{\true}{\mbox{$\mathsf{true}$}}
 \newcommand{\false}{\mbox{$\mathsf{false}$}}
@@ -189,21 +189,11 @@ and then solve the entire constraint with a procedure that is similar to the one
 We use $\mathbb{N}$ and $\mathbb{Z}$ to denote the sets of natural numbers and 
 integers. For a set $A$, we use $|A|$ to denote its size. For a string $w$, we 
 use $|w|$ to denote its length and $|w|_a$ to denote the number of occurrences of $a$ in $w$. We $\epsilon$ to denote an empty string and use $w_1\cdot w_2$ to denote the concatenation of strings $w_1$ and $w_2$. Let $S$ be a finite set of symbols. We use $S^+$ to denote the set of string over $S$ and $S^* = S^+\cup \{\epsilon\}$. We define $S_\epsilon =S\cup\{\epsilon\}$. A language 
-$L$ over $S$ is a set of strings in $S^*$.
+$L$ over $S$ is a set of strings in $S^*$. 
 
 A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of states, $T\subseteq Q\times (\Sigma\cup \{\epsilon\} )\times Q $ is the set of transition relation, $\Sigma$ is the alphabet, $q_0$ is the initial state, and $q_m$ is the final state. The semantics of finite automaton is defined in the standard manner. We use $L(A)$ to denote the regular language, i.e., set of accepted strings, of the automaton $A$.
 
-In this paper, we fix a finite alphabet $\Sigma \subseteq \mathbb{N}$. Note that here we assume the alphabet is a finite subset of natural numbers. Essentially, we try to capture the numerical encoding of the corresponding symbols in computers (e.g., in ASCII, `A' is encoded as $65$). We assume there is a one-one mapping between numbers in $\Sigma$ and the character it encodes. For simplicity of presentation, we assume the character `$0$' is mapped to number $0$, `$1$' to $1$,$\ldots$, and `$9$' to $9$. For other character $c$, we use $\enc{c}$ to denote the number that it maps to. Notice that this approach is general enough to support any finite set of characters. We write $[n,m]$ for the set of numbers (or symbols in $\Sigma$) $\{k\mid n\leq k \leq m\}$. A \emph{term} is an element in $(\vars\cup \Sigma)^*$.
-
-Given a finite automaton $A$ over $\{a_1,a_2,\ldots,a_n\}$, the Parikh image of $L$ is the set $\{(|w|_{a_1},\ldots, |w|_{a_n}) \mid w \in  L(A) \}$, i.e., the number of occurrences of each symbol $\{a_1,a_2,\ldots,a_n\}$ of words in $L(A)$. Moreover, one can construct from $A$ in linear time a Presburger formula $\phi_A(v_1, \ldots,v_n)$ such that $\phi(c_1, \ldots,c_n) \iff (c_1, \ldots,c_n)$ in the Parikh image of $L$~\cite{peter}.
-
-We use $\vars$ to denote a finite set of string variables ranging over $\Sigma^*$, $\varn$ to denote a finite set of integer variables ranging over $\mathbb{Z}$, and $\cvar$ to denote a finite set of character variables  ranging over $\Sigma_\epsilon$. Sometimes we use index to denote different set of variables over the same range, e.g., $\cvarone$ and $\cvartwo$. 
-We call a string over $\cvar$ a \emph{symbolic string}. 
-For a variable $x$, we call its primed version (e.g., $x'$) or indexed versions (e.g., $x_1$, $x^1$) its \emph{variants}.  
-In this paper, we use $x,y$ or their variants to denote variables in $\vars$, $n$ or its variants to denote variables in $\varn$, and $v$ and its variants for variables in $\cvar$.
-
-An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I$ from $\vars\cup \varn$ to $\Sigma^* \cup \mathbb{N}$. We lift $i$ to terms by defining $I: (\vars\cup \Sigma)^* \rightarrow \Sigma^*$ with $I(a) =a$ for $a\in \Sigma$ and $I(t_1 \cdot t_2) = I(t_1)\cdot I(t_2)$.
-An \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$. For a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
+Given a finite automaton $A$ over $\{a_1,a_2,\ldots,a_n\}$, the Parikh image of $L$ is the set $\{(|w|_{a_1},\ldots, |w|_{a_n}) \mid w \in  L(A) \}$, i.e., the number of occurrences of each symbol $\{a_1,a_2,\ldots,a_n\}$ of words in $L(A)$. Moreover, one can construct from $A$ in linear time a Presburger formula $\phi_A(v_1, \ldots,v_n)$ such that $\phi(c_1, \ldots,c_n) \iff (c_1, \ldots,c_n)$ in the Parikh image of $L$~\cite{SeidlSMH04}.
 
  
 
@@ -211,9 +201,18 @@ An \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{String Constraints} \label{section:sc}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+In this section, we formally define string constraints and the decision problem we want to solve. We fix a finite alphabet $\Sigma \subseteq \mathbb{N}$. Note that here we assume the alphabet is a finite subset of natural numbers. Essentially, we try to capture the numerical encoding of the corresponding symbols in computers (e.g., in ASCII, `A' is encoded as $65$). We assume there is a one-one mapping between numbers in $\Sigma$ and the character it encodes. For simplicity of presentation, we assume the character `$0$' is mapped to number $0$, `$1$' to $1$,$\ldots$, and `$9$' to $9$. For other character $c$, we use $\enc{c}$ to denote the number that it maps to. Notice that this approach is general enough to support any finite set of characters. We write $[n,m]$ for the set of numbers (or symbols in $\Sigma$) $\{k\mid n\leq k \leq m\}$. A \emph{term} is an element in $(\vars\cup \Sigma)^*$.
+
+
+We call $\vars$ the set of \emph{string variables} (ranging over $\Sigma^*$) and $\varn$ the set of \emph{integer variables} (ranging over $\mathbb{Z}$).
+For a variable $x$, we call its primed version (e.g., $x'$) or indexed versions (e.g., $x_1$, $x^1$) its \emph{variants}.
+In this paper, we use $x,y$ (or their variants) to denote string variables and $n$ (or its variants) to denote integer variables.
+
 The \emph{string-number conversion function} $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $x \cdot a \in [0,9]^+$, $\sti{x\cdot a} = 10\times \sti{x}+a$. For $x\notin [0,9]^+$, $\sti{x}=-1$. 
 
-Notice that only positive integer is supported in this semantics. This is the semantics used by most of the SMT solvers, and hence we follow it in this paper. The encoding has a benefit that only can also handle the case where $x$ is ``not a number'', using the condition $\sti{x} = -1$.
+Notice that only positive integer is supported in this semantics. This is the semantics used by most of the SMT solvers, and hence we follow it in this paper. The encoding has a benefit that it can also handle the case where $x$ is ``not a number'', using the condition $\sti{x} = -1$.
 
 Supporting only positive integer is not a strong restriction, since conversing from negative integer can still be encoded using the positive only version. More specifically, if we want to say $n \in \varn$ is the integer value of the string $x \in \Sigma^*$, we can write the following constraint (ignore the case that $x$ is ``not a number'', which can also be encoded using more conditions):
 
@@ -229,6 +228,8 @@ An \emph{integer constraint} $\phi$ is a linear constraint over the variables in
 %Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
 We define  $\modelof{\phi}= \{I \mid I(\phi)= \true \}$.
 
+An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I$ from $\vars\cup \varn$ to $\Sigma^* \cup \mathbb{N}$. We lift $I$ to terms (i.e., an element in $(\vars\cup \Sigma)^*$) in the standard manner. 
+
 
 
 
@@ -237,6 +238,8 @@ We define  $\modelof{\phi}= \{I \mid I(\phi)= \true \}$.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\st}[2]{q_{#1}^{#2}}
 \newcommand{\sym}[2]{v_{#1}^{#2}}
+We use $\cvar$ to denote a finite set of \emph{character variables}  ranging over $\Sigma_\epsilon$. Sometimes we use index to denote different set of variables over the same range, e.g., $\cvarone$ and $\cvartwo$. We use $v$ and its variants for character variables. We call a string over $\cvar$ (character variables) a \emph{symbolic string}.
+An \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$. For a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 
 We introduce \emph{symbolic flat automata} (SFA) $(Q,T,\cvar,\st{0}{0},\st{m}{0})$ that will be used to define patterns for the string variable domain restriction. SFA is a finite automaton operating over the alphabet $\cvar$ in addition with the following structural constraints.
 \begin{enumerate}
