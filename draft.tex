@@ -58,6 +58,40 @@
 \section{Introduction} \label{section:introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+
+String constraint solving has received considerable attention in the constraint solving community, with solvers such as CVC4 and Z3 implmenting solvers of ever-increasing sophistication.  Operations such as substring and string length are widely supported, and recent solvers such as Z3-str3 have shown impressive results.  However, these solvers have limited for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often limited to ground terms, i.e. at least one side of the conversion must be a constant.  Thus, $v = string2int("5")$ or $v = int2string(5)$ are handled but $v_1 = int2string(v_2)$ will fail.
+
+As solvers such Z3 are applied to symbolic execution of programming languages, this is increasingly becoming a severe limitation.  For many languages such as Java, conversion between integers and strings is a niche operation, and much symbolic execution can be done without supporting it; however, this is not true of some scripting languages, of which JavaScript is the most notable.  JavaScript is a key language---it powers most interactive content on the Web, and increasingly server-side code with nodejs---and it has conversions between strings and integers embedded in the core of its semantics.
+
+\begin{verbatim}
+function resetArray(arr) {
+  for(var i = 0; i < arr.length; i++) {
+    arr[i] = 0
+  }
+}
+\end{verbatim}
+
+
+
+A casual glance at the above code reveal no use of strings at all, but the semantics of field access is somewhat unusual in JavaScript: all array indices act like strings, and numeric indices are converted to strings.  Any faithful symbolic execution of JavaScript must handle such conversions for even basic array operations to work correctly; consider the following code snippet that uses {\tt{resetArray}}, with the value of {\tt{x}} shown on the right:
+
+\begin{tabular}{l|c}
+	{\tt{x = [0, 1, 2, 3, 4, 5]}} & [0, 1, 2, 3, 4, 5] \\
+	{\tt{resetArray(x)}} & [0, 0, 0, 0, 0, 0] \\
+	{\tt{x["3"] = 5}} & [0, 0, 0, 5, 0, 0] \\
+	{\tt{x["12"] = 7}} & [0, 0, 0, 5, 0, 0, , , , , , 7] \\
+	{\tt{resetArray(x)}} & [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] \\
+\end{tabular}
+
+In this code, string and integer values access the same array elements interchangeably, necessitating conversions between string and integers to faithfully model JavaScript semantics.  This conversion is mandated explicitly by JavaScript semantics: the 2019 edition of ECMAScript requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}).
+
+Now observe that {\tt{resetArray}} assigns to the array in a loop of which the size cannot, in general, be known a priori; as such, falls into the case where neither the string nor the integer in a conversion are constant and hence most SMT solvers will not be able to handle it.  But this is a rather straightforward array operation, and so this limit will cripple any model of non-trivial JavaScript code.
+
+
+\todo{The end of Julian's current writing}
+
+
 \hide{Why this problem is important? Need to say it is used often, e.g., read 
 from text file or user input. Why this problem is challenging? It is undecidable. Some tricky cases 
 using string as array index. Bounded SAT-based encoding might not work even for 
@@ -135,6 +169,15 @@ The approach combines techniques from both automata theory and SMT solving to ex
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview} \label{section:overview}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+For proving UNSAT, our strategy first over-approximates string-number conversion function $n=\its{x}$ as an uninterpreted function with an additional axiom $n\leq 0 \rightarrow \sti{\its{n}}=n$. 
+
+
+and then solve the entire constraint with a procedure that is similar to the one in ATVA 2019.
+
+
 
 
 
@@ -147,11 +190,11 @@ integers. For a set $A$, we use $|A|$ to denote its size. For a string $w$, we
 use $|w|$ to denote its length and $|w|_a$ to denote the number of occurrences of $a$ in $w$. We $\epsilon$ to denote an empty string and use $w_1\cdot w_2$ to denote the concatenation of strings $w_1$ and $w_2$. Let $S$ be a finite set of symbols. We use $S^+$ to denote the set of string over $S$ and $S^* = S^+\cup \{\epsilon\}$. We define $S_\epsilon =S\cup\{\epsilon\}$. A language 
 $L$ over $S$ is a set of strings in $S^*$.
 
-A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of states, $T\subseteq Q\times (\Sigma\cup \{\epsilon\} )\times Q $ is the set of transition relation, $\Sigma$ is the alphabet, $q_0$ is the initial state, and $q_m$ is the final state. The semantics of finite automaton is defined in the standard manner. We use $L(A)$ to denote the regular language, i.e., set of accepted strings, of a finite automaton $A$.
+A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of states, $T\subseteq Q\times (\Sigma\cup \{\epsilon\} )\times Q $ is the set of transition relation, $\Sigma$ is the alphabet, $q_0$ is the initial state, and $q_m$ is the final state. The semantics of finite automaton is defined in the standard manner. We use $L(A)$ to denote the regular language, i.e., set of accepted strings, of the automaton $A$.
 
 In this paper, we fix a finite alphabet $\Sigma \subseteq \mathbb{N}$. Note that here we assume the alphabet is a finite subset of natural numbers. Essentially, we try to capture the numerical encoding of the corresponding symbols in computers (e.g., in ASCII, `A' is encoded as $65$). We assume there is a one-one mapping between numbers in $\Sigma$ and the character it encodes. For simplicity of presentation, we assume the character `$0$' is mapped to number $0$, `$1$' to $1$,$\ldots$, and `$9$' to $9$. For other character $c$, we use $\enc{c}$ to denote the number that it maps to. Notice that this approach is general enough to support any finite set of characters. We write $[n,m]$ for the set of numbers (or symbols in $\Sigma$) $\{k\mid n\leq k \leq m\}$. A \emph{term} is an element in $(\vars\cup \Sigma)^*$.
 
-Given a finite automaton $A$ over $\{a_1,a_2,\ldots,a_n\}$, the Parikh image of $L$ is the set $\{(|w|_{a_1},\ldots, |w|_{a_n}) \mid w \in  L(A) \}$. Moreover, one can construct from $A$ in linear time a Presburger formula $\phi_A(v_1, \ldots,v_n)$ such that $\phi(c_1, \ldots,c_n) \iff (c_1, \ldots,c_n)$ in the Parikh image of $L$~\cite{peter}.
+Given a finite automaton $A$ over $\{a_1,a_2,\ldots,a_n\}$, the Parikh image of $L$ is the set $\{(|w|_{a_1},\ldots, |w|_{a_n}) \mid w \in  L(A) \}$, i.e., the number of occurrences of each symbol $\{a_1,a_2,\ldots,a_n\}$ of words in $L(A)$. Moreover, one can construct from $A$ in linear time a Presburger formula $\phi_A(v_1, \ldots,v_n)$ such that $\phi(c_1, \ldots,c_n) \iff (c_1, \ldots,c_n)$ in the Parikh image of $L$~\cite{peter}.
 
 We use $\vars$ to denote a finite set of string variables ranging over $\Sigma^*$, $\varn$ to denote a finite set of integer variables ranging over $\mathbb{Z}$, and $\cvar$ to denote a finite set of character variables  ranging over $\Sigma_\epsilon$. Sometimes we use index to denote different set of variables over the same range, e.g., $\cvarone$ and $\cvartwo$. 
 We call a string over $\cvar$ a \emph{symbolic string}. 
@@ -184,15 +227,6 @@ t_2$ and is interpreted analogously.
 An \emph{integer constraint} $\phi$ is a linear constraint over the variables in $\varn$ and length of a string $|x|$ for all $x \in \vars$.
 %Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
 We define  $\modelof{\phi}= \{I \mid I(\phi)= \true \}$.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Over-Approximation and Under-Approximation Framework} \label{section:framework}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-For proving UNSAT, our strategy first over-approximates string-number conversion function $n=\its{x}$ as an uninterpreted function with an additional axiom $n\leq 0 \rightarrow \sti{\its{n}}=n$. 
-
-
-and then solve the entire constraint with a procedure that is similar to the one in ATVA 2019.
 
 
 
