@@ -20,6 +20,7 @@
 \newcommand{\hide}[1]{}
 
 \newcommand{\todo}[1]{{\color{blue}TODO: #1}}
+\newcommand{\lh}[1]{{\color{orange}Lukas: #1}}
 \newcommand{\sti}[1]{\mbox{\textbf{toInt}($#1$)}}
 \newcommand{\its}[1]{\mbox{\textbf{toStr}($#1$)}}
 \newcommand{\varn}{\mbox{$\mathbb{V}_{\mathbb{Z}}$}}
@@ -31,6 +32,7 @@
 \newcommand{\true}{\mbox{$\mathsf{true}$}}
 \newcommand{\false}{\mbox{$\mathsf{false}$}}
 \newcommand{\enc}[1]{[\![#1]\!]}
+\newcommand{\parikh}{\mathit{Parikh}}
 
 
 \maketitle
@@ -184,16 +186,34 @@ and then solve the entire constraint with a procedure that is similar to the one
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Preliminary} \label{section:preliminary}
+\section{Preliminaries} \label{section:preliminary}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-We use $\mathbb{N}$ and $\mathbb{Z}$ to denote the sets of natural numbers and 
-integers. For a set $A$, we use $|A|$ to denote its size. For a string $w$, we 
-use $|w|$ to denote its length and $|w|_a$ to denote the number of occurrences of $a$ in $w$. We $\epsilon$ to denote an empty string and use $w_1\cdot w_2$ to denote the concatenation of strings $w_1$ and $w_2$. Let $S$ be a finite set of symbols. We use $S^+$ to denote the set of string over $S$ and $S^* = S^+\cup \{\epsilon\}$. We define $S_\epsilon =S\cup\{\epsilon\}$. A language 
-$L$ over $S$ is a set of strings in $S^*$. 
+%We use $\mathbb{N}$ and $\mathbb{Z}$ to denote the sets of natural numbers and 
+%integers. For a set $A$, we use $|A|$ to denote its size. For a string $w$, we 
+%use $|w|$ to denote its length and $|w|_a$ to denote the number of occurrences of $a$ in $w$. We $\epsilon$ to denote an empty string and use $w_1\cdot w_2$ to denote the concatenation of strings $w_1$ and $w_2$. Let $S$ be a finite set of symbols. We use $S^+$ to denote the set of string over $S$ and $S^* = S^+\cup \{\epsilon\}$. We define $S_\epsilon =S\cup\{\epsilon\}$. A language 
+%$L$ over $S$ is a set of strings in $S^*$. 
+%
+%A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of states, $T\subseteq Q\times (\Sigma\cup \{\epsilon\} )\times Q $ is the set of transition relation, $\Sigma$ is the alphabet, $q_0$ is the initial state, and $q_m$ is the final state. The semantics of finite automaton is defined in the standard manner. We use $L(A)$ to denote the regular language, i.e., set of accepted strings, of the automaton $A$.
 
-A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of states, $T\subseteq Q\times (\Sigma\cup \{\epsilon\} )\times Q $ is the set of transition relation, $\Sigma$ is the alphabet, $q_0$ is the initial state, and $q_m$ is the final state. The semantics of finite automaton is defined in the standard manner. We use $L(A)$ to denote the regular language, i.e., set of accepted strings, of the automaton $A$.
+%Given a finite automaton $A$ over $\{a_1,a_2,\ldots,a_n\}$, the Parikh image of $L$ is the set $\{(|w|_{a_1},\ldots, |w|_{a_n}) \mid w \in  L(A) \}$, i.e., the number of occurrences of each symbol $\{a_1,a_2,\ldots,a_n\}$ of words in $L(A)$. Moreover, one can construct from $A$ in linear time a Presburger formula $\phi_A(v_1, \ldots,v_n)$ such that $\phi(c_1, \ldots,c_n) \iff (c_1, \ldots,c_n)$ in the Parikh image of $L$~\cite{SeidlSMH04}.
 
-Given a finite automaton $A$ over $\{a_1,a_2,\ldots,a_n\}$, the Parikh image of $L$ is the set $\{(|w|_{a_1},\ldots, |w|_{a_n}) \mid w \in  L(A) \}$, i.e., the number of occurrences of each symbol $\{a_1,a_2,\ldots,a_n\}$ of words in $L(A)$. Moreover, one can construct from $A$ in linear time a Presburger formula $\phi_A(v_1, \ldots,v_n)$ such that $\phi(c_1, \ldots,c_n) \iff (c_1, \ldots,c_n)$ in the Parikh image of $L$~\cite{SeidlSMH04}.
+We use $\mathbb{N}$ and $\mathbb{Z}$ to denote the sets of natural numbers (including 0) and 
+integers. For a set $A$, we use $|A|$ to denote its size. 
+An \emph{alphabet} is a finite set $\Sigma$ of \emph{characters} and a \emph{string} over $\Sigma$ is a sequence $w = a_1\ldots a_n$ of characters from $\Sigma$, with $\epsilon$ denoting the \emph{empty string}. 
+We use $w_1\cdot w_2$ to denote the \emph{concatenation} of strings $w_1$ and $w_2$.
+$\Sigma^*$ is the set of all strings over $\Sigma$, $\Sigma^+ = \Sigma^*\setminus \{\epsilon\}$, and 
+A \emph{language} over $\Sigma$ is a subset $L$ of $\Sigma^*$.  
+%
+We use $|w|$ to denote the lenght of $w$ and $|w|_a$ to denote the number of occurrences of the character $a\in \Sigma$ in $w$.  
+The \emph{Parikh image} of $w$ is the assignment 
+%$\parikh(w) = \{a_1 \mapsto |w|_{a_1},\ldots, a_n \mapsto |w|_{a_n}\}$ that maps every symbol in $w$ to the number of its occurences in $w$. 
+$\parikh(w)$ that maps every character $a\in\Sigma$ to the number of its occurences in $w$, i.e., $\parikh(a) = |w|_a$. 
+The Parikh image of a language $L$ is the set of Parikh images $\parikh(L) = \{\parikh(w) \mid w \in  L\}$. 
+
+A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of \emph{states}, $T\subseteq Q\times (\Sigma\cup \{\epsilon\} )\times Q $ is the set of \emph{transitions}, $\Sigma$ is the alphabet, $q_0$ is the \emph{initial state}, and $q_m$ is the \emph{final state}. 
+%The semantics of finite automaton is defined in the standard manner. 
+We use $L(A)$ to denote the language of the automaton $A$, i.e., the set of accepted strings, defined in the standard manner.
+\lh{If we later start technical talking about tings like runs then we should include this definition.}
 
  
 
@@ -238,16 +258,31 @@ An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I$ from $\vars\c
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\st}[2]{q_{#1}^{#2}}
 \newcommand{\sym}[2]{v_{#1}^{#2}}
-We use $\cvar$ to denote a finite set of \emph{character variables}  ranging over $\Sigma_\epsilon$. Sometimes we use index to denote different set of variables over the same range, e.g., $\cvarone$ and $\cvartwo$. We use $v$ and its variants for character variables. We call a string over $\cvar$ (character variables) a \emph{symbolic string}.
-An \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$. For a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
+%We use $\cvar$ to denote a finite set of \emph{character variables}  ranging over $\Sigma_\epsilon$. 
+%Sometimes we use index to denote different set of variables over the same range, e.g., $\cvarone$ and $\cvartwo$. 
+%We use $v$ and its variants for character variables. We call a string over $\cvar$ (character variables) a \emph{symbolic string}.
+%An \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$. For a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 
-We introduce \emph{symbolic flat automata} (SFA) $(Q,T,\cvar,\st{0}{0},\st{m}{0})$ that will be used to define patterns for the string variable domain restriction. SFA is a finite automaton operating over the alphabet $\cvar$ in addition with the following structural constraints.
+We introduce \emph{symbolic flat automata} (SFA) that will be used to define patterns 
+%for the string variable domain restriction. 
+used by the underapproximation module to restrict the domain of string variables. 
+Namely, an SFA is a finite automaton $A = (Q,T,\cvar,\st{0}{0},\st{m}{0})$ operating over the alphabet $\cvar$ of \emph{character variables}, 
+and satisfying the following structural constraints:
 \begin{enumerate}
-	\item the initial state $\st{0}{0}$ and final state $\st{m}{0}$ are connected by a straight-line structure, i.e., $(\st{i}{0},v_i,\st{i+1}{0}) \in T$ and states $\st{i}{0} \in Q$ for $i\in[0,m-1]$.
-	\item  each state $\st{i}{0}$ may be included to an unique simple cycle. Assume that $\st{i}{0}$ is included in a cycle with $l_i$ states (includes $\st{i}{0}$), then we have $\st{i}{j} \in Q$ and $(\st{i}{j-1}, \sym{i}{j-1}, \st{i}{j \bmod l_i})$, for $j\in [1,l_i]$. 
-	\item each variable in $\cvar$ appears in at most one transition (but $\epsilon$ transition can appear multiple times). 
+	\item The final state $\st{m}{0}$ is reached from  the initial state $\st{0}{0}$ through a stright path of $m-1$ transitions $(\st{i}{0},v_i,\st{i+1}{0}) \in T$, $\st{i}{0} \in Q$ for $i\in[0,m-1]$. %, with pairwise distiand states $\st{i}{0} \in Q$ for $i\in[0,m-1]$.
+	\item  
+Each state $\st{i}{0}$ is the origin of a unique simple cycle of the length $l_i\in\mathbb{N}$, consisting of states $\st{i}{j} \in Q$ and transitions $(\st{i}{j-1}, \sym{i}{j-1}, \st{i}{j \bmod l_i})$ for $j\in [1,l_i]$. 
+Notice that case when $l_i = 0$ is also admissible and means that there is no cycle on $q_i$.
+%Assume that $\st{i}{0}$ is included in a cycle with $l_i$ states (includes $\st{i}{0}$). 
+%For each $j\in [1,l_i]$, we have $\st{i}{j} \in Q$ and $(\st{i}{j-1}, \sym{i}{j-1}, \st{i}{j \bmod l_i})$. 
+%(where $l_i = 0$ means that there is no cycle on $q_i$)
+	\item Each variable in $\cvar$ appears on at most one transition (but $\epsilon$ transition can appear multiple times). 
 \end{enumerate} 
-Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
+%Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
+Symbolic automata accept strings over $\cvar$, called \emph{symbolic strings}. 
+Each symbolic string may be interpeted as a string over $\Sigma$, given an assignment of characters to its character variables.  
+%
+Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$ and for a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$. 
 
 \begin{figure*}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
@@ -294,11 +329,22 @@ Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
 	\label{fig:sfa_def}
 \end{figure*}
 
-A finite automaton $D=(Q,T',\Sigma,q_0,q_m)$ is an \emph{instance} of a SFA $S=(Q,T,\cvar,q_0,q_m)$, if there exists an interpretation $I: \cvar \cup \{\epsilon\} \rightarrow \Sigma_\epsilon$ satisfying $I(\epsilon)=\epsilon$ and $T'=\{(q,I(c),q')\mid (q,c,q')\in T\}$. We write $I(S)$ to denote the instance of $S$ wrt. $I$. The language of $S$ is defined as $L(S)= \cup\{L(D) \mid D \mbox{ is an instance of } S\}$. Notice that $L(S)$ is regular because every SFA has only finitely many instance and the finite union of regular languages are also regular.
+%A finite automaton $D=(Q,T',\Sigma,q_0,q_m)$ is an \emph{instance} of a SFA $S=(Q,T,\cvar,q_0,q_m)$, if there exists an interpretation $I: \cvar \cup \{\epsilon\} \rightarrow \Sigma_\epsilon$ satisfying $I(\epsilon)=\epsilon$ and $T'=\{(q,I(c),q')\mid (q,c,q')\in T\}$. We write $I(S)$ to denote the instance of $S$ wrt. $I$. The language of $S$ is defined as $L(S)= \cup\{L(D) \mid D \mbox{ is an instance of } S\}$. Notice that $L(S)$ is regular because every SFA has only finitely many instance and the finite union of regular languages are also regular.
 
+The purpose of the structural restrictions of SFA is to ensure that the words of $L(A)$ are uniquelly determined by their Parikh images, as formalised by the following lemma.  
 
-For such kind of automata, the number of occurrence of each symbol in $\cvar$ uniquely characterize an accepting symbolic string. For example, in the example of Figure~\ref{fig:sfa_def}, if the string $v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ is accepted, then all other strings $w$ with $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and also $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$ are not accepted. Moreover, from $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$, we can derive $w=v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ by exploring the automata structure. \todo{add Presburger constraints to allow more expressive power.}
+\begin{lemma}
+%Distict words from the language of an SFA must have distinct Parikh images.  
+For an SFA $A$ and $x,y\in L(A)$ if $\parikh(x) = \parikh(y)$ then $x = y$. 
+%Distict words from the language of an SFA have distinct Parikh images.  
+\end{lemma}
+Indeed, notice that each accepted symbolic string $x$ is determined by the numbers of repetitions of individual cycles in the accepting run of $A$ over $x$.
+Since every variable appears on at most one transition, 
+the number of repetitions of each cyclce equals the value each variable on the edges of the cycle has assigned by $\parikh(x)$ (notice also that $\parikh(x)$ must assign to all variables appearing within the same cycle the same value). 
 
+%For such kind of automata, the number of occurrence of each symbol in $\cvar$ uniquely characterize an accepting symbolic string. For example, in the example of Figure~\ref{fig:sfa_def}, if the string $v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ is accepted, then all other strings $w$ with $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and also $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$ are not accepted. Moreover, from $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$, we can derive $w=v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ by exploring the automata structure. \todo{add Presburger constraints to allow more expressive power.}
+
+\lh{so far not sure about how and where to present this:}
 \begin{lemma}
 	Symbolic flat automata are closed under concatenation.
 \end{lemma}
@@ -307,7 +353,6 @@ For such kind of automata, the number of occurrence of each symbol in $\cvar$ un
 
 
 
-\todo{Mention NDD when talk about our practical bounded encoding for str2int}
 
 \section{Handling Equality and Disequality Constraint Symbolically} \label{section:eq}
 
