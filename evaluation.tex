@@ -1,0 +1,61 @@
+\section{Evaluation}
+\label{section:evaluation}
+
+\todo{Organize/Revise the context; Revise tables; Discussions}
+
+{\bf General description}:
+In this section, we report and discuss our experiments. As a base result, we compare z3-Trau to SMT tools z3 and CVC4 on PyEx benchmark which is widely used for testing SMT string solvers to show the performance of z3-Trau in general. Then we do the same comparison on our string\_to\_int benchmarks to evaluate our approach.
+
+{\bf How we obtained our (str\_int) benchmark}:
+For experiments, we prepared our own str\_int benchmark\footnote{\url{https://github.com/plfm-iis/str_int_benchmarks}}. It is collected from two sources of Python programs: Leetcode solutions written in Python and Python core libraries. These Python programs are concolic tested by \texttt{Py-Conbyte}\footnote{\url{https://github.com/spencerwuwu/py-conbyte}}, our concolic tester for Python programs. The SMT queries during the concolic testing are collected to the benchmark. The benchmark has two versions: full\_str\_int and filtered\_str\_int. full\_str\_int is the original benchmark we collected; filtered\_str\_int is that we filtered out cases that cvc4 says unsat while the unsat corers are not containing \texttt{str.to.int} or \texttt{int.to.str}. 
+
+{\bf The environment of experiments}:
+The experiments are conducted under machines of the following specifications: 4-core CPU, 8GB RAM, Ubuntu 18.4-LVM OS. Since the large amount of problems in these benchmarks, we use containers to run these experiments in several machines with the same environment. The timeout is set to 10 seconds.
+
+{\bf Some annotations in tables}:
+\texttt{u.k.} stands for ``unknown''. \texttt{t.o.} stands for ``timeout''. \texttt{error} means that the execution is stopped with an error or exception such as segmental fault. \texttt{misc} means that the execution ends without expected (including errors) output.
+
+{\bf Tabales}:
+Table~\ref{table:pyex} shows the comparison on PyEx benchmark. The total amount of cases in PyEx (PyEx\_unsat, PyEx\_sat, PyEx\_todo) is 25421.
+
+\begin{table}[]
+\caption{Results of z3-Trau, cvc4, and z3 on PyEx benchmark}
+\begin{tabular}{|r|r|r|r|r|r|r|}
+\hline
+Tool		& sat & unsat & u.k. & t.o. & err. & misc \\ \hline\hline
+z3-Trau		& 19655 & 3851 & 0 & 1915 & 0 & 0 \\ 
+cvc4		& 19763 & 3834 & 0 & 0 & 0 & 1824 \\ 
+z3seq		& 16578 & 3832 & 0 & 5011 & 0 & 0 \\ 
+z3str3		& 3023 & 3835 & 9 & 16717 & 1125 & 712 \\ \hline
+\end{tabular}
+\label{table:pyex}
+\end{table}
+
+Table~\ref{table:full_str_int} shows the comparison on full\_str\_int. The total amount of cases in full\_str\_int is 21573.
+\begin{table}[]
+\caption{Results of z3-Trau, cvc4, and z3 on full\_str\_int benchmark}
+\begin{tabular}{|r|r|r|r|r|r|r|}
+\hline
+Tool		& sat & unsat & u.k. & t.o. & err. & misc \\ \hline\hline
+z3-Trau		& 3289 & 17089 & 0 & 1195 & 0 & 0 \\ 
+cvc4		& 2185 & 16377 & 0 & 3011 & 0 & 0 \\ 
+z3seq		& 2716 & 16831 & 0 & 2026 & 0 & 0 \\ 
+z3str3		& 422 & 16034 & 634 & 4131 & 347 & 5 \\ \hline
+\end{tabular}
+\label{table:full_str_int}
+\end{table}
+
+Table~\ref{table:filtered_str_int} shows the comparison on filtered\_str\_int.  The total amount of cases in filtered\_str\_int is 7396.
+
+\begin{table}[]
+\caption{Results of z3-Trau, cvc4, and z3 on filtered\_str\_int benchmark}
+\begin{tabular}{|r|r|r|r|r|r|r|}
+\hline
+Tool		& sat & unsat & u.k. & t.o. & err. & misc \\ \hline\hline
+z3-Trau		& 3281 & 2912 & 0 & 1203 & 0 & 0 \\ 
+cvc4		& 2210 & 2211 & 0 & 2975 & 0 & 0 \\ 
+z3seq		& 2729 & 2655 & 0 & 2012 & 0 & 0 \\ 
+z3str3		& 424 & 1944 & 587 & 4106 & 330 & 5 \\ \hline
+\end{tabular}
+\label{table:filtered_str_int}
+\end{table}
