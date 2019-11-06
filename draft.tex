@@ -33,6 +33,7 @@
 \newcommand{\false}{\mbox{$\mathsf{false}$}}
 \newcommand{\enc}[1]{[\![#1]\!]}
 \newcommand{\parikhof}[1]{\mathit{Parikh}{(#1)}}
+\newcommand{\parikhwof}[2]{|#1|_{#2}}
 
 
 \maketitle
@@ -345,8 +346,11 @@ Since every variable appears on at most one transition, then the $\parikhof x$ v
 The accepting run on $x$ (and so $x$ itself) can thus be reconstructed from $\parikhof x$.
 
 For example, in the example of Figure~\ref{fig:sfa_def}, 
-from $\parikhof x(v_0) = \parikhof x(v_1) = \cdots = \parikhof x(v_{m-1})=1$ and $\parikhof x(v^0_1)=\parikhof x(v^1_1)=\parikhof x(v^2_1)=2$, then $x=v_0(v^0_1v^1_1v^2_1)^2v_1\cdots v_{m-1}$. 
+from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=1$ and $\parikhwof x {v^0_1}=\parikhwof x {v^1_1}=\parikhwof x {v^2_1}=2$ we derive that $x=v_0(v^0_1v^1_1v^2_1)^2v_1\cdots v_{m-1}$. 
 \todo{add Presburger constraints to allow more expressive power.}
+
+%For such kind of automata, the number of occurrence of each symbol in $\cvar$ uniquely characterize an accepting symbolic string. For example, in the example of Figure~\ref{fig:sfa_def}, if the string $v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ is accepted, then all other strings $w$ with $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and also $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$ are not accepted. Moreover, from $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$, we can derive $w=v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ by exploring the automata structure. \todo{add Presburger constraints to allow more expressive power.}
+
 
 \lh{so far not sure about how and where to present this:}
 \begin{lemma}
@@ -358,9 +362,8 @@ from $\parikhof x(v_0) = \parikhof x(v_1) = \cdots = \parikhof x(v_{m-1})=1$ and
 
 
 
-\section{Handling Equality and Disequality Constraint Symbolically} \label{section:eq}
-
-
+%\section{Handling Equality and Disequality Constraint Symbolically} \label{section:eq}
+\section{Flat Underapproximation for Equalities and Regular Constraints} \label{section:eq}
 
 Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some SFA with disjoint alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. We rename the variables on the transitions of SFA's for different occurrences of the same variable in one equality constraint. Later we will use some arithmetic constraints to enforce that all occurrences of the variants of the same variable will be assigned the same value. For notational convenience, the renaming is done by adding a version number to the variable. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, $\ldots$.
 
