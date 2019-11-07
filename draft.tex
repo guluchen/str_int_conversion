@@ -28,7 +28,7 @@
 \newcommand{\cvar}{\mbox{$V_{\Sigma_\epsilon}$}}
 \newcommand{\cvarone}{\mbox{$V^1_{\Sigma_\epsilon}$}}
 \newcommand{\cvartwo}{\mbox{$V^2_{\Sigma_\epsilon}$}}
-\newcommand{\modelof}[1]{[\![#1]\!]}
+\newcommand{\modelsof}[1]{[\![#1]\!]}
 \newcommand{\true}{\mbox{$\mathsf{true}$}}
 \newcommand{\false}{\mbox{$\mathsf{false}$}}
 \newcommand{\enc}[1]{[\![#1]\!]}
@@ -239,17 +239,17 @@ In this paper, we use $x,y$ (or their variants) to denote string variables and $
 An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I$ from $\vars\cup \varn$ to $\Sigma^* \cup \mathbb{N}$. A \emph{term} is an element in $(\vars\cup \Sigma)^*$. We lift the interpretation $I$ to terms and linear constraints in the standard manner. 
 
 An \emph{equality constraint} $\phi_e$ is of the form $t_1 = t_2$ where $t_1, 
-t_2$ are terms in $(\vars\cup \Sigma)^*$. The \emph{model} of $\phi_e$ is the set of interpretations $\modelof{\phi_e}=\{I\mid 
+t_2$ are terms in $(\vars\cup \Sigma)^*$. The \emph{model} of $\phi_e$ is the set of interpretations $\modelsof{\phi_e}=\{I\mid 
 I(t_1)=I(t_2)\}$. A \emph{disequality constraint} is of the form $t_1 \neq 
 t_2$ and is interpreted analogously.
 
 An \emph{integer constraint} $\phi_i$ is a linear constraint over the variables in $\varn$ and length of a string $|x|$ for all $x \in \vars$.
-%Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
-We define  $\modelof{\phi_i}= \{I \mid I(\phi_i)= \true \}$.
+%Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelsof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
+We define  $\modelsof{\phi_i}= \{I \mid I(\phi_i)= \true \}$.
 
-The \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define  $\modelof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$.
+The \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define  $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$.
 
-A \emph{string constraint} $\phi$ is in the form of $\bigwedge_{\pi \in \Pi} \pi$, where $\Pi$ is a set of the above three kinds of constraints. We say that $\phi$ is \emph{satisfiable}  iff $\bigcap_{\pi \in \Pi} \modelof{\pi}$ is not empty.
+A \emph{string constraint} $\phi$ is in the form of $\bigwedge_{\pi \in \Pi} \pi$, where $\Pi$ is a set of the above three kinds of constraints. We say that $\phi$ is \emph{satisfiable}  iff $\bigcap_{\pi \in \Pi} \modelsof{\pi}$ is not empty.
 
 Notice that only positive integer is supported in the string-number conversion function. This is the semantics used by most of the SMT solvers, and hence we follow it in this paper. The encoding has a benefit that it can also handle the case where $x$ is ``not a number'', using the condition $\sti{x} = -1$.
 
