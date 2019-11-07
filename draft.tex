@@ -205,10 +205,10 @@ We use $w_1\cdot w_2$ to denote the \emph{concatenation} of strings $w_1$ and $w
 $\Sigma^*$ is the set of all strings over $\Sigma$, $\Sigma^+ = \Sigma^*\setminus \{\epsilon\}$, and 
 A \emph{language} over $\Sigma$ is a subset $L$ of $\Sigma^*$.  
 %
-We use $|w|$ to denote the lenght of $w$ and $|w|_a$ to denote the number of occurrences of the character $a\in \Sigma$ in $w$.  
+We use $|w|$ to denote the length of $w$ and $|w|_a$ to denote the number of occurrences of the character $a\in \Sigma$ in $w$.  
 The \emph{Parikh image} of $w$ is the assignment 
 %$\parikh(w) = \{a_1 \mapsto |w|_{a_1},\ldots, a_n \mapsto |w|_{a_n}\}$ that maps every symbol in $w$ to the number of its occurences in $w$. 
-$\parikhof w$ that maps every character $a\in\Sigma$ to the number of its occurences in $w$, i.e., $\parikhof w (a) = |w|_a$. 
+$\parikhof w$ that maps every character $a\in\Sigma$ to the number of its occurrences in $w$, i.e., $\parikhof w (a) = |w|_a$. 
 The Parikh image of a language $L$ is the set of Parikh images $\parikhof L = \{\parikhof w \mid w \in  L\}$. 
 
 A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of \emph{states}, $T\subseteq Q\times (\Sigma\cup \{\epsilon\} )\times Q $ is the set of \emph{transitions}, $\Sigma$ is the alphabet, $q_0$ is the \emph{initial state}, and $q_m$ is the \emph{final state}. 
@@ -267,13 +267,13 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 
 We introduce \emph{symbolic flat automata} (SFA) that will be used to define patterns 
 %for the string variable domain restriction. 
-used by the underapproximation module to restrict the domain of string variables. 
+used by the under-approximation module to restrict the domain of string variables. 
 Namely, an SFA is a finite automaton $A = (Q,T,\cvar,\st{0}{0},\st{m}{0})$ operating over the alphabet $\cvar$ of \emph{character variables}, 
 and satisfying the following structural constraints:
 \begin{enumerate}
 	\item The final state $\st{m}{0}$ is reached from  the initial state $\st{0}{0}$ through a stright path of $m-1$ transitions $(\st{i}{0},v_i,\st{i+1}{0}) \in T$, $\st{i}{0} \in Q$ for $i\in[0,m-1]$. %, with pairwise distiand states $\st{i}{0} \in Q$ for $i\in[0,m-1]$.
 	\item  
-Each state $\st{i}{0}$ is the origin of a unique simple cycle of the length $l_i\in\mathbb{N}$, consisting of states $\st{i}{j} \in Q$ and transitions $(\st{i}{j-1}, \sym{i}{j-1}, \st{i}{j \bmod l_i})$ for $j\in [1,l_i]$. 
+Each state $\st{i}{0}$ is the origin of a unique simple cycle of the length $l_i\in\mathbb{N}$, consisting of states $\st{i}{j-1} \in Q$ and transitions $(\st{i}{j-1}, \sym{i}{j-1}, \st{i}{j \bmod l_i})$ for $j\in [1,l_i]$. 
 Notice that case when $l_i = 0$ is also admissible and means that there is no cycle on $q_i$.
 %Assume that $\st{i}{0}$ is included in a cycle with $l_i$ states (includes $\st{i}{0}$). 
 %For each $j\in [1,l_i]$, we have $\st{i}{j} \in Q$ and $(\st{i}{j-1}, \sym{i}{j-1}, \st{i}{j \bmod l_i})$. 
@@ -282,7 +282,7 @@ Notice that case when $l_i = 0$ is also admissible and means that there is no cy
 \end{enumerate} 
 %Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
 Symbolic automata accept strings over $\cvar$, called \emph{symbolic strings}. 
-Each symbolic string may be interpeted as a string over $\Sigma$, given an assignment of characters to its character variables.  
+Each symbolic string may be interpreted as a string over $\Sigma$, given an assignment of characters to its character variables.  
 %
 Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$ and for a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$. 
 
@@ -363,7 +363,7 @@ from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=
 
 
 %\section{Handling Equality and Disequality Constraint Symbolically} \label{section:eq}
-\section{Flat Underapproximation for Equalities and Regular Constraints} \label{section:eq}
+\section{Flat Under-approximation for Equalities and Regular Constraints} \label{section:eq}
 
 Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some SFA with disjoint alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. We rename the variables on the transitions of SFA's for different occurrences of the same variable in one equality constraint. Later we will use some arithmetic constraints to enforce that all occurrences of the variants of the same variable will be assigned the same value. For notational convenience, the renaming is done by adding a version number to the variable. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, $\ldots$.
 
@@ -495,7 +495,7 @@ From the model $M$ of the linear constraints, we can obtain $w_n$, $w_m$, and $I
 More specifically, assume that the SFA $S_n$ is the one in Figure~\ref{fig:sfa_def}, then $$w_n = (v_0^0v_0^1v_0^2v_0^3)^{\#(v_0^0)}v_0(v_1^0v_1^1v_1^2)^{\#(v_1^0)}v_1\ldots(v_m^0v_m^1v_m^2v_m^3)^{\#(v_m^0)}$$
 Note that $\#(v_0^0)=\#(v_0^1)=\#(v_0^2)=\#(v_0^3)$, so we just use $\#(v_0^0)$ to denote the number of times of first loop traversal. One can construct $w_m$ in a similar way. Using the same approach, one can derive the assignment to variables in $\vars$ using the corresponding count and values of variables in $\cvar$.
 
-Disquality constraint $x_1\cdot x_2 \cdots x_n \neq x_{n+1}\cdot x_{n+2} \cdots x_m$ can be converted to equal-satisfiable equality constraints in the standard way~\cite{abdulla2015norn}. We replace it with the following constraints.
+Disequality constraint $x_1\cdot x_2 \cdots x_n \neq x_{n+1}\cdot x_{n+2} \cdots x_m$ can be converted to equal-satisfiable equality constraints in the standard way~\cite{abdulla2015norn}. We replace it with the following constraints.
 
 $$
 \begin{array}{c}
@@ -526,18 +526,18 @@ The second disjunct says that the constraints $x_1\cdot x_2 \cdots x_n$ and $x_{
 \section{Handling String-Integer Conversion} \label{section:s2i}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this section, we discuss how to handle the constraint $n=\sti{x}$ by restrict the domain of $x$ to some SFA. Let us begin with a simple example, assume that we use the SFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee n=-1 $.
+In this section, we discuss how to handle the constraint $n=\sti{x}$ by restricting the domain of $x$ to some SFA. Let us begin with a simple example, assume that we use the SFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee n=-1 $.
 
-For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)+1}-1}{100-1}$. 
+For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)}-1}{100-1}$. 
 The constraint uses $\#(v_0)$ to capture the total number of loop traversal.
-Notice that the constraint above contains an exponential component $100^{\#(v_0)}$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
+Notice that the constraint above contains an exponential component $\frac{100^{\#(v_0)}}{100-1}$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
 
-For a more general form, if we restrict the domain of $x$ to the SFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0^{(0)}\times 10+ v_1^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{v_0^{(0)}-1})\times 100^{v_2^{(0)}}+(v_2^{(0)}\times 10+ v_3^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{v_2^{(0)}-1}) =  (v_0^{(0)}\times 10+ v_1^{(0)}) \times \frac{100^{\#(v_0^{(0)})+1}-1}{100-1}\times 100^{v_2^{(0)}} + (v_2^{(0)}\times 10+ v_3^{(0)}) \times \frac{100^{\#(v_2^{(0)})+1}-1}{100-1}$. Observe that the formula has even more exponential components.
+Let us have a look at another example. If we restrict the domain of $x$ to the SFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0^{(0)}\times 10+ v_1^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0^{(0)})-1})\times 100^{\#(v_2^{(0)})}+(v_2^{(0)}\times 10+ v_3^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_2^{(0)})-1}) =  (v_0^{(0)}\times 10+ v_1^{(0)}) \times \frac{100^{\#(v_0^{(0)})}-1}{100-1}\times 100^{\#(v_2^{(0)})} + (v_2^{(0)}\times 10+ v_3^{(0)}) \times \frac{100^{\#(v_2^{(0)})}-1}{100-1}$. Observe that the formula has two exponential components $\frac{100^{\#(v_0^{(0)})}\times 100^{\#(v_2^{(0)})} }{100-1}$ and $\frac{100^{\#(v_2^{(0)})} }{100-1}$.
 
-To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. 
+It is not difficult to observe that, for the case of an arbitrary SFA of $m$ loops, the formula to define $n$ contains $m$ exponential components, one for each loop.
+To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. As said in the introduction, the problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances. So we do not expect that this constraint can be solved efficiently.
 
-For the particular case with only one integer variable, the satisfiability of integer constraints with a mix of polynomials and exponentials can be decided using the algorithm in~\cite{POPL2019}. However, the algorithm involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances. 
-
+\todo{talk about the design principle}
 In order to handle the under-approximation of string-integer conversion efficiently, we propose to restrict the domain of $x$ to a SFA in Figure~\ref{fig:sfa_its}. 
 
 The SFA has a self-loop transition labeled $v_0$ at $q_0$ and we always add a constraint $v_0=0$ for such SFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Notice that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. For example, the formula $\sti{x}=10 \wedge |x|=5$ is satisfiable when $x=``00010"$. 
@@ -575,10 +575,10 @@ $$(n=-1 \vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(
 The length of $x$ can be specified by the following formula.
 
 $\begin{array}{ccc}
-	(|x|&=& \#(v_0)+1 \wedge 0\leq v_1 \leq 9 \wedge v_2 = -1)\wedge \\
-	(|x|&=& \#(v_0)+2 \wedge 0\leq v_2 \leq 9 \wedge v_3 = -1)\wedge \\
+	(|x|&=& \#(v_0)+1 \wedge 0\leq v_1 \leq 9 \wedge v_2 = -1)\vee \\
+	(|x|&=& \#(v_0)+2 \wedge 0\leq v_2 \leq 9 \wedge v_3 = -1)\vee \\
 	& &\ldots\\
-	(|x|&=& \#(v_0)+(m-1) \wedge 0\leq v_{m-1} \leq 9 \wedge v_m = -1)\wedge\\
+	(|x|&=& \#(v_0)+(m-1) \wedge 0\leq v_{m-1} \leq 9 \wedge v_m = -1)\vee\\
 	(|x|&=& \#(v_0)+m \wedge 0\leq v_m \leq 9 )
 \end{array}$
 
