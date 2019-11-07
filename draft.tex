@@ -176,6 +176,7 @@ The approach combines techniques from both automata theory and SMT solving to ex
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Overview} \label{section:overview}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\todo{Some non-technical text to explain how the approach solves a toy problem}
 For proving UNSAT, our strategy first over-approximates string-number conversion function $n=\its{x}$ as an uninterpreted function with an additional axiom $n\leq 0 \rightarrow \sti{\its{n}}=n$. 
 
 
@@ -253,10 +254,10 @@ $$(n= \sti{x}) \vee (n=-\sti{x'} \wedge x = \enc{-}\cdot x')$$
 Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \emph{number-string conversion function} $\its{n}$ is defined symmetrically. We have $x = \its{n}$ iff $y= \sti{n}$. 
 
 
-
+\section{Under-approximation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Symbolic Flat Automata} \label{section:sfa}
+\subsection{Symbolic Flat Automata} \label{section:sfa}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\st}[2]{q_{#1}^{#2}}
 \newcommand{\sym}[2]{v_{#1}^{#2}}
@@ -363,7 +364,7 @@ from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=
 
 
 %\section{Handling Equality and Disequality Constraint Symbolically} \label{section:eq}
-\section{Flat Under-approximation for Equalities and Regular Constraints} \label{section:eq}
+\subsection{Flat Under-approximation for Equalities and Regular Constraints} \label{section:eq}
 
 Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some SFA with disjoint alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. We rename the variables on the transitions of SFA's for different occurrences of the same variable in one equality constraint. Later we will use some arithmetic constraints to enforce that all occurrences of the variants of the same variable will be assigned the same value. For notational convenience, the renaming is done by adding a version number to the variable. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, $\ldots$.
 
@@ -523,7 +524,7 @@ The second disjunct says that the constraints $x_1\cdot x_2 \cdots x_n$ and $x_{
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Handling String-Integer Conversion} \label{section:s2i}
+\subsection{Handling String-Integer Conversion} \label{section:s2i}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 In this section, we discuss how to handle the constraint $n=\sti{x}$ by restricting the domain of $x$ to some SFA. Let us begin with a simple example, assume that we use the SFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee n=-1 $.
@@ -537,10 +538,20 @@ Let us have a look at another example. If we restrict the domain of $x$ to the S
 It is not difficult to observe that, for the case of an arbitrary SFA of $m$ loops, the formula to define $n$ contains $m$ exponential components, one for each loop.
 To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. As said in the introduction, the problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances. So we do not expect that this constraint can be solved efficiently.
 
-\todo{talk about the design principle}
-In order to handle the under-approximation of string-integer conversion efficiently, we propose to restrict the domain of $x$ to a SFA in Figure~\ref{fig:sfa_its}. 
+\paragraph{SFA that allows efficient string-integer conversion: } In the previous discussion, we know that it is unlikely to use arbitrary SFA and gain efficient solving procedure, due to the requirement to solve exponential integer constraints. The problem is that each loop in the SFA creates an exponential component. An immediate idea would be that maybe we can restrict the variable to some specific SFA that allow more efficient constraint solving. At the same time, we want to keep some good property, i.e., the search space covers all integers with at most $m$-digits.
 
-The SFA has a self-loop transition labeled $v_0$ at $q_0$ and we always add a constraint $v_0=0$ for such SFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Notice that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. For example, the formula $\sti{x}=10 \wedge |x|=5$ is satisfiable when $x=``00010"$. 
+Our first attempt is a SFA with no loop, i.e., a straight line structure (e.g., the SFA in Fig~\ref{fig:sfa_its} without the self-loop at $q_0$). The corresponding integer constraint does not have exponential components. However, it does not ensure the property that all numbers with at most $m$-digits are covered. Consider the example $\sti{x}=10 \wedge |x|=5$. The number $10$ has only $2$-digits, at the first glance, a straight-line SFA with two transitions, i.e., the SFA \scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
+			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
+	\begin{tikzpicture} 
+	\node[state,initial] (q0)  {$q_0$};
+	\node[state] (q1) [right = 1cm of q0] {$q_1$};
+	\node[state,accepting] (q2) [right = 1cm of q1] {$q_2$};
+	
+	\draw[->] (q0) edge node [below]{$v_1$} (q1) ;
+	\draw[->] (q1) edge node [below]{$v_2$} (q2) ;
+	\end{tikzpicture}}, should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable under this domain restriction.
+
+However, the formula is satisfiable when $x=``00010"$. The point is that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. In order to handle all number with at most $m$ digits, we propose to restrict the domain of $x$ to a SFA in Figure~\ref{fig:sfa_its}.  The SFA has a self-loop transition labeled $v_0$ at $q_0$ and we always add a constraint $v_0=0$ for such SFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Although this SFA still has a loop, but it will not create any exponential component because the loop only represents a sequence of `0' that occurs in the prefix of $x$. It will not affect the integer value of $n=\sti{x}$.
 
 \begin{figure}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
@@ -564,7 +575,10 @@ The SFA has a self-loop transition labeled $v_0$ at $q_0$ and we always add a co
 \end{figure}
 
 Such SFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
-Remember that the character variables can be assigned $\epsilon$. In order to handle such cases efficiently, we use an encoding that if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j,m]$, i.e., we shift all the $\epsilon$-transitions to the least significant digits. More specifically, we first define two functions:
+Remember that the character variables can be assigned $\epsilon$. In order to handle such cases efficiently, we use an encoding that if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j,m]$, i.e., we shift all the $\epsilon$-transitions to the least significant digits. In order to explain this encoding, we first define two macro function:
+
+
+More specifically, we first define two functions:
 
 $$\mathsf{epsAfter(k)}::= (0\leq v_0,\ldots, v_k\leq 9) \wedge v_{k+1}=\ldots =v_m = -1$$
 $$\mathsf{toNumber(k)}::= (n = v_0\times 10^{k} + v_1\times 10^{k-1} + \ldots + v_{k})$$
