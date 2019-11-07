@@ -362,8 +362,7 @@ from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=
 
 
 
-%\section{Handling Equality and Disequality Constraint Symbolically} \label{section:eq}
-\section{Flat Underapproximation for Equalities and Regular Constraints} \label{section:eq}
+\section{Handling Equality and Disequality Constraint Symbolically} \label{section:eq}
 
 Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some SFA with disjoint alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. We rename the variables on the transitions of SFA's for different occurrences of the same variable in one equality constraint. Later we will use some arithmetic constraints to enforce that all occurrences of the variants of the same variable will be assigned the same value. For notational convenience, the renaming is done by adding a version number to the variable. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, $\ldots$.
 
