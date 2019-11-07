@@ -549,9 +549,9 @@ Our first attempt is a SFA with no loop, i.e., a straight line structure (e.g., 
 	
 	\draw[->] (q0) edge node [below]{$v_1$} (q1) ;
 	\draw[->] (q1) edge node [below]{$v_2$} (q2) ;
-	\end{tikzpicture}}, should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable under this domain restriction.
+	\end{tikzpicture}}, should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable, because the length of $x$ cannot be $5$  under this domain restriction.
 
-However, the formula is satisfiable when $x=``00010"$. The point is that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. In order to handle all number with at most $m$ digits, we propose to restrict the domain of $x$ to a SFA in Figure~\ref{fig:sfa_its}.  The SFA has a self-loop transition labeled $v_0$ at $q_0$ and we always add a constraint $v_0=0$ for such SFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Although this SFA still has a loop, but it will not create any exponential component because the loop only represents a sequence of `0' that occurs in the prefix of $x$. It will not affect the integer value of $n=\sti{x}$.
+However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$. The key is that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. In order to handle all number with at most $m$ digits, we propose to restrict the domain of $x$ to a SFA in Figure~\ref{fig:sfa_its}.  The SFA has a self-loop transition labeled $v_0$ at $q_0$ and we always add a constraint $v_0=0$ for such SFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Although this SFA still has a loop, but it will not create any exponential component because the loop only represents a sequence of `0' that occurs in the prefix of $x$. It will not affect the integer value of $n=\sti{x}$.
 
 \begin{figure}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
@@ -577,14 +577,18 @@ However, the formula is satisfiable when $x=``00010"$. The point is that even fo
 Such SFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
 Remember that the character variables can be assigned $\epsilon$. In order to handle such cases efficiently, we use an encoding that if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j,m]$, i.e., we shift all the $\epsilon$-transitions to the least significant digits. In order to explain this encoding, we first define two macro function:
 
+$$\begin{array}{rl}
+\mathsf{epsilonAfter(k)}::=& (0\leq v_0,\ldots, v_k\leq 9) \wedge\\
+&v_{k+1}=\ldots =v_m = -1\\
+\mathsf{toNumber(k)}::=& (n = v_0\times 10^{k} + v_1\times 10^{k-1} + \ldots + v_{k})
+\end{array}
+$$
 
-More specifically, we first define two functions:
-
-$$\mathsf{epsAfter(k)}::= (0\leq v_0,\ldots, v_k\leq 9) \wedge v_{k+1}=\ldots =v_m = -1$$
-$$\mathsf{toNumber(k)}::= (n = v_0\times 10^{k} + v_1\times 10^{k-1} + \ldots + v_{k})$$
-
+The function $\mathsf{epsilonAfter(k)}$ forces the first $k$ variables to be assigned some number and those after $k$ be assigned $\epsilon$. Recall that we use $-1$ to represent $\epsilon$. The function $\mathsf{toNumber(k)}$ converts the first $k$ variables to the corresponding number in $n$.
 Then we can specify the relation between $n$ and the character variables as follows:
 $$(n=-1 \vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(k)} ) )$$
+It says either $x$ is not a number and so $n=-1$ or the first $k$ variables represent the value of $n$, for some $k\in [0,m]$ .
+
 
 The length of $x$ can be specified by the following formula.
 
@@ -601,6 +605,8 @@ $\begin{array}{ccc}
 % \section{Evaluation}
 %  \label{section:evaluation}
 % \todo{copy a few tables from our test site to here}
+
+\section{Implementation}
 \input{evaluation}
 
 \bibliographystyle{ACM-Reference-Format}
