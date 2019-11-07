@@ -28,12 +28,16 @@
 \newcommand{\cvar}{\mbox{$V_{\Sigma_\epsilon}$}}
 \newcommand{\cvarone}{\mbox{$V^1_{\Sigma_\epsilon}$}}
 \newcommand{\cvartwo}{\mbox{$V^2_{\Sigma_\epsilon}$}}
-\newcommand{\modelof}[1]{[\![#1]\!]}
+\newcommand{\modelsof}[1]{[\![#1]\!]}
 \newcommand{\true}{\mbox{$\mathsf{true}$}}
 \newcommand{\false}{\mbox{$\mathsf{false}$}}
 \newcommand{\enc}[1]{[\![#1]\!]}
-\newcommand{\parikhof}[1]{\mathit{Parikh}{(#1)}}
+%\newcommand{\parikhof}[1]{\mathit{Parikh}{(#1)}}
+\newcommand{\parikhof}[1]{\mathbb{P}{(#1)}}
 \newcommand{\parikhwof}[2]{|#1|_{#2}}
+\newcommand{\semof}[1]{||#1||}
+\newcommand{\decode}{\mathit{decode}}
+\newcommand{\pformulaof}[1]{\Phi_{#1}}
 
 
 \maketitle
@@ -209,7 +213,7 @@ A \emph{language} over $\Sigma$ is a subset $L$ of $\Sigma^*$.
 We use $|w|$ to denote the length of $w$ and $|w|_a$ to denote the number of occurrences of the character $a\in \Sigma$ in $w$.  
 The \emph{Parikh image} of $w$ is the assignment 
 %$\parikh(w) = \{a_1 \mapsto |w|_{a_1},\ldots, a_n \mapsto |w|_{a_n}\}$ that maps every symbol in $w$ to the number of its occurences in $w$. 
-$\parikhof w$ that maps every character $a\in\Sigma$ to the number of its occurrences in $w$, i.e., $\parikhof w (a) = |w|_a$. 
+$\parikhof w$ that for every character $a\in\Sigma$ maps the \emph{Parikh variable} $\#a$ to the number of occurrences of $a$ in $w$, i.e., $\parikhof w (\#a) = |w|_a$. 
 The Parikh image of a language $L$ is the set of Parikh images $\parikhof L = \{\parikhof w \mid w \in  L\}$. 
 
 A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of \emph{states}, $T\subseteq Q\times (\Sigma\cup \{\epsilon\} )\times Q $ is the set of \emph{transitions}, $\Sigma$ is the alphabet, $q_0$ is the \emph{initial state}, and $q_m$ is the \emph{final state}. 
@@ -235,17 +239,17 @@ In this paper, we use $x,y$ (or their variants) to denote string variables and $
 An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I$ from $\vars\cup \varn$ to $\Sigma^* \cup \mathbb{N}$. A \emph{term} is an element in $(\vars\cup \Sigma)^*$. We lift the interpretation $I$ to terms and linear constraints in the standard manner. 
 
 An \emph{equality constraint} $\phi_e$ is of the form $t_1 = t_2$ where $t_1, 
-t_2$ are terms in $(\vars\cup \Sigma)^*$. The \emph{model} of $\phi_e$ is the set of interpretations $\modelof{\phi_e}=\{I\mid 
+t_2$ are terms in $(\vars\cup \Sigma)^*$. The \emph{model} of $\phi_e$ is the set of interpretations $\modelsof{\phi_e}=\{I\mid 
 I(t_1)=I(t_2)\}$. A \emph{disequality constraint} is of the form $t_1 \neq 
 t_2$ and is interpreted analogously.
 
 An \emph{integer constraint} $\phi_i$ is a linear constraint over the variables in $\varn$ and length of a string $|x|$ for all $x \in \vars$.
-%Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
-We define  $\modelof{\phi_i}= \{I \mid I(\phi_i)= \true \}$.
+%Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelsof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
+We define  $\modelsof{\phi_i}= \{I \mid I(\phi_i)= \true \}$.
 
-The \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define  $\modelof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$.
+The \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define  $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$.
 
-A \emph{string constraint} $\phi$ is in the form of $\bigwedge_{\pi \in \Pi} \pi$, where $\Pi$ is a set of the above three kinds of constraints. We say that $\phi$ is \emph{satisfiable}  iff $\bigcap_{\pi \in \Pi} \modelof{\pi}$ is not empty.
+A \emph{string constraint} $\phi$ is in the form of $\bigwedge_{\pi \in \Pi} \pi$, where $\Pi$ is a set of the above three kinds of constraints. We say that $\phi$ is \emph{satisfiable}  iff $\bigcap_{\pi \in \Pi} \modelsof{\pi}$ is not empty.
 
 Notice that only positive integer is supported in the string-number conversion function. This is the semantics used by most of the SMT solvers, and hence we follow it in this paper. The encoding has a benefit that it can also handle the case where $x$ is ``not a number'', using the condition $\sti{x} = -1$.
 
@@ -266,7 +270,7 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 %We use $v$ and its variants for character variables. We call a string over $\cvar$ (character variables) a \emph{symbolic string}.
 %An \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$. For a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 
-We introduce \emph{symbolic flat automata} (SFA) that will be used to define patterns 
+We introduce \emph{parametric flat automata} (SFA) that will be used to define patterns 
 %for the string variable domain restriction. 
 used by the under-approximation module to restrict the domain of string variables. 
 Namely, an SFA is a finite automaton $A = (Q,T,\cvar,\st{0}{0},\st{m}{0})$ operating over the alphabet $\cvar$ of \emph{character variables}, 
@@ -281,12 +285,7 @@ Notice that case when $l_i = 0$ is also admissible and means that there is no cy
 %(where $l_i = 0$ means that there is no cycle on $q_i$)
 	\item Each variable in $\cvar$ appears on at most one transition (but $\epsilon$ transition can appear multiple times). 
 \end{enumerate} 
-%Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
-Symbolic automata accept strings over $\cvar$, called \emph{symbolic strings}. 
-Each symbolic string may be interpreted as a string over $\Sigma$, given an assignment of characters to its character variables.  
-%
-Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$ and for a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$. 
-
+\lh{TODO: decide whether we want epsilon trans, or perhaps additional constraints saying that a var equals epsilon or a character}
 \begin{figure*}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
@@ -328,7 +327,7 @@ Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to
 		\draw[->] (q12) edge [bend left] node [right]{$\sym{1}{2}$} (q1) ;
 	\end{tikzpicture} 
 
-	\caption{An example of a symbolic flat automaton}
+	\caption{An example of a parametric flat automaton}
 	\label{fig:sfa_def}
 \end{figure*}
 
@@ -336,18 +335,37 @@ Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to
 
 The purpose of the structural restrictions of SFA is to ensure that the words of $L(A)$ are uniquely determined by their Parikh images, as formalised by the following lemma.  
 
-\begin{lemma}
-%Distinct words from the language of an SFA must have distinct Parikh images.  
+\begin{lemma}\label{lemma:parikh}
 For an SFA $A$ and $x,y\in L(A)$ if $\parikhof x = \parikhof y$ then $x = y$. 
-%Distict words from the language of an SFA have distinct Parikh images.  
 \end{lemma}
-Indeed, notice that each accepted symbolic string $x$ is determined by the numbers of repetitions of individual cycles in the accepting run of $A$ over $x$.
+Indeed, notice that each accepted parametric string $x$ is determined by the numbers of repetitions of individual cycles in the accepting run of $A$ over $x$.
 Since every variable appears on at most one transition, then the $\parikhof x$ value of all variables appearing within the same cycle is the same, and it is equal to the number of repetitions of that cycle in the accepting run. 
 %
 The accepting run on $x$ (and so $x$ itself) can thus be reconstructed from $\parikhof x$.
 
 For example, in the example of Figure~\ref{fig:sfa_def}, 
 from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=1$ and $\parikhwof x {v^0_1}=\parikhwof x {v^1_1}=\parikhwof x {v^2_1}=2$ we derive that $x=v_0(v^0_1v^1_1v^2_1)^2v_1\cdots v_{m-1}$. 
+
+
+%Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
+Symbolic automata accept strings over $\cvar$, called \emph{parametric strings}, but we still use them as representations of languages over $\Sigma$. 
+%
+Namely, string over $\cvar$ are interpreted as strings over $\Sigma$ given an assignment of characters to its character variables.  
+%
+Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$ and for a parametric string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
+%
+We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V_\Sigma$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics $\semof A$ of an SFA is the semantics of its language. 
+
+The crucial feature of parametric flat automata is that their semantics can be faithfully represented by a linear integer arithmetic formulae and handled by an SMT solver, allowing to circumvent more costly automata algorithms and decision procedures. \lh{concretize and justify this better?}
+%
+To be more concrete, every word $w \in \semof{A}$ can be identified by a parametric string $x\in L(A)$ and an interpretation of character varriables $I$ such that $w = I(x)$. 
+Moreover, every parametric string $x\in L(A)$ is uniquelly determined by its Parikh image $\parikhof{x}$. 
+Hence the united assignment $I \cup \parikhof{x}$ encodes $w$. 
+Notice that there might be more united assignments encoding $w$, but different words over $\Sigma$ must have different encodings by Lemma~\ref{lemma:parikh}. 
+We may hence define the decoding function $\decode$ such that $\decode(I\cup \parikhof{x}) = w$. 
+It is well known that $\parikhof{A}$ can be computed in a form of linear arithmetic formula \cite{} $\pformulaof{A}$ such that $\modelsof{\pformulaof A} = \parikhof{A}$.
+
+
 \todo{add Presburger constraints to allow more expressive power.}
 
 %For such kind of automata, the number of occurrence of each symbol in $\cvar$ uniquely characterize an accepting symbolic string. For example, in the example of Figure~\ref{fig:sfa_def}, if the string $v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ is accepted, then all other strings $w$ with $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and also $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$ are not accepted. Moreover, from $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$, we can derive $w=v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ by exploring the automata structure. \todo{add Presburger constraints to allow more expressive power.}
@@ -363,7 +381,6 @@ from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=
 
 
 
-%\section{Handling Equality and Disequality Constraint Symbolically} \label{section:eq}
 \subsection{Flat Under-approximation for Equalities and Regular Constraints} \label{section:eq}
 
 Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some SFA with disjoint alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. We rename the variables on the transitions of SFA's for different occurrences of the same variable in one equality constraint. Later we will use some arithmetic constraints to enforce that all occurrences of the variants of the same variable will be assigned the same value. For notational convenience, the renaming is done by adding a version number to the variable. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, $\ldots$.
