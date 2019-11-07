@@ -25,6 +25,8 @@
 \newcommand{\its}[1]{\mbox{\textsf{toStr}($#1$)}}
 \newcommand{\varn}{\mbox{$\mathbb{V}_{\mathbb{Z}}$}}
 \newcommand{\vars}{\mbox{$\mathbb{V}_{\Sigma^*}$}}
+\newcommand{\cvars}{\mbox{$\mathbb{V}_{\Sigma_\epsilon}$}}
+\newcommand{\pvars}{\mbox{$\mathbb{V}_{\sharp}$}}
 \newcommand{\cvar}{\mbox{$V_{\Sigma_\epsilon}$}}
 \newcommand{\cvarone}{\mbox{$V^1_{\Sigma_\epsilon}$}}
 \newcommand{\cvartwo}{\mbox{$V^2_{\Sigma_\epsilon}$}}
@@ -35,9 +37,13 @@
 %\newcommand{\parikhof}[1]{\mathit{Parikh}{(#1)}}
 \newcommand{\parikhof}[1]{\mathbb{P}{(#1)}}
 \newcommand{\parikhwof}[2]{|#1|_{#2}}
-\newcommand{\semof}[1]{||#1||}
+%\newcommand{\semof}[1]{||#1||}
+\newcommand{\semof}[1]{\modelsof{#1}}
 \newcommand{\decode}{\mathit{decode}}
 \newcommand{\pformulaof}[1]{\Phi_{#1}}
+\newcommand{\pim}{\alpha}
+\newcommand{\syncof}[2]{A \Cap B}
+\newcommand{\nat}{\mathbb{N}}
 
 
 \maketitle
@@ -261,19 +267,20 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 \section{Under-approximation}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Symbolic Flat Automata} \label{section:sfa}
+\subsection{Parametric Flat Automata} \label{section:sfa}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\st}[2]{q_{#1}^{#2}}
 \newcommand{\sym}[2]{v_{#1}^{#2}}
+\todo{add Presburger constraints to allow more expressive power.}
 %We use $\cvar$ to denote a finite set of \emph{character variables}  ranging over $\Sigma_\epsilon$. 
 %Sometimes we use index to denote different set of variables over the same range, e.g., $\cvarone$ and $\cvartwo$. 
 %We use $v$ and its variants for character variables. We call a string over $\cvar$ (character variables) a \emph{symbolic string}.
 %An \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$. For a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 
-We introduce \emph{parametric flat automata} (SFA) that will be used to define patterns 
+We introduce \emph{parametric flat automata} (PFA) that will be used to define patterns 
 %for the string variable domain restriction. 
 used by the under-approximation module to restrict the domain of string variables. 
-Namely, an SFA is a finite automaton $A = (Q,T,\cvar,\st{0}{0},\st{m}{0})$ operating over the alphabet $\cvar$ of \emph{character variables}, 
+Namely, an PFA is a finite automaton $A = (Q,T,\cvar,\st{0}{0},\st{m}{0})$ operating over the alphabet $\cvar$ of \emph{character variables}, 
 and satisfying the following structural constraints:
 \begin{enumerate}
 	\item The final state $\st{m}{0}$ is reached from  the initial state $\st{0}{0}$ through a stright path of $m-1$ transitions $(\st{i}{0},v_i,\st{i+1}{0}) \in T$, $\st{i}{0} \in Q$ for $i\in[0,m-1]$. %, with pairwise distiand states $\st{i}{0} \in Q$ for $i\in[0,m-1]$.
@@ -331,47 +338,94 @@ Notice that case when $l_i = 0$ is also admissible and means that there is no cy
 	\label{fig:sfa_def}
 \end{figure*}
 
-%A finite automaton $D=(Q,T',\Sigma,q_0,q_m)$ is an \emph{instance} of a SFA $S=(Q,T,\cvar,q_0,q_m)$, if there exists an interpretation $I: \cvar \cup \{\epsilon\} \rightarrow \Sigma_\epsilon$ satisfying $I(\epsilon)=\epsilon$ and $T'=\{(q,I(c),q')\mid (q,c,q')\in T\}$. We write $I(S)$ to denote the instance of $S$ wrt. $I$. The language of $S$ is defined as $L(S)= \cup\{L(D) \mid D \mbox{ is an instance of } S\}$. Notice that $L(S)$ is regular because every SFA has only finitely many instance and the finite union of regular languages are also regular.
-
-The purpose of the structural restrictions of SFA is to ensure that the words of $L(A)$ are uniquely determined by their Parikh images, as formalised by the following lemma.  
-
-\begin{lemma}\label{lemma:parikh}
-For an SFA $A$ and $x,y\in L(A)$ if $\parikhof x = \parikhof y$ then $x = y$. 
-\end{lemma}
-Indeed, notice that each accepted parametric string $x$ is determined by the numbers of repetitions of individual cycles in the accepting run of $A$ over $x$.
-Since every variable appears on at most one transition, then the $\parikhof x$ value of all variables appearing within the same cycle is the same, and it is equal to the number of repetitions of that cycle in the accepting run. 
-%
-The accepting run on $x$ (and so $x$ itself) can thus be reconstructed from $\parikhof x$.
-
-For example, in the example of Figure~\ref{fig:sfa_def}, 
-from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=1$ and $\parikhwof x {v^0_1}=\parikhwof x {v^1_1}=\parikhwof x {v^2_1}=2$ we derive that $x=v_0(v^0_1v^1_1v^2_1)^2v_1\cdots v_{m-1}$. 
+%A finite automaton $D=(Q,T',\Sigma,q_0,q_m)$ is an \emph{instance} of a PFA $S=(Q,T,\cvar,q_0,q_m)$, if there exists an interpretation $I: \cvar \cup \{\epsilon\} \rightarrow \Sigma_\epsilon$ satisfying $I(\epsilon)=\epsilon$ and $T'=\{(q,I(c),q')\mid (q,c,q')\in T\}$. We write $I(S)$ to denote the instance of $S$ wrt. $I$. The language of $S$ is defined as $L(S)= \cup\{L(D) \mid D \mbox{ is an instance of } S\}$. Notice that $L(S)$ is regular because every PFA has only finitely many instance and the finite union of regular languages are also regular.
 
 
 %Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
-Symbolic automata accept strings over $\cvar$, called \emph{parametric strings}, but we still use them as representations of languages over $\Sigma$. 
+Parametric automata accept strings over $\cvar$, called \emph{parametric strings}, but we still use them as representations of languages over $\Sigma$. 
 %
 Namely, string over $\cvar$ are interpreted as strings over $\Sigma$ given an assignment of characters to its character variables.  
 %
 Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$ and for a parametric string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 %
-We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V_\Sigma$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics $\semof A$ of an SFA is the semantics of its language. 
+We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V_\Sigma$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics $\semof A$ of an PFA is the semantics of its language. 
 
 The crucial feature of parametric flat automata is that their semantics can be faithfully represented by a linear integer arithmetic formulae and handled by an SMT solver, allowing to circumvent more costly automata algorithms and decision procedures. \lh{concretize and justify this better?}
 %
-To be more concrete, every word $w \in \semof{A}$ can be identified by a parametric string $x\in L(A)$ and an interpretation of character varriables $I$ such that $w = I(x)$. 
-Moreover, every parametric string $x\in L(A)$ is uniquelly determined by its Parikh image $\parikhof{x}$. 
-Hence the united assignment $I \cup \parikhof{x}$ encodes $w$. 
-Notice that there might be more united assignments encoding $w$, but different words over $\Sigma$ must have different encodings by Lemma~\ref{lemma:parikh}. 
-We may hence define the decoding function $\decode$ such that $\decode(I\cup \parikhof{x}) = w$. 
-It is well known that $\parikhof{A}$ can be computed in a form of linear arithmetic formula \cite{} $\pformulaof{A}$ such that $\modelsof{\pformulaof A} = \parikhof{A}$.
+Achieving this was the purpose of introducing the structural constraints of PFA. 
+Their implication central for our method is that every parametric string $x\in L(A)$ is uniquelly determined by its Parikh image $\parikhof{x}$, as formalised by the following lemma.  
+
+\begin{lemma}\label{lemma:parikh}
+For an PFA $A$ and $x,y\in L(A)$ if $\parikhof x = \parikhof y$ then $x = y$. 
+\end{lemma}
+%
+Indeed, since every variable appears on at most one transition, then the $\parikhof x$ value of all variables appearing within the same cycle is the same, and it is equal to the number of repetitions of that cycle in the accepting run. 
+%
+The accepting run on $x$ (and so $x$ itself) can thus be reconstructed from $\parikhof x$. \lh{say precisely how?}
+%
+For example, in the example of Figure~\ref{fig:sfa_def}, 
+from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=1$ and $\parikhwof x {v^0_1}=\parikhwof x {v^1_1}=\parikhwof x {v^2_1}=2$ we derive that $x=v_0(v^0_1v^1_1v^2_1)^2v_1\cdots v_{m-1}$. 
+We may say that $\parikhof x$ is an encoding of $x$, and define the decoding function $\decode$ such that $\decode(\parikhof x) = x$.
+It is well known that $\parikhof{A}$ can be computed in the form of a linear arithmetic formula  $\pformulaof{A}$ such that $\modelsof{\pformulaof A} = \parikhof{A}$, in time linear to the size of $A$ \cite{}.
+\begin{lemma}\label{lemma:decx}
+For a PFA $A$, $L(A) = \{\decode(\pim) \mid \pim\in\semof{\pformulaof A}\}$.
+\end{lemma}
 
 
-\todo{add Presburger constraints to allow more expressive power.}
+Since every string $w \in \semof{A}$ is obtained from a parametric string $x\in L(A)$ and an interpretation of character varriables $I:\cvar\rightarrow\Sigma_\epsilon$ such that $w = I(x)$, and since $x = \decode(\parikhof x)$, 
+we may say that the united assignment $I \cup \parikhof x$ encodes $w$. Lemma~\ref{lemma:parikh} also implies that two different strings are encoded by different united assignments, and hence we may extend the decoding function $\decode$ to united assignments so that $\decode(I \cup x) = w$.
+Encodings of strings in $\semof{A}$ are encodings of strings of $L(A)$ paired with arbitrary interpretations of $\cvar$, 
+hence $\semof A$ is characterised by $\parikhof A$ interpreted over variables $\cvar\cup\pvars$: 
+%\begin{lemma}\ref{lemma:decw}
+%For a PFA $A$, $\semof{A} = \{\decode(I\cup \pim) \mid \pim\in\semof{\pformulaof A} \land I:\cvar\rightarrow \Sigma_\epsilon\}$.
+%\end{lemma}
+\begin{lemma}
+For a PFA $A$, $\semof{A} = \{\decode(I\cup \pim) \mid I\cup\pim\in\semof{\pformulaof A}_{\cvar\cup\pvars}\}$.
+\end{lemma}
 
-%For such kind of automata, the number of occurrence of each symbol in $\cvar$ uniquely characterize an accepting symbolic string. For example, in the example of Figure~\ref{fig:sfa_def}, if the string $v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ is accepted, then all other strings $w$ with $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and also $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$ are not accepted. Moreover, from $|w|_{v_0}=|w|_{v_1}=\ldots=|w|_{v_{m-1}}=1$ and $|w|_{v^0_1}=|w|_{v^1_1}=|w|_{v^2_1}=2$, we can derive $w=v_0(v^0_1v^1_1v^2_1)^2v_1v_{m-1}$ by exploring the automata structure. \todo{add Presburger constraints to allow more expressive power.}
+\paragraph{Synchronisation of PFA}
+The following construction of the so called synchronisation formula of two PFA $A$ and $B$ is a crucial component of bulding overapproximations of string constraints. 
+Synchronisation formula is a formula $\syncof A B$ over $\pvars\cup\cvarone\cup \cvartwo$ encoding the semantic intersection $\semof A \cap \semof B$. Besides the intersection, it contains a more precise information about the synchronisation of $A$ and $B$, 
+namely, it characterises the set of pairs of encodings $(I\cup \pim)\in \parikhof A$ and $(I'\cup \pim')\in\parikhof B$ such that 
+$\decode(I\cup \pim) = \decode(I'\cup \pim')$ which constitute the intersection.
+
+Assume that $A$ and $B$ are over disjoint sets of variables. 
+We build so called asynchronous product machine of $A$ and $B$ and then extract the formula from its Parikh image.
+%
+The product machine uses $Q\times P$ as the set of states and $(\cvarone \cup \{\epsilon\}) \times (\cvartwo \cup \{\epsilon\} )$ as the alphabet. If a transition $((q_1,p_1), (v,v'),(q_2,p_2))$ is taken, it means the character variable $v$ and $v'$ should be assigned the same value and this value leads $S_n$ from state $q_1$ to state $q_2$ and $S_m$ from $p_1$ to $p_2$.
+
+More precisely, the product machine is a tuple $M = (Q\times P, T^2, (\cvarone \cup \{\epsilon\}) \times (\cvartwo \cup \{\epsilon\} ), (q_i,p_i),(q_f,p_f))$, where the transition relation $T^2$ is the minimal set satisfying the following.
+
+\begin{itemize}
+\item If $(q_1,v,q_2) \in T$, then for all states $p\in P$, we have $((q_1,p),(v,\epsilon),(q_2,p))\in T^2$.
+\item If $(p_1,v,p_2) \in T'$, then for all states $q\in Q,((q,p_1)$, we have $(\epsilon,v),(q,p_2))\in T^2$.
+\item If $(q_1,v,q_2) \in T$ and $(p_1,v',p_2) \in T'$, then we have $((q_1,p_1),(v,v'),(q_2,p_2))\in T^2$.
+\end{itemize}	
+The first two cases correspond to the situation when the character variable $v$ is assigned $\epsilon$. In such cases, only one automaton changes its state.
+%
+We compute a Presburger formula $\pformulaof M$ over the set of variables $\{\#(v,v')\mid (v,v') \in \cvarone \times \cvartwo\}$ of the product machine. 
+%We use $\#v$ and $\#v'$ to denote the number of occurrences of $v_i$ and $v_i^{(j)}$, respectively. 
+The following formulae establish the relation of the number of occurrences of symbols between the SFAs and the product machine.
+\begin{enumerate}
+	\item for all $v \in \cvarone$, $\#(v) = \sum_{v' \in {\cvartwo \cup \{\epsilon\}}} \#{(v,v')}$   
+	\item for all $v \in \cvartwo$, $\#(v) = \sum_{v' \in {\cvarone \cup \{\epsilon\}}} \#{(v',v)}$ 
+\end{enumerate}
+
+Then we add the following linear constraints to enforce  condition 1. and 2. required for the pair of symbolic string $(w_n, w_m)$ and $I$, i.e., $I(w_n) = I(w_m)$ and $I$ assign the same value to all versions of the same variable (we use $-1$ as the value of $\epsilon$). 
+\begin{enumerate}
+	\item for all $v\in \cvarone$ and $v'\in \cvartwo$, $\#{(v,v')}>0 \rightarrow (v=v')$, 
+	\item for all $v\in \cvarone$, $\#{(v,\epsilon)}>0 \rightarrow (v=\epsilon)$, and
+	Mitem for all $v\in \cvartwo$,$\#{(\epsilon,v)}>0 \rightarrow (v=\epsilon)$.
+\end{enumerate}
+
+The correctness of this construction is expressed by the following lemma
+\begin{lemma}
+For $\pim:\pvars\rightarrow \nat$, $\pim':\pvars\rightarrow\nat$, $I:\cvarone\rightarrow\Sigma$, $I':\cvartwo\rightarrow\Sigma$, 
+we have $(I\cup\pim)\cup(I'\cup\pim')\in\semof \Psi$ if and only if $\decode(I\cup\pim) = \decode(I'\cup\pim')$.
+\end{lemma}
+We actually have even something stronger, namely, that, $\Psi$ has all possible allignments. How do I say this ... or do I have to say this?
 
 
-\lh{so far not sure about how and where to present this:}
 \begin{lemma}
 	Symbolic flat automata are closed under concatenation.
 \end{lemma}
@@ -383,9 +437,9 @@ It is well known that $\parikhof{A}$ can be computed in a form of linear arithme
 
 \subsection{Flat Under-approximation for Equalities and Regular Constraints} \label{section:eq}
 
-Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some SFA with disjoint alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. We rename the variables on the transitions of SFA's for different occurrences of the same variable in one equality constraint. Later we will use some arithmetic constraints to enforce that all occurrences of the variants of the same variable will be assigned the same value. For notational convenience, the renaming is done by adding a version number to the variable. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, $\ldots$.
+Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some PFA with disjoint alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. We rename the variables on the transitions of PFA's for different occurrences of the same variable in one equality constraint. Later we will use some arithmetic constraints to enforce that all occurrences of the variants of the same variable will be assigned the same value. For notational convenience, the renaming is done by adding a version number to the variable. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, $\ldots$.
 
-For the constraint $xy = yx$, we first restrict the domains of $x$ and $y$ to the SFA in Figure~\ref{fig:sfa} (a) and (b), respectively. In the construction of the SFA for $xy$ and $yx$ (Figure~\ref{fig:sfa} (c) and (d)), we rename the variables on the SFA of $X$ and $Y$ to some fresh variable for each different occurrence of $x$ and $y$ in $xy = yx$.
+For the constraint $xy = yx$, we first restrict the domains of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. In the construction of the PFA for $xy$ and $yx$ (Figure~\ref{fig:sfa} (c) and (d)), we rename the variables on the PFA of $X$ and $Y$ to some fresh variable for each different occurrence of $x$ and $y$ in $xy = yx$.
 
 \begin{figure*}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
@@ -503,7 +557,7 @@ Recall that for flat automata, the number of occurrences of each symbol uniquely
 
 Then we add the following linear constraints to enforce  condition 1. and 2. required for the pair of symbolic string $(w_n, w_m)$ and $I$, i.e., $I(w_n) = I(w_m)$ and $I$ assign the same value to all versions of the same variable (we use $-1$ as the value of $\epsilon$). 
 \begin{enumerate}
-	\item for all $v_i^{(j)}\in \cvarone$ and $v_{i'}^{(j')}\in \cvartwo$, $\#{(v_i^{(j)},v_{i'}^{(j')})}>0 \rightarrow (v_i=v_{i'})$, 
+	\item for all $v_i^{(j)}\in \cvarone$ and $v_{i'}^{(j')}\in \cvartwo$, $\#{(v_i^{(j)},v_{i'}^{(j')})}>0 \rightarrow (v_i=v_{i'})$,\lh{typo?} 
 	\item for all $v_i^{(j)}\in \cvarone$, $\#{(v_i^{(j)},\epsilon)}>0 \rightarrow (v_i=\epsilon)$, and
 	\item for all $v_{i'}^{(j')}\in \cvartwo$,$\#{(\epsilon,v_{i'}^{(j')})}>0 \rightarrow (v_{i'}=\epsilon)$.
 \end{enumerate}
