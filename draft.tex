@@ -590,7 +590,7 @@ $$(n=-1 \vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(
 It says either $x$ is not a number and so $n=-1$ or the first $k$ variables represent the value of $n$, for some $k\in [0,m]$ .
 
 
-The length of $x$ can be specified by the following formula.
+\hide{The length of $x$ can be specified by the following formula.
 
 $\begin{array}{ccc}
 	(|x|&=& \#(v_0)+1 \wedge 0\leq v_1 \leq 9 \wedge v_2 = -1)\vee \\
@@ -598,7 +598,7 @@ $\begin{array}{ccc}
 	& &\ldots\\
 	(|x|&=& \#(v_0)+(m-1) \wedge 0\leq v_{m-1} \leq 9 \wedge v_m = -1)\vee\\
 	(|x|&=& \#(v_0)+m \wedge 0\leq v_m \leq 9 )
-\end{array}$
+\end{array}$}
 
 \todo{Add an example: $\sti{x}=\sti{y} \wedge x= y\cdot y$. Do product construction informally here.}
 
