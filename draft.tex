@@ -404,7 +404,7 @@ hence $\semof A$ is characterised by models of $\parikhof {A}$ interpreted over 
 where $\semof{\parikhfof A}_{\cvar\cup\pvar}$ are models of $\parikhfof A$, assignments to $\pvar$, united with arbitrary interpretations of $\cvar$ \lh{this is ugly}\yfc{I totally agree}.
 
 \paragraph{Synchronisation of PFA}
-The following construction of the so called synchronisation formula of two PFA $A$ and $A'$ is a crucial component of building overapproximations of string constraints. 
+The following construction of the so called synchronisation formula of two PFA $A$ and $A'$ is a crucial component of building overapproximations \yfc{under-approximation} of string constraints. 
 Synchronisation formula is a formula $\syncfof A {A'}$ over $\pvarone\cup\pvartwo\cup\cvarone\cup \cvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. Besides the intersection, it contains a more precise information about the synchronisation of $A$ and ${A'}$, 
 namely, it characterises the set of pairs of encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {L(A')}$ such that 
 $\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$.% which constitute the intersection.
