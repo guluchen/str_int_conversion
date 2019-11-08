@@ -237,6 +237,15 @@ A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_i,q_f)$, where $Q$ is the se
 A \emph{run} of $A$ over a word $w = a_1\cdots a_n$ is a sequence of transition $(q_0,a_1,q_1),(q_1,a_1,q_2),\ldots,(q_{n-1},a_n,q_n)$. The run  is \emph{accepting} if $q_0 = q_i$ and $q_i = q_f$ and $w$ then is \emph{accepted}.
 The \emph{language} of $A$ is the set $L(A)$ of all accepted words.
 
+It is well known that the Parikh image of the language of $A$ can be efficiently computed in the form of linear arithmetic formula.
+We will use $\parikhof{A}$ as a shorthand for $\parikhof{L(A)}$.
+
+\begin{lemma}[\cite{PeterParikh}]
+$\parikhof{A}$ of an FA $A$ can be computed in the form of a linear arithmetic formula  $\parikhfof{A}$ such that $\modelsof{\parikhfof A} = \parikhof{A}$, in time linear to the size of $A$.
+\end{lemma}
+
+
+
  
 
 
@@ -376,14 +385,6 @@ The accepting run on $x$ (and so $x$ itself) can thus be reconstructed from $\pa
 For example, in the automaton of Figure~\ref{fig:sfa_def}, 
 from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=1$ and $\parikhwof x {v^0_1}=\parikhwof x {v^1_1}=\parikhwof x {v^2_1}=2$ we derive that $x=v_0(v^0_1v^1_1v^2_1)^2v_1\cdots v_{m-1}$. 
 We may say that $\parikhof x$ is an encoding of $x$, and define the decoding function $\decode A$ such that $\decode A(\parikhof x) = x$.
-It is well known that the Parikh image of the language of $A$ can be efficiently computed in the form of linear arithmetic formula.
-We will use $\parikhof{A}$ as a shorthand for $\parikhof{L(A)}$.
-
-\begin{lemma}[\cite{PeterParikh}]
-$\parikhof{A}$ of an FA $A$ can be computed in the form of a linear arithmetic formula  $\parikhfof{A}$ such that $\modelsof{\parikhfof A} = \parikhof{A}$, in time linear to the size of $A$.
-\end{lemma}
-
-
 
 \begin{lemma}\label{lemma:decx}
 For a PFA $A$, $L(A) = \{\decode A(\pim) \mid \pim\in\semof{\parikhfof A}\}$.
