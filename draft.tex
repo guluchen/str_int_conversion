@@ -23,6 +23,8 @@
 \newcommand{\nat}{\mathbb{N}}
 \newcommand{\todo}[1]{{\color{blue}TODO: #1}}
 \newcommand{\lh}[1]{{\color{orange}Lukas: #1}}
+\newcommand{\yfc}[1]{{\color{blue}YFC: #1}}
+\newcommand{\petr}[1]{{\color{pink}Petr: #1}}
 \newcommand{\sti}[1]{\mbox{\textsf{toInt}($#1$)}}
 \newcommand{\its}[1]{\mbox{\textsf{toStr}($#1$)}}
 \newcommand{\varn}{\mbox{$\mathbb{V}_{\mathbb{Z}}$}}
@@ -399,7 +401,7 @@ hence $\semof A$ is characterised by models of $\parikhof {A}$ interpreted over 
 %For a PFA $A$, $\semof{A} = \{\decode(I\cup \pim) \mid \pim\in\semof{\parikhfof A} \land I:\cvar\rightarrow \Sigma_\epsilon\}$.
 %\end{lemma}
  $$\semof{A} = \{\decode A(I\cup \pim) \mid I\cup\pim\in\semof{\parikhfof A}_{\cvar\cup\pvar}\}$$
-where $\semof{\parikhfof A}_{\cvar\cup\pvar}$ are models of $\parikhfof A$, assignments to $\pvar$, united with arbitrary interpretations of $\cvar$ \lh{this is ugly}.
+where $\semof{\parikhfof A}_{\cvar\cup\pvar}$ are models of $\parikhfof A$, assignments to $\pvar$, united with arbitrary interpretations of $\cvar$ \lh{this is ugly}\yfc{I totally agree}.
 
 \paragraph{Synchronisation of PFA}
 The following construction of the so called synchronisation formula of two PFA $A$ and $A'$ is a crucial component of building overapproximations of string constraints. 
