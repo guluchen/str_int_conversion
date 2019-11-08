@@ -24,13 +24,13 @@ Table~\ref{table:base_benchmark} shows the comparison on several string benchmar
 \begin{tabular}{l | r r r | r r r | r r r | r r r}
 \hline
 \multirow{2}{*}{}   & \multicolumn{3}{|c|}{z3-Trau} & \multicolumn{3}{|c}{cvc4} & \multicolumn{3}{|c}{z3} & \multicolumn{3}{|c}{z3-str3} \\
-			& sat & unsat & $\times$ & sat & unsat & $\times$ & sat & unsat & $\times$ & sat & unsat & $\times$ \\ \hline
-PyEx		& 19655 & 3851 & 1915 & 19763 & 3834 & 1824 & 16578 & 3832 & 5011 & 3023 & 3835 & 18563 \\ 
-APLAS		&   128 &  287 &  185 & 205 & 221 & 174 & 13 & 100 & 487 & 36 & 112 &  452 \\ 
-LeetCode	&  &  &  &  &  &  &  &  &  &  &  &  \\ 
-StringFuzz	&  &  &  &  &  &  &  &  &  &  &  &  \\ 
-cvc4\textsubscript{pred}	&  &  &  &  &  &  &  &  &  &  &  &  \\ 
-cvc4\textsubscript{term}	&  &  &  &  &  &  &  &  &  &  &  &  \\ \hline
+			& sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ \\ \hline
+PyEx		& 19655 & 3851 & 1915/0 & 19763 & 3834 & 0/1824 & 16578 & 3832 & 5011/0 & 3023 & 3835 & 16717/1846 \\ 
+APLAS		&   128 &  287 &  185/0 & 205 &  221 & 174/0 &  13 &  100 & 486/1 & 36 & 112 & 105/347 \\ 
+LeetCode	&   856 & 1784 &   26/0 & 860 & 1785 &  21/0 & 881 & 1785 & 0/0 & 676 & 1780 &  70/140 \\ 
+StringFuzz	& 504 & 295 & 264/2 & 677 & 240 & 63/85 & 265 & 187 & 609/4 & 493 & 190 & 377/5 \\ 
+cvc4\textsubscript{pred}	& 16 & 184 & 5/0 & 11 & 818 & 6/0 & 12 & 808 & 15/0 & 8 & 772 & 41/14 \\ 
+cvc4\textsubscript{term}	& 13 & 1030 & 2/0 & 8 & 936 & 12/89 & 5 & 2021 & 19/0 & 16 & 958 & 53/18 \\ \hline
 \end{tabular}
 \label{table:base_benchmark}
 \end{table*}
@@ -42,9 +42,9 @@ Table~\ref{table:str_int_benchmark} shows the comparison on full\_str\_int. The 
 \begin{tabular}{l | r r r | r r r | r r r | r r r}
 \hline
 \multirow{2}{*}{}   & \multicolumn{3}{|c|}{z3-Trau} & \multicolumn{3}{|c}{cvc4} & \multicolumn{3}{|c}{z3} & \multicolumn{3}{|c}{z3-str3} \\
-			& sat & unsat & $\times$ & sat & unsat & $\times$ & sat & unsat & $\times$ & sat & unsat & $\times$ \\ \hline
-full\_str\_int		& 3289 & 17089 & 1195 & 2185 & 16377 & 3011 & 2716 & 16831 & 2026 & 422 & 16034 & 5117 \\ 
-filtered\_str\_int	& 3281 & 2912 & 1203 & 2210 & 2211 & 2975 & 2729 & 2655 & 2012 & 424 & 1944 & 5028 \\ \hline
+			& sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ \\ \hline
+full\_str\_int		& 3289 & 17089 & 1195/0 & 2185 & 16377 & 3011/0 & 2716 & 16831 & 2026/0 & 422 & 16034 & 4131/986 \\ 
+filtered\_str\_int	& 3281 & 2912 & 1203/0 & 2210 & 2211 & 2975/0 & 2729 & 2655 & 2012/0 & 424 & 1944 & 4106/922 \\ \hline
 \end{tabular}
 \label{table:str_int_benchmark}
 \end{table*}
