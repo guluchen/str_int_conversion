@@ -37,9 +37,6 @@
 \newcommand{\cvarone}{V}
 \newcommand{\cvartwo}{V'}
 \newcommand{\cvar}{V}
-\newcommand{\pvar}{V_\#}
-\newcommand{\pvarone}{V_\#}
-\newcommand{\pvartwo}{V'_\#}
 \newcommand{\modelsof}[1]{[\![#1]\!]}
 \newcommand{\true}{\mbox{$\mathsf{true}$}}
 \newcommand{\false}{\mbox{$\mathsf{false}$}}
@@ -56,7 +53,10 @@
 \newcommand{\syncof}[2]{#1 \syncop #2}
 \newcommand{\syncfof}[2]{\Psi_{\syncof {#1} {#2}}}
 \newcommand{\syncT}{T_\syncop}
-
+\newcommand{\pvarsof}[1]{\#(#1)}
+\newcommand{\pvar}{\pvarsof V}
+\newcommand{\pvarone}{\pvarsof V}
+\newcommand{\pvartwo}{\pvarsof {V'}}
 
 \maketitle
 
@@ -229,21 +229,23 @@ $\Sigma^*$ is the set of all strings over $\Sigma$, $\Sigma^+ = \Sigma^*\setminu
 A \emph{language} over $\Sigma$ is a subset $L$ of $\Sigma^*$.  
 %
 We use $|w|$ to denote the length of $w$ and $|w|_a$ to denote the number of occurrences of the character $a\in \Sigma$ in $w$.  
-The \emph{Parikh image} of $w$ is the assignment 
-%$\parikh(w) = \{a_1 \mapsto |w|_{a_1},\ldots, a_n \mapsto |w|_{a_n}\}$ that maps every symbol in $w$ to the number of its occurences in $w$. 
-$\parikhof w$ that for every character $a\in\Sigma$ maps the \emph{Parikh variable} $\#a$ to the number of occurrences of $a$ in $w$, i.e., $\parikhof w (\#a) = |w|_a$. 
-The Parikh image of a language $L$ is the set of Parikh images $\parikhof L = \{\parikhof w \mid w \in  L\}$. 
 
 A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_i,q_f)$, where $Q$ is the set of \emph{states}, $T\subseteq Q\times \Sigma \times Q $ is the set of \emph{transitions}, $\Sigma$ is the alphabet, $q_i$ is the \emph{initial state}, and $q_f$ is the \emph{final state}. 
 %The semantics of finite automaton is defined in the standard manner. 
 A \emph{run} of $A$ over a word $w = a_1\cdots a_n$ is a sequence of transition $(q_0,a_1,q_1),(q_1,a_1,q_2),\ldots,(q_{n-1},a_n,q_n)$. The run  is \emph{accepting} if $q_0 = q_i$ and $q_i = q_f$ and $w$ then is \emph{accepted}.
 The \emph{language} of $A$ is the set $L(A)$ of all accepted words.
 
-It is well known that the Parikh image of the language of $A$ can be efficiently computed in the form of linear arithmetic formula.
-We will use $\parikhof{A}$ as a shorthand for $\parikhof{L(A)}$.
+The \emph{Parikh image} of a wore $w\in \Sigma^*$ is the assignment 
+$\parikhof w$ that for every character $a\in\Sigma$ maps the \emph{Parikh variable} $\#a$ to the number of occurrences of $a$ in $w$.
+Formally, let $\pvarsof S$ denote the set of Parikh variables $\{\#s \mid s\in S\}$ obtained from a set $S$. 
+The Parikh image of $w$ is a function $\parikhof w:\pvarsof \Sigma \rightarrow \nat$ such that $\parikhof w (\#a) = |w|_a$. 
+The Parikh image of a language $L$ is the set of Parikh images $\parikhof L = \{\parikhof w \mid w \in  L\}$ and the Parikh image of an FA $A$ is Parikh image of its language, $\parikhof{A} = \parikhof{L(A)}$. 
+%
+It is well known that $\parikhof A$ can be efficiently computed in the form of linear interger arithmetic formula:
 
-\begin{lemma}[\cite{PeterParikh}]
-$\parikhof{A}$ of an FA $A$ can be computed in the form of a linear arithmetic formula  $\parikhfof{A}$ such that $\modelsof{\parikhfof A} = \parikhof{A}$, in time linear to the size of $A$.
+
+\begin{lemma}[\cite{SeidlSMH04}]
+$\parikhof{A}$ of an FA $A$ can be computed in the form of a linear interger arithmetic formula  $\parikhfof{A}$ such that $\modelsof{\parikhfof A} = \parikhof{A}$, in time linear to the size of $A$.
 \end{lemma}
 
 
@@ -293,6 +295,7 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 \newcommand{\st}[2]{q_{#1}^{#2}}
 \newcommand{\sym}[2]{v_{#1}^{#2}}
 \todo{add Presburger constraints to allow more expressive power.}
+\lh{TODO: solve the where to add $-1$ problem}
 %We use $\cvar$ to denote a finite set of \emph{character variables}  ranging over $\Sigma_\epsilon$. 
 %Sometimes we use index to denote different set of variables over the same range, e.g., $\cvarone$ and $\cvartwo$. 
 %We use $v$ and its variants for character variables. We call a string over $\cvar$ (character variables) a \emph{symbolic string}.
@@ -400,11 +403,13 @@ hence $\semof A$ is characterised by models of $\parikhof {A}$ interpreted over 
 %\begin{lemma}\ref{lemma:decw}
 %For a PFA $A$, $\semof{A} = \{\decode(I\cup \pim) \mid \pim\in\semof{\parikhfof A} \land I:\cvar\rightarrow \Sigma_\epsilon\}$.
 %\end{lemma}
- $$\semof{A} = \{\decode A(I\cup \pim) \mid I\cup\pim\in\semof{\parikhfof A}_{\cvar\cup\pvar}\}$$
+$$
+\semof{A} = \{\decode A(I\cup \pim) \mid I\cup\pim\in\semof{\parikhfof A}_{\cvar\cup\pvar}\}
+$$
 where $\semof{\parikhfof A}_{\cvar\cup\pvar}$ are models of $\parikhfof A$, assignments to $\pvar$, united with arbitrary interpretations of $\cvar$ \lh{this is ugly}\yfc{I totally agree}.
 
 \paragraph{Synchronisation of PFA}
-The following construction of the so called synchronisation formula of two PFA $A$ and $A'$ is a crucial component of building overapproximations of string constraints. 
+The following construction of the so called synchronisation formula of two PFA $A$ and $A'$ is a crucial component of building underapproximations of string constraints. 
 Synchronisation formula is a formula $\syncfof A {A'}$ over $\pvarone\cup\pvartwo\cup\cvarone\cup \cvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. Besides the intersection, it contains a more precise information about the synchronisation of $A$ and ${A'}$, 
 namely, it characterises the set of pairs of encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
 $\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$.% which constitute the intersection.
@@ -417,7 +422,7 @@ Such product automaton uses $Q\times Q'$ as the set of states and
 $\cvarone_\epsilon\times\cvartwo_\epsilon$
 as the alphabet. 
 %
-Every accepting run of $\syncof A {A'}$ \lh{define run as a sequence of transitions etc} corresponds to an accepting run of $A$ and an accepting run of ${A'}$, and the word accepted by the run of $\syncof A {A'}$ implies a set of constraints on $\pvarone\cup\pvartwo\cup\cvarone\cup\cvartwo$ under which the word accepted by $A$ has the same semantics as the word accepted by ${A'}$.
+Every accepting run of $\syncof A {A'}$ corresponds to an accepting run of $A$ and an accepting run of ${A'}$, and the word accepted by the run of $\syncof A {A'}$ implies a set of constraints on $\pvarone\cup\pvartwo\cup\cvarone\cup\cvartwo$ under which the word accepted by $A$ has the same semantics as the word accepted by ${A'}$.
 %
 Particularly, if a transition $((q_1,q_1'), (v,v'),(q_2,q_2'))$ is taken, it means the character variable $v$ and $v'$ should be assigned the same value and this value leads $A$ from state $q_1$ to state $q_2$ and ${A'}$ from $q_1'$ to $q_2'$.
 %
@@ -432,7 +437,7 @@ Formally, the product automaton is a tuple $\syncof A {A'} = (Q\times Q', \syncT
 \end{itemize}	
 %
 Next, we define the set of constraints that extract from $\syncof A {A'}$ pairs of united assignments (encodings of strings over $\Sigma$) that encode the same string. 
-We start with the Parikh formula $\parikhfof {\syncof A {A'}}$ of $\syncof A {A'}$ over the set of variables $\{\#(v,v')\mid (v,v') \in \cvarone_\epsilon \times \cvartwo_\epsilon\}$ of the product automaton and conjoin it with the following restricting constraints. 
+We start with computing the Parikh formula $\parikhfof {\syncof A {A'}}$ of $\syncof A {A'}$ over the set of variables $\pvarsof{\cvarone_\epsilon\times\cvartwo_\epsilon}$ and then conjoin it with the following restricting constraints. 
 %We use $\#v$ and $\#v'$ to denote the number of occurrences of $v_i$ and $v_i^{(j)}$, respectively. 
 
 The first restricting constraint establishes the relation of between the Parikh image of a word accepted by $\syncof A {A'}$ and the Parikh images of the corresponding parametric strings accepted by $A$ and ${A'}$:
@@ -460,13 +465,14 @@ $$
 
 The synchronisation formula is the conjunction 
 $$\label{lemma:synccorrect}
-\syncfof A {A'} = \parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
+%\syncfof A {A'} = \exists \pvarsof{\cvarone\times\cvartwo}\exists {(\cvarone\times\cvartwo)}.\,\parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
+\syncfof A {A'} = {(\cvarone\times\cvartwo)}.\,\parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
 $$
 The correctness of this construction is expressed by Lemma~\ref{lemma:synccorrect}. Informally,
 the 
 
 \begin{lemma}
- $\semof {\exists .\,\syncfof A {A'}} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
+ $\semof {\syncfof A {A'}} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 \end{lemma}
 
 %We actually have even something stronger, namely, that, $\syncfof A {A'}$ has all possible allignments. How do I say this ... or do I have to say this?
