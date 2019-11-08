@@ -373,10 +373,18 @@ Indeed, since every variable appears on at most one transition, then the $\parik
 %
 The accepting run on $x$ (and so $x$ itself) can thus be reconstructed from $\parikhof x$. \lh{say precisely how?}
 %
-For example, in the example of Figure~\ref{fig:sfa_def}, 
+For example, in the automaton of Figure~\ref{fig:sfa_def}, 
 from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=1$ and $\parikhwof x {v^0_1}=\parikhwof x {v^1_1}=\parikhwof x {v^2_1}=2$ we derive that $x=v_0(v^0_1v^1_1v^2_1)^2v_1\cdots v_{m-1}$. 
 We may say that $\parikhof x$ is an encoding of $x$, and define the decoding function $\decode A$ such that $\decode A(\parikhof x) = x$.
-It is well known that $\parikhof{A}$ can be computed in the form of a linear arithmetic formula  $\parikhfof{A}$ such that $\modelsof{\parikhfof A} = \parikhof{A}$, in time linear to the size of $A$ \cite{}.
+It is well known that the Parikh image of the language of $A$ can be efficiently computed in the form of linear arithmetic formula.
+We will use $\parikhof{A}$ as a shorthand for $\parikhof{L(A)}$.
+
+\begin{lemma}[\cite{PeterParikh}]
+$\parikhof{A}$ of an FA $A$ can be computed in the form of a linear arithmetic formula  $\parikhfof{A}$ such that $\modelsof{\parikhfof A} = \parikhof{A}$, in time linear to the size of $A$.
+\end{lemma}
+
+
+
 \begin{lemma}\label{lemma:decx}
 For a PFA $A$, $L(A) = \{\decode A(\pim) \mid \pim\in\semof{\parikhfof A}\}$.
 \end{lemma}
@@ -385,7 +393,7 @@ For a PFA $A$, $L(A) = \{\decode A(\pim) \mid \pim\in\semof{\parikhfof A}\}$.
 Since every string $w \in \semof{A}$ is obtained from a parametric string $x\in L(A)$ and an interpretation of character varriables $I:\cvar\rightarrow\Sigma_\epsilon$ such that $w = I(x)$, and since $x = \decode A(\parikhof x)$, 
 we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I$ and the Parikh image of the parametric string $x$ encodes $w$. Lemma~\ref{lemma:parikh} also implies that two different strings are encoded by different united assignments (the Parikh image or the interpretation must be different), and hence we may extend the decoding function $\decode A$ to united assignments so that $\decode A(I \cup x) = w$.
 Encodings of strings in $\semof{A}$ are encodings of parametric strings of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$, 
-hence $\semof A$ is characterised by models of $\parikhof A$ interpreted over variables $\cvar\cup\pvar$ (variables of $\cvar$  may have arbitrary values since $\parikhof A$ does not constraint them), we may say that 
+hence $\semof A$ is characterised by models of $\parikhof {A}$ interpreted over variables $\cvar\cup\pvar$ (variables of $\cvar$  may have arbitrary values since $\parikhof {A}$ does not constraint them), we may say that 
 %\begin{lemma}\ref{lemma:decw}
 %For a PFA $A$, $\semof{A} = \{\decode(I\cup \pim) \mid \pim\in\semof{\parikhfof A} \land I:\cvar\rightarrow \Sigma_\epsilon\}$.
 %\end{lemma}
@@ -395,7 +403,7 @@ where $\semof{\parikhfof A}_{\cvar\cup\pvar}$ are models of $\parikhfof A$, assi
 \paragraph{Synchronisation of PFA}
 The following construction of the so called synchronisation formula of two PFA $A$ and $A'$ is a crucial component of building overapproximations of string constraints. 
 Synchronisation formula is a formula $\syncfof A {A'}$ over $\pvarone\cup\pvartwo\cup\cvarone\cup \cvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. Besides the intersection, it contains a more precise information about the synchronisation of $A$ and ${A'}$, 
-namely, it characterises the set of pairs of encodings $(I\cup \pim)\in \parikhof A$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
+namely, it characterises the set of pairs of encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {L(A')}$ such that 
 $\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$.% which constitute the intersection.
 
 Assume that $A = (Q,T,\cvarone,q_i,q_f)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f')$ are two SFA over disjoint sets of variables, $\cvarone \cap \cvartwo = \emptyset$. 
