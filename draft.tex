@@ -28,11 +28,15 @@
 \newcommand{\vars}{\mbox{$\mathbb{V}_{\Sigma^*}$}}
 \newcommand{\cvars}{\mbox{$\mathbb{V}_{\Sigma_\epsilon}$}}
 \newcommand{\pvars}{\mbox{$\mathbb{V}_{\sharp}$}}
-\newcommand{\cvar}{\mbox{$V_{\Sigma_\epsilon}$}}
-%\newcommand{\cvarone}{\mbox{$V^1_{\Sigma_\epsilon}$}}
-%\newcommand{\cvartwo}{\mbox{$V^2_{\Sigma_\epsilon}$}}
-\newcommand{\cvarone}{\mbox{$V_{\Sigma_\epsilon}$}}
-\newcommand{\cvartwo}{\mbox{$V'_{\Sigma_\epsilon}$}}
+%\newcommand{\cvar}{\mbox{$V_{\Sigma_\epsilon}$}}
+%\newcommand{\cvarone}{\mbox{$V_{\Sigma_\epsilon}$}}
+%\newcommand{\cvartwo}{\mbox{$V'_{\Sigma_\epsilon}$}}
+\newcommand{\cvarone}{V}
+\newcommand{\cvartwo}{V'}
+\newcommand{\cvar}{V}
+\newcommand{\pvar}{V_\#}
+\newcommand{\pvarone}{V_\#}
+\newcommand{\pvartwo}{V'_\#}
 \newcommand{\modelsof}[1]{[\![#1]\!]}
 \newcommand{\true}{\mbox{$\mathsf{true}$}}
 \newcommand{\false}{\mbox{$\mathsf{false}$}}
@@ -42,12 +46,11 @@
 \newcommand{\parikhwof}[2]{|#1|_{#2}}
 %\newcommand{\semof}[1]{||#1||}
 \newcommand{\semof}[1]{\modelsof{#1}}
-\newcommand{\decode}{\mathit{decode}}
-\newcommand{\pformulaof}[1]{\Phi_{#1}}
+\newcommand{\decode}[1]{\mathit{decode_{#1}}}
+\newcommand{\parikhfof}[1]{\Phi_{\parikhof{#1}}}
 \newcommand{\pim}{\alpha}
 \newcommand{\syncop}{\Cap}
-\newcommand{\syncof}[2]{A \syncop B}
-\newcommand{\syncfof}[2]{\Psi_{\syncof {#1} {#2}}}
+\newcommand{\syncof}[2]{#1 \syncop #2}
 \newcommand{\syncfof}[2]{\Psi_{\syncof {#1} {#2}}}
 \newcommand{\syncT}{T_\syncop}
 
@@ -228,8 +231,9 @@ The \emph{Parikh image} of $w$ is the assignment
 $\parikhof w$ that for every character $a\in\Sigma$ maps the \emph{Parikh variable} $\#a$ to the number of occurrences of $a$ in $w$, i.e., $\parikhof w (\#a) = |w|_a$. 
 The Parikh image of a language $L$ is the set of Parikh images $\parikhof L = \{\parikhof w \mid w \in  L\}$. 
 
-A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of \emph{states}, $T\subseteq Q\times (\Sigma\cup \{\epsilon\} )\times Q $ is the set of \emph{transitions}, $\Sigma$ is the alphabet, $q_0$ is the \emph{initial state}, and $q_m$ is the \emph{final state}. 
+A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_i,q_f)$, where $Q$ is the set of \emph{states}, $T\subseteq Q\times \Sigma \times Q $ is the set of \emph{transitions}, $\Sigma$ is the alphabet, $q_0$ is the \emph{initial state}, and $q_m$ is the \emph{final state}. 
 %The semantics of finite automaton is defined in the standard manner. 
+A run of $A$ over a word $w = a_1\cdots a_n$ is a sequence of transition $(q_i)$
 We use $L(A)$ to denote the language of the automaton $A$, i.e., the set of accepted strings, defined in the standard manner.
 \lh{If we later start technical talking about tings like runs then we should include this definition.}
 
@@ -286,7 +290,7 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 We introduce \emph{parametric flat automata} (PFA) that will be used to define patterns 
 %for the string variable domain restriction. 
 used by the under-approximation module to restrict the domain of string variables. 
-Namely, an PFA is a finite automaton $A = (Q,T,\cvar,\st{0}{0},\st{m}{0})$ operating over the alphabet $\cvar$ of \emph{character variables}, 
+Namely, an PFA is a finite automaton $A = (Q,T,\cvar,\st{0}{0},\st{m}{0})$ operating over an alphabet $\cvar$ of \emph{character variables}, 
 and satisfying the following structural constraints:
 \begin{enumerate}
 	\item The final state $\st{m}{0}$ is reached from  the initial state $\st{0}{0}$ through a stright path of $m-1$ transitions $(\st{i}{0},v_i,\st{i+1}{0}) \in T$, $\st{i}{0} \in Q$ for $i\in[0,m-1]$. %, with pairwise distiand states $\st{i}{0} \in Q$ for $i\in[0,m-1]$.
@@ -296,7 +300,7 @@ Notice that case when $l_i = 0$ is also admissible and means that there is no cy
 %Assume that $\st{i}{0}$ is included in a cycle with $l_i$ states (includes $\st{i}{0}$). 
 %For each $j\in [1,l_i]$, we have $\st{i}{j} \in Q$ and $(\st{i}{j-1}, \sym{i}{j-1}, \st{i}{j \bmod l_i})$. 
 %(where $l_i = 0$ means that there is no cycle on $q_i$)
-	\item Each variable in $\cvar$ appears on at most one transition (but $\epsilon$ transition can appear multiple times). 
+	\item Each variable in $\cvar$ appears on at most one transition.% (but $\epsilon$ transition can appear multiple times). 
 \end{enumerate} 
 \lh{TODO: decide whether we want epsilon trans, or perhaps additional constraints saying that a var equals epsilon or a character}
 \begin{figure*}
@@ -371,65 +375,93 @@ The accepting run on $x$ (and so $x$ itself) can thus be reconstructed from $\pa
 %
 For example, in the example of Figure~\ref{fig:sfa_def}, 
 from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=1$ and $\parikhwof x {v^0_1}=\parikhwof x {v^1_1}=\parikhwof x {v^2_1}=2$ we derive that $x=v_0(v^0_1v^1_1v^2_1)^2v_1\cdots v_{m-1}$. 
-We may say that $\parikhof x$ is an encoding of $x$, and define the decoding function $\decode$ such that $\decode(\parikhof x) = x$.
-It is well known that $\parikhof{A}$ can be computed in the form of a linear arithmetic formula  $\pformulaof{A}$ such that $\modelsof{\pformulaof A} = \parikhof{A}$, in time linear to the size of $A$ \cite{}.
+We may say that $\parikhof x$ is an encoding of $x$, and define the decoding function $\decode A$ such that $\decode A(\parikhof x) = x$.
+It is well known that $\parikhof{A}$ can be computed in the form of a linear arithmetic formula  $\parikhfof{A}$ such that $\modelsof{\parikhfof A} = \parikhof{A}$, in time linear to the size of $A$ \cite{}.
 \begin{lemma}\label{lemma:decx}
-For a PFA $A$, $L(A) = \{\decode(\pim) \mid \pim\in\semof{\pformulaof A}\}$.
+For a PFA $A$, $L(A) = \{\decode A(\pim) \mid \pim\in\semof{\parikhfof A}\}$.
 \end{lemma}
 
 
-Since every string $w \in \semof{A}$ is obtained from a parametric string $x\in L(A)$ and an interpretation of character varriables $I:\cvar\rightarrow\Sigma_\epsilon$ such that $w = I(x)$, and since $x = \decode(\parikhof x)$, 
-we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I$ and the Parikh image of the parametric string $x$ encode $w$. Lemma~\ref{lemma:parikh} also implies that two different strings are encoded by different united assignments (the Parikh image or the interpretation must be different), and hence we may extend the decoding function $\decode$ to united assignments so that $\decode(I \cup x) = w$.
-Encodings of strings in $\semof{A}$ are encodings of strings of $L(A)$ paired with arbitrary interpretations of $\cvar$, 
-hence $\semof A$ is characterised by models of $\parikhof A$ interpreted over variables $\cvar\cup\pvars$ (variables of $\cvar$  may have arbitrary values since $\parikhof A$ does not constraint them): 
+Since every string $w \in \semof{A}$ is obtained from a parametric string $x\in L(A)$ and an interpretation of character varriables $I:\cvar\rightarrow\Sigma_\epsilon$ such that $w = I(x)$, and since $x = \decode A(\parikhof x)$, 
+we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I$ and the Parikh image of the parametric string $x$ encodes $w$. Lemma~\ref{lemma:parikh} also implies that two different strings are encoded by different united assignments (the Parikh image or the interpretation must be different), and hence we may extend the decoding function $\decode A$ to united assignments so that $\decode A(I \cup x) = w$.
+Encodings of strings in $\semof{A}$ are encodings of parametric strings of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$, 
+hence $\semof A$ is characterised by models of $\parikhof A$ interpreted over variables $\cvar\cup\pvar$ (variables of $\cvar$  may have arbitrary values since $\parikhof A$ does not constraint them), we may say that 
 %\begin{lemma}\ref{lemma:decw}
-%For a PFA $A$, $\semof{A} = \{\decode(I\cup \pim) \mid \pim\in\semof{\pformulaof A} \land I:\cvar\rightarrow \Sigma_\epsilon\}$.
+%For a PFA $A$, $\semof{A} = \{\decode(I\cup \pim) \mid \pim\in\semof{\parikhfof A} \land I:\cvar\rightarrow \Sigma_\epsilon\}$.
 %\end{lemma}
-\begin{lemma}
-For a PFA $A$, $\semof{A} = \{\decode(I\cup \pim) \mid I\cup\pim\in\semof{\pformulaof A}_{\cvar\cup\pvars}\}$.
-\end{lemma}
+ $$\semof{A} = \{\decode A(I\cup \pim) \mid I\cup\pim\in\semof{\parikhfof A}_{\cvar\cup\pvar}\}$$
+where $\semof{\parikhfof A}_{\cvar\cup\pvar}$ are models of $\parikhfof A$, assignments to $\pvar$, united with arbitrary interpretations of $\cvar$ \lh{this is ugly}.
 
 \paragraph{Synchronisation of PFA}
-The following construction of the so called synchronisation formula of two PFA $A$ and $B$ is a crucial component of bulding overapproximations of string constraints. 
-Synchronisation formula is a formula $\syncfof A B$ over $\pvars\cup\cvarone\cup \cvartwo$ encoding the semantic intersection $\semof A \cap \semof B$. Besides the intersection, it contains a more precise information about the synchronisation of $A$ and $B$, 
-namely, it characterises the set of pairs of encodings $(I\cup \pim)\in \parikhof A$ and $(I'\cup \pim')\in\parikhof B$ such that 
-$\decode(I\cup \pim) = \decode(I'\cup \pim')$ which constitute the intersection.
+The following construction of the so called synchronisation formula of two PFA $A$ and $A'$ is a crucial component of building overapproximations of string constraints. 
+Synchronisation formula is a formula $\syncfof A {A'}$ over $\pvarone\cup\pvartwo\cup\cvarone\cup \cvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. Besides the intersection, it contains a more precise information about the synchronisation of $A$ and ${A'}$, 
+namely, it characterises the set of pairs of encodings $(I\cup \pim)\in \parikhof A$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
+$\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$.% which constitute the intersection.
 
-Assume that $A = (Q,T,\cvarone,q_i,q_f)$ and $B = (P,T',\cvartwo,p_i,p_f)$ are two SFA over disjoint sets of variables, $\cvarone \cap \cvartwo = \emptyset$. 
-We build so called asynchronous product automaton $\syncof A B$ of $A$ and $B$ and then extract the formula $\syncfof A B$ from its Parikh image.
+Assume that $A = (Q,T,\cvarone,q_i,q_f)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f')$ are two SFA over disjoint sets of variables, $\cvarone \cap \cvartwo = \emptyset$. 
+We build so called asynchronous product automaton $\syncof A {A'}$ of $A$ and ${A'}$ and then extract the formula $\syncfof A {A'}$ from its Parikh image.
 %
-The product automaton uses $Q\times P$ as the set of states and $(\cvarone \cup \{\epsilon\}) \times (\cvartwo \cup \{\epsilon\} )$ as the alphabet. If a transition $((q_1,p_1), (v,v'),(q_2,p_2))$ is taken, it means the character variable $v$ and $v'$ should be assigned the same value and this value leads $A$ from state $q_1$ to state $q_2$ and $B$ from $p_1$ to $p_2$.
+Such product automaton uses $Q\times Q'$ as the set of states and 
+%$(\cvarone \cup \{\epsilon\}) \times (\cvartwo \cup \{\epsilon\} )$ 
+$\cvarone_\epsilon\times\cvartwo_\epsilon$
+as the alphabet. 
+%
+Every accepting run of $\syncof A {A'}$ \lh{define run as a sequence of transitions etc} corresponds to an accepting run of $A$ and an accepting run of ${A'}$, and the word accepted by the run of $\syncof A {A'}$ implies a set of constraints on $\pvarone\cup\pvartwo\cup\cvarone\cup\cvartwo$ under which the word accepted by $A$ has the same semantics as the word accepted by ${A'}$.
+%
+Particularly, if a transition $((q_1,q_1'), (v,v'),(q_2,q_2'))$ is taken, it means the character variable $v$ and $v'$ should be assigned the same value and this value leads $A$ from state $q_1$ to state $q_2$ and ${A'}$ from $q_1'$ to $q_2'$.
+%
+If a transition $((q_1,q_1'), (v,\epsilon),(q_2,q_1'))$ is taken, then it means that the character variable $v$ should be assigned $\epsilon$, $A$ may transition under $v$ to $q_1$ and ${A'}$ stays in the same state, as a response to $A$s reading epsilon may as well be taking no action. Symmetrically, ${A'}$ might read a variable $v$ assigned $\epsilon$ and $A$ may stay.
 
-More precisely, the product automaton is a tuple $\syncof A B = (Q\times P, \syncT, (\cvarone \cup \{\epsilon\}) \times (\cvartwo \cup \{\epsilon\} ), (q_i,p_i),(q_f,p_f))$, where the transition relation $\syncT$ is the minimal set satisfying the following.
-
+Formally, the product automaton is a tuple $\syncof A {A'} = (Q\times Q', \syncT, \cvarone_\epsilon \times \cvartwo_\epsilon, (q_i,q_i'),(q_f,q_f'))$, where the transition relation $\syncT$ is the minimal set satisfying the following:
+%
 \begin{itemize}
-\item If $(q_1,v,q_2) \in T$, then for all states $p\in P$, we have $((q_1,p),(v,\epsilon),(q_2,p))\in \syncT$.
-\item If $(p_1,v,p_2) \in T'$, then for all states $q\in Q,((q,p_1)$, we have $(\epsilon,v),(q,p_2))\in \syncT$.
-\item If $(q_1,v,q_2) \in T$ and $(p_1,v',p_2) \in T'$, then we have $((q_1,p_1),(v,v'),(q_2,p_2))\in \syncT$.
+\item If $(q_1,v,q_2) \in T$ and $(q_1',v',q_2') \in T'$, then we have $((q_1,q_1'),(v,v'),(q_2,q_2'))\in \syncT$.
+\item If $(q_1,v,q_2) \in T$, then for all states $q'\in Q'$, we have $((q_1,q'),(v,\epsilon),(q_2,q'))\in \syncT$.
+\item If $(q_1',v',q_2') \in T'$, then for all states $q\in Q$, we have $((q,q_1'),(\epsilon,v'),(q,q_2'))\in \syncT$.
 \end{itemize}	
-The first two cases correspond to the situation when the character variable $v$ is assigned $\epsilon$. In such cases, only one automaton changes its state.
 %
-We compute a Presburger formula $\pformulaof {\syncof A B}$ over the set of variables $\{\#(v,v')\mid (v,v') \in \cvarone \times \cvartwo\}$ of the product automaton. 
+Next, we define the set of constraints that extract from $\syncof A {A'}$ pairs of united assignments (encodings of strings over $\Sigma$) that encode the same string. 
+We start with the Parikh formula $\parikhfof {\syncof A {A'}}$ of $\syncof A {A'}$ over the set of variables $\{\#(v,v')\mid (v,v') \in \cvarone_\epsilon \times \cvartwo_\epsilon\}$ of the product automaton and conjoin it with the following restricting constraints. 
 %We use $\#v$ and $\#v'$ to denote the number of occurrences of $v_i$ and $v_i^{(j)}$, respectively. 
-The following formulae establish the relation of the number of occurrences of symbols between the SFAs and the product automaton.
-\begin{enumerate}
-	\item for all $v \in \cvarone$, $\#(v) = \sum_{v' \in {\cvartwo \cup \{\epsilon\}}} \#{(v,v')}$   
-	\item for all $v \in \cvartwo$, $\#(v) = \sum_{v' \in {\cvarone \cup \{\epsilon\}}} \#{(v',v)}$ 
-\end{enumerate}
 
-Then we add the following linear constraints to enforce  condition 1. and 2. required for the pair of symbolic string $(w_n, w_m)$ and $I$, i.e., $I(w_n) = I(w_m)$ and $I$ assign the same value to all versions of the same variable (we use $-1$ as the value of $\epsilon$). 
-\begin{enumerate}
-	\item for all $v\in \cvarone$ and $v'\in \cvartwo$, $\#{(v,v')}>0 \rightarrow (v=v')$, 
-	\item for all $v\in \cvarone$, $\#{(v,\epsilon)}>0 \rightarrow (v=\epsilon)$, and
-	Mitem for all $v\in \cvartwo$,$\#{(\epsilon,v)}>0 \rightarrow (v=\epsilon)$.
-\end{enumerate}
+The first restricting constraint establishes the relation of between the Parikh image of a word accepted by $\syncof A {A'}$ and the Parikh images of the corresponding parametric strings accepted by $A$ and ${A'}$:
+$$ \Psi_{\#} = 
+\left(\bigwedge_{v\in\cvarone}\#v = \sum_{x' \in \cvartwo_\epsilon} \#{(v,x')}\right)
+\land
+\left(\bigwedge_{v'\in\cvartwo} \#v' = \sum_{x \in \cvarone_\epsilon} \#{(x,v')}\right)
+$$
+Notice that $x,x'$ are either variables or $\epsilon$.
+%\begin{enumerate}
+%	\item for all $v \in \cvarone$, $\#(v) = \sum_{v' \in \cvartwo} \#{(v,v')}$   
+%	\item for all $v \in \cvartwo$, $\#(v) = \sum_{v' \in \cvarone} \#{(v',v)}$ 
+%\end{enumerate}
 
+Then we add the following linear constraints to enforce that the decodings of the models are indeed the same, 
+% condition 1. and 2. required for the pair of symbolic string $(w_n, w_m)$ and $I$, i.e., $I(w_n) = I(w_m)$ and $I$ assign the same value to all versions of the same variable (we use $-1$ as the value of $\epsilon$). 
+$$ \Psi_= =
+\bigwedge_{x\in\cvarone_\epsilon,x'\in\cvartwo_\epsilon} \#(x,x')>0 \rightarrow (x=x')
+$$
+%\begin{enumerate}
+%	\item for all $v\in \cvarone$ and $v'\in \cvartwo$, $\#{(v,v')}>0 \rightarrow (v=v')$, 
+%	\item for all $v\in \cvarone$, $\#{(v,\epsilon)}>0 \rightarrow (v=\epsilon)$, and
+%	\item for all $v\in \cvartwo$,$\#{(\epsilon,v')}>0 \rightarrow (v'=\epsilon)$.
+%\end{enumerate}
+
+The synchronisation formula is the conjunction 
+$$
+\syncfof A {A'} = \parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
+$$
 The correctness of this construction is expressed by the following lemma
+%\begin{lemma}
+%For $\pim:\pvarone\rightarrow \nat$, $\pim':\pvartwo \rightarrow\nat$, $I:\cvarone\rightarrow\Sigma$, $I':\cvartwo\rightarrow\Sigma$, 
+%we have $(I\cup\pim)\cup(I'\cup\pim')\in\semof {\syncfof A {A'}}$ if and only if $\decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')$.
+%\end{lemma}
+
 \begin{lemma}
-For $\pim:\pvars\rightarrow \nat$, $\pim':\pvars\rightarrow\nat$, $I:\cvarone\rightarrow\Sigma$, $I':\cvartwo\rightarrow\Sigma$, 
-we have $(I\cup\pim)\cup(I'\cup\pim')\in\semof \syncofof A B$ if and only if $\decode(I\cup\pim) = \decode(I'\cup\pim')$.
+ $\semof {\syncfof A {A'}} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 \end{lemma}
-We actually have even something stronger, namely, that, $\syncofof A B$ has all possible allignments. How do I say this ... or do I have to say this?
+
+We actually have even something stronger, namely, that, $\syncfof A {A'}$ has all possible allignments. How do I say this ... or do I have to say this?
 
 
 \begin{lemma}
@@ -538,7 +570,9 @@ This is equivalent to finding a pair of symbolic strings $(w_n,w_m) \in L(S_n)\t
 In order to find such a pair of symbolic strings $(w_n,w_m) \in L(S_n)\times L(S_m)$ and an interpretation $I$, we first build a ``product'' automaton of $S_n$ and $S_m$ and then add some additional linear arithmetic constraints to enforce the above conditions.
 
 Such product automaton uses $Q\times P$ as the set of states and 
-§$(\cvarone \cup \{\epsilon\}) \times (\cvartwo \cup \{\epsilon\} )$ as the alphabet. If a transition $((q_1,p_1), (v_i^{(j)},v_{i'}^{(j')}),(q_2,p_2))$ is taken, for some $i,j,i',j' \in \mathbb{N}$, it means the character variable $v_i$ and $v_{i'}$ (and so all of their indexed variants) should be assigned the same value and this value leads $A$ from state $q_1$ to state $q_2$ and $B$ from $p_1$ to $p_2$.
+%$(\cvarone \cup \{\epsilon\}) \times (\cvartwo \cup \{\epsilon\} )$ 
+$\cvarone\times\cvartwo$
+as the alphabet. If a transition $((q_1,p_1), (v,v'),(q_2,p_2))$ is taken, it means the character variable $v$ and $v'$ should be assigned the same value and this value leads $A$ from state $q_1$ to state $q_2$ and $B$ from $p_1$ to $p_2$.
 
 More precisely, the product automaton is a tuple $\syncof A B = (Q\times P, \syncT, (\cvarone \cup \{\epsilon\}) \times (\cvartwo \cup \{\epsilon\} ), (q_i,p_i),(q_f,p_f))$, where the transition relation $\syncT$ is the minimal set satisfying the following.
 
