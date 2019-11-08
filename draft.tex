@@ -404,7 +404,7 @@ where $\semof{\parikhfof A}_{\cvar\cup\pvar}$ are models of $\parikhfof A$, assi
 \paragraph{Synchronisation of PFA}
 The following construction of the so called synchronisation formula of two PFA $A$ and $A'$ is a crucial component of building overapproximations of string constraints. 
 Synchronisation formula is a formula $\syncfof A {A'}$ over $\pvarone\cup\pvartwo\cup\cvarone\cup \cvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. Besides the intersection, it contains a more precise information about the synchronisation of $A$ and ${A'}$, 
-namely, it characterises the set of pairs of encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {L(A')}$ such that 
+namely, it characterises the set of pairs of encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
 $\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$.% which constitute the intersection.
 
 Assume that $A = (Q,T,\cvarone,q_i,q_f)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f')$ are two SFA over disjoint sets of variables, $\cvarone \cap \cvartwo = \emptyset$. 
@@ -457,21 +457,23 @@ $$
 %\end{enumerate}
 
 The synchronisation formula is the conjunction 
-$$
+$$\label{lemma:synccorrect}
 \syncfof A {A'} = \parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
 $$
-The correctness of this construction is expressed by the following lemma
+The correctness of this construction is expressed by Lemma~\ref{lemma:synccorrect}. Informally,
+the 
+
+\begin{lemma}
+ $\semof {\exists .\,\syncfof A {A'}} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
+\end{lemma}
+
+%We actually have even something stronger, namely, that, $\syncfof A {A'}$ has all possible allignments. How do I say this ... or do I have to say this?
 %\begin{lemma}
 %For $\pim:\pvarone\rightarrow \nat$, $\pim':\pvartwo \rightarrow\nat$, $I:\cvarone\rightarrow\Sigma$, $I':\cvartwo\rightarrow\Sigma$, 
 %we have $(I\cup\pim)\cup(I'\cup\pim')\in\semof {\syncfof A {A'}}$ if and only if $\decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')$.
 %\end{lemma}
 
-\begin{lemma}
- $\semof {\syncfof A {A'}} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
-\end{lemma}
-
-We actually have even something stronger, namely, that, $\syncfof A {A'}$ has all possible allignments. How do I say this ... or do I have to say this?
-
+\lh{TODO: put this somewhere and explain}
 
 \begin{lemma}
 	Symbolic flat automata are closed under concatenation.
