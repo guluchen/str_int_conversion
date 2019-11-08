@@ -16,22 +16,42 @@ The experiments are conducted under machines of the following specifications: 4-
 \texttt{u.k.} stands for ``unknown''. \texttt{t.o.} stands for ``timeout''. \texttt{error} means that the execution is stopped with an error or exception such as segmental fault. \texttt{misc} means that the execution ends without expected (including errors) output.
 
 {\bf Tabales}:
-Table~\ref{table:pyex} shows the comparison on PyEx benchmark. The total amount of cases in PyEx (PyEx\_unsat, PyEx\_sat, PyEx\_todo) is 25421.
+Table~\ref{table:base_benchmark} shows the comparison on several string benchmarks that are used by other tools. The total amount of cases in PyEx is 25421.
 
-\begin{table}[]
-\caption{Results of z3-Trau, cvc4, and z3 on PyEx benchmark}
-\begin{tabular}{|r|r|r|r|r|r|r|}
+\begin{table*}[]
+\centering
+\caption{Results of z3-Trau, cvc4, and z3 on string benchmarks}
+\begin{tabular}{l | r r r | r r r | r r r | r r r}
 \hline
-Tool		& sat & unsat & u.k. & t.o. & err. & misc \\ \hline\hline
-z3-Trau		& 19655 & 3851 & 0 & 1915 & 0 & 0 \\ 
-cvc4		& 19763 & 3834 & 0 & 0 & 0 & 1824 \\ 
-z3seq		& 16578 & 3832 & 0 & 5011 & 0 & 0 \\ 
-z3str3		& 3023 & 3835 & 9 & 16717 & 1125 & 712 \\ \hline
+\multirow{2}{*}{}   & \multicolumn{3}{|c|}{z3-Trau} & \multicolumn{3}{|c}{cvc4} & \multicolumn{3}{|c}{z3} & \multicolumn{3}{|c}{z3-str3} \\
+			& sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ \\ \hline
+PyEx		& 19655 & 3851 & 1915/0 & 19763 & 3834 & 0/1824 & 16578 & 3832 & 5011/0 & 3023 & 3835 & 16717/1846 \\ 
+APLAS		&   128 &  287 &  185/0 & 205 &  221 & 174/0 &  13 &  100 & 486/1 & 36 & 112 & 105/347 \\ 
+LeetCode	&   856 & 1784 &   26/0 & 860 & 1785 &  21/0 & 881 & 1785 & 0/0 & 676 & 1780 &  70/140 \\ 
+StringFuzz	& 504 & 295 & 264/2 & 677 & 240 & 63/85 & 265 & 187 & 609/4 & 493 & 190 & 377/5 \\ 
+cvc4\textsubscript{pred}	& 16 & 184 & 5/0 & 11 & 818 & 6/0 & 12 & 808 & 15/0 & 8 & 772 & 41/14 \\ 
+cvc4\textsubscript{term}	& 13 & 1030 & 2/0 & 8 & 936 & 12/89 & 5 & 2021 & 19/0 & 16 & 958 & 53/18 \\ \hline
 \end{tabular}
-\label{table:pyex}
-\end{table}
+\label{table:base_benchmark}
+\end{table*}
 
-Table~\ref{table:full_str_int} shows the comparison on full\_str\_int. The total amount of cases in full\_str\_int is 21573.
+Table~\ref{table:str_int_benchmark} shows the comparison on full\_str\_int. The total amount of cases in full\_str\_int is 21573.
+\begin{table*}[]
+\centering
+\caption{Results of z3-Trau, cvc4, and z3 on str\_int benchmark}
+\begin{tabular}{l | r r r | r r r | r r r | r r r}
+\hline
+\multirow{2}{*}{}   & \multicolumn{3}{|c|}{z3-Trau} & \multicolumn{3}{|c}{cvc4} & \multicolumn{3}{|c}{z3} & \multicolumn{3}{|c}{z3-str3} \\
+			& sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ & sat & unsat & timeout/$\times$ \\ \hline
+full\_str\_int		& 3289 & 17089 & 1195/0 & 2185 & 16377 & 3011/0 & 2716 & 16831 & 2026/0 & 422 & 16034 & 4131/986 \\ 
+filtered\_str\_int	& 3281 & 2912 & 1203/0 & 2210 & 2211 & 2975/0 & 2729 & 2655 & 2012/0 & 424 & 1944 & 4106/922 \\ \hline
+\end{tabular}
+\label{table:str_int_benchmark}
+\end{table*}
+
+
+
+\hide{
 \begin{table}[]
 \caption{Results of z3-Trau, cvc4, and z3 on full\_str\_int benchmark}
 \begin{tabular}{|r|r|r|r|r|r|r|}
@@ -59,3 +79,4 @@ z3str3		& 424 & 1944 & 587 & 4106 & 330 & 5 \\ \hline
 \end{tabular}
 \label{table:filtered_str_int}
 \end{table}
+}
