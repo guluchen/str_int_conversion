@@ -165,6 +165,8 @@ explosion problem that the approach in~\cite{abdulla2017flatten} suffers.
 
 Based on the SFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary symbolic flat automata, one can convert the a string constraint with string-number function to an integer constraint consisting of both polynomials and exponentials. Solving such kind of constraints is a very difficult task. For simpler cases where the variables are real numbers, decision procedures for different subclass polynomial-exponential equations exists~\cite{gan2015decidability,kincaid2019closed,achatz2008deciding}. To the best of our knowledge, the satisfiability problem of polynomial-exponential equations is still open. For efficiency reason, we propose to use \emph{SFA with only one loop} to handle string-number conversion function. That is, if we encountered a constraint $y=\sti{x}$, then we always restrict the domain of $x$ to some SFA with one loop, instead of arbitrary SFAs. This allows us to convert a string constraint with string-number conversion function to a equisatisfiable linear integer constraint, which can be solved very efficiently. 
 
+Our string constraint solving produce can be used as a theory solver in a \emph{satisfiability module theory (SMT)} solver. In this way, we can describe and solve complex constraints like those appeared in the introduction. Further details of the combination as well as some other implementation details can be found in Section~\ref{section:implementation}.
+
 \todo{Talk about experiments}
 
 
@@ -198,13 +200,12 @@ The approach combines techniques from both automata theory and SMT solving to ex
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Overview} \label{section:overview}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\todo{Some non-technical text to explain how the approach solves a toy problem}
-For proving UNSAT, our strategy first over-approximates string-number conversion function $n=\its{x}$ as an uninterpreted function with an additional axiom $n\leq 0 \rightarrow \sti{\its{n}}=n$. 
 
+Here we try to explain the approach using a toy example $\phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^*\}$. Notice that $\phi$ is satisfiable. E.g., it has a model $x=``12''$ and $y=``1212''$.
 
-and then solve the entire constraint with a procedure that is similar to the one in ATVA 2019.
+For proving UNSAT, our framework does not set any restriction on which decision procedure to use. One can select any decision procedure they want to use and ``over-approximate'' the input constraint to one that falls in the decidable fragment, e.g., the acyclic fragment~\cite{abdulla2014string}, the straight-line fragment~\cite{chen2019decision}, or the chain-free fragment~\cite{abdulla2019chain}. For instance, we can convert $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and remove the constraint $n=\sti{x}$. This produce new formulas that over-approximate the original ones and fall in the acyclic fragment~\cite{abdulla2014string}, which is decidable. 
 
-
+Since $\phi$ is satisfiable, so the over-approximation module will not return UNSAT. Then our procedure will pick patterns to restrict the domain of each string variables. More precisely, we use the so-called \emph{parametric flat automata} (PFA) to define such patterns (will be defined in Section~\ref{section:sfa}). An example of PFA can be found in Figure~\ref{fig:sfa}. The major benefit of project the domain of string variables to PFA is that then the satisfiability problem of string constraints can be reduced to the satisfiability of linear formulas in polynomial time. For most string constraints (e.g., $xy=yx$, $y \in (12)^*$ ), we can reduce them to linear constraint with arbitrary PFA for domain restriction (see Section~\ref{section:eq}) and reduce them to linear formulas. However, this does not work for \emph{string-number conversion constraints} $n = \sti{x}$. We will explain in Section~\ref{section:s2i} that restricting $x$ to general PFA reduces the string-number conversion constraint to an exponential-polynomial formula, which is unlikely to be solved efficiently~\cite{achatz2008deciding}. In this paper, we suggest that whenever $x$ is involved in a string-number conversion function, then we only use PFA in the form of the one in Figure~\ref{fig:sfa_its}. This allows us to obtain a reduction to linear formula even for string-number conversion constraints. If a model is found, then the procedure concludes SAT.  If not, one can step-wisely change the PFA to more expressive ones (by adding more states and transitions) and hope the solution can be found at some point.
 
 
 
@@ -288,7 +289,7 @@ $$(n= \sti{x}) \vee (n=-\sti{x'} \wedge x = \enc{-}\cdot x')$$
 Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \emph{number-string conversion function} $\its{n}$ is defined symmetrically. We have $x = \its{n}$ iff $y= \sti{n}$. 
 
 
-\section{Under-approximation}
+\section{Under-approximation} \label{section:under_approximate}
 In this section, we describe formally how to restrict the domain of string variables to patterns defined by \emph{parametric flat automata} (PFA) (Section~\ref{section:sfa}) and hence convert string constraints $\phi_s$ to a set of equisatisfiable linear integer constraints $\phi_I$ in polynomial-time. We first pick a PFA for each variable in $\vars$ and then construct the set of linear integer constraints in a stepwise manner. In each step, we take a string constraint from $\phi_s$ and depending on the type of the string constraint, we execute the corresponding procedure to produce the linear integer constraints. The procedure for equality, disequality, and membership constraints is in Section~\ref{section:eq} and the one for string/integer conversion is in Section~\ref{section:s2i}.
 
 
@@ -738,7 +739,7 @@ $\begin{array}{ccc}
 %  \label{section:evaluation}
 % \todo{copy a few tables from our test site to here}
 
-\section{Implementation}
+\section{Implementation}\label{section:implementation}
 \input{evaluation}
 
 \bibliographystyle{ACM-Reference-Format}
