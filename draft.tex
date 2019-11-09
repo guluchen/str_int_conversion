@@ -315,8 +315,7 @@ In this section, we describe formally how to restrict the domain of string varia
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\st}[2]{q_{#1}^{#2}}
 \newcommand{\sym}[2]{v_{#1}^{#2}}
-\todo{add Presburger constraints to allow more expressive power.}
-\lh{TODO: solve the where to add $-1$ problem}
+\todo{additional presburget constraints to encode $\epsilon$ added at translation to a formula}
 %We use $\cvar$ to denote a finite set of \emph{character variables}  ranging over $\Sigma_\epsilon$. 
 %Sometimes we use index to denote different set of variables over the same range, e.g., $\cvarone$ and $\cvartwo$. 
 %We use $v$ and its variants for character variables. We call a string over $\cvar$ (character variables) a \emph{symbolic string}.
@@ -394,7 +393,8 @@ Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to
 %
 We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V_\Sigma$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics $\semof A$ of an PFA is the semantics of its language. 
 
-The crucial feature of parametric flat automata is that their semantics can be faithfully represented by a linear integer arithmetic formulae and handled by an SMT solver, allowing to circumvent more costly automata algorithms and decision procedures. \lh{concretize and justify this better?}
+The crucial feature of parametric flat automata is that their semantics can be faithfully represented by a linear integer arithmetic formulae and handled efficiently by an SMT solver. 
+\lh{, allowing to circumvent more costly automata algorithms and decision procedures. Concretize and justify this better?}
 %
 Achieving this was the purpose of introducing the structural constraints of PFA. 
 Their implication central for our method is that every parametric string $x\in L(A)$ is uniquelly determined by its Parikh image $\parikhof{x}$, as formalised by the following lemma.  
@@ -431,22 +431,24 @@ Hence, to allow purely arithmetic formulae to talk about the value $\epsilon$, w
 In the further development, $\epsilon$ will mean $-1$ when working with arithmetic formulae constraining interpretations of character variables.
 
 \paragraph{Synchronisation of PFA}
-The following construction of the so called synchronisation formula of two PFA $A$ and $A'$ over character variables $V$ and $V'$, respectively, is a crucial component of building underapproximations of string constraints. 
-Synchronisation formula is a formula $\syncfof A {A'}$ over $\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. Its representation of the intersection includes an additional information about the synchronisation of $A$ and ${A'}$, also needed for building underapproximations of string constraints. 
-Namely, it characterises the set of pairs of string encoding encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
-$\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$.% which constitute the intersection.
+The following construction is an important step in building underapproximations of string constraints. 
+For two PFA $A$ and $A'$ over character variables $V$ and $V'$, respectively, 
+it builds \emph{synchronisation formula} $\syncfof A {A'}$, a linear formula over $\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. 
+Besides the intersection itself, it also represents the set of all pairs of string encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
+$\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$ which constitute the intersection.
 
-Let $A = (Q,T,\cvarone,q_i,q_f)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f')$ such that $\cvarone \cap \cvartwo = \emptyset$. 
-We will build their asynchronous product, an automaton $\syncof A {A'}$, 
-and then extract the synchronisation formula $\syncfof A {A'}$ from it.
+Particularly, a synchronisation formula is build for two PFA  
+$A = (Q,T,\cvarone,q_i,q_f)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f')$ such that $\cvarone \cap \cvartwo = \emptyset$. 
 %
-The product automaton uses $Q\times Q'$ as the set of states and 
+It is extracted from the asynchronous product of $A$ and $A'$, an automaton $\syncof A {A'}$. 
+%
+The asynchronour product is an automaton that uses $Q\times Q'$ as the set of states and 
 $\cvarone_\epsilon\times\cvartwo_\epsilon$
 as the alphabet. 
 %
-Every accepting run of $\syncof A {A'}$ will correspond to a pair of accepting runs, 
+Every accepting run of $\syncof A {A'}$ corresponds to a pair of accepting runs, 
 a run of $A$ over a parametric string $x$ and a run of ${A'}$ over a parametric string $x'$. 
-The word accepted by the run of $\syncof A {A'}$ will induce the constraints on the interpretations of $I$ of $\cvarone$ and $I'$ of $\cvartwo$ under which the two parametric strings have the same interpretation, i.e. $I(x) = I(x')$. 
+The word accepted by the run of $\syncof A {A'}$ induces constraints on the interpretations of $I$ of $\cvarone$ and $I'$ of $\cvartwo$ under which the two parametric strings have the same interpretation, i.e. $I(x) = I(x')$. 
 
 Intuitively, when $\syncof A {A'}$ takes a transition $((q_1,q_1'), (v,v'),(q_2,q_2'))$, 
 it means the character variable $v$ and $v'$ should be assigned the same value,
@@ -456,7 +458,7 @@ When $\syncof A {A'}$ takes a transition $((q_1,q_1'), (v,\epsilon),(q_2,q_1'))$
 it means that the character variable $v$ should be assigned $\epsilon$, 
 $A$ transitions under $v$ to $q_1$, and ${A'}$ takes no action, since no action is needed to match $A$s reading $\epsilon$ (hence not reading the input word). Symmetrically, ${A'}$ might read a variable $v$ assigned $\epsilon$ and $A$ may stay.
 
-Formally, the product automaton is a tuple $\syncof A {A'} = (Q\times Q', \syncT, \cvarone_\epsilon \times \cvartwo_\epsilon, (q_i,q_i'),(q_f,q_f'))$, where the transition relation $\syncT$ is the minimal set satisfying the following:
+Formally, the asynchronous product automaton is a tuple $\syncof A {A'} = (Q\times Q', \syncT, \cvarone_\epsilon \times \cvartwo_\epsilon, (q_i,q_i'),(q_f,q_f'))$, where the transition relation $\syncT$ is the minimal set satisfying the following:
 %
 \begin{itemize}
 \item If $(q_1,v,q_2) \in T$ and $(q_1',v',q_2') \in T'$, then we have $((q_1,q_1'),(v,v'),(q_2,q_2'))\in \syncT$.
@@ -465,9 +467,10 @@ Formally, the product automaton is a tuple $\syncof A {A'} = (Q\times Q', \syncT
 \end{itemize}	
 %
 %The we define of constraints that extract from $\syncof A {A'}$ pairs of united assignments (encodings of strings over $\Sigma$) that encode the same string. 
-The core part of the synchronisation formula is the Parikh formula $\parikhfof {\syncof A {A'}}$ of the product, which encodes all its runs.
+The synchronisation formula $\syncof A {A'}$ is extracted from $\syncof A {A'}$ as follows.
+Its first, core part is the Parikh formula $\parikhfof {\syncof A {A'}}$ of the product, which encodes all runs of the product.
 %
-To extract form a run of $\syncof A {A'}$ the corresponding run of $A$ and of $A'$, we use the following constraint:
+The second part is a constraint that extracts from a run of $\syncof A {A'}$ the corresponding runs of $A$ and of $A'$:
 $$ \Psi_{\#} \defeq 
 \left(\bigwedge_{v\in\cvarone}\#v = \sum_{x' \in \cvartwo_\epsilon} \#{(v,x')}\right)
 \land
@@ -478,7 +481,7 @@ Notice that $x,x'$ are either variables or $\epsilon$.
 %	\item for all $v \in \cvarone$, $\#(v) = \sum_{v' \in \cvartwo} \#{(v,v')}$   
 %	\item for all $v \in \cvartwo$, $\#(v) = \sum_{v' \in \cvarone} \#{(v',v)}$ 
 %\end{enumerate}
-Finally, to ensure that the interpretations of the parametric strings accepted by $A$ and $A'$ are the same, the following constraint is used:
+Finally, the third part forces the interpretations of the parametric strings accepted by $A$ and $A'$ be the same:
 % condition 1. and 2. required for the pair of symbolic string $(w_n, w_m)$ and $I$, i.e., $I(w_n) = I(w_m)$ and $I$ assign the same value to all versions of the same variable (we use $-1$ as the value of $\epsilon$). 
 $$ \Psi_= \defeq
 \bigwedge_{x\in\cvarone_\epsilon,x'\in\cvartwo_\epsilon} \#(x,x')>0 \rightarrow (x=x')
@@ -489,19 +492,19 @@ $$
 %	\item for all $v\in \cvartwo$,$\#{(\epsilon,v')}>0 \rightarrow (v'=\epsilon)$.
 %\end{enumerate}
 The synchronisation formula is the conjunction 
-$$\label{lemma:synccorrect}
+$$
 %\syncfof A {A'} = \exists \pvarsof{\cvarone\times\cvartwo}\exists {(\cvarone\times\cvartwo)}.\,\parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
 \syncfof A {A'} \defeq \parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
 $$
-The correctness of this construction is expressed by Lemma~\ref{lemma:synccorrect}. 
+The correctness of this construction is expressed by Lemma~\ref{lemma:synccorrect}. The Lemma can also be understood as a precise specification the semantics of the synchronisation formula. 
 %
 %\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
-\begin{lemma}
+\begin{lemma}\label{lemma:synccorrect}
 %$\semof {\exists V_\times . \syncfof A {A'}}\restrict{\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 $\semof {\exists V_\times . \syncfof A {A'}} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 \end{lemma}
 %
-Informally, the models of $\syncfof A {A'}$ encode precisely the pairs of equivalent encodings of words from $\semof{A}$ and $\semof{B}$, that constitute the intersection $\semof{A} \cap \semof{B}$. A minor technical difficulty is that the modes of $\syncfof A {A'}$ include also an assignment to the auxiliary variables of $V_\times = (\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$, hence in the lemma we have to restrict the models only to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$, which we achieve by quantifying out $V_\times$.
+Informally, the lemma states that the models of $\syncfof A {A'}$ encode precisely the pairs of equivalent encodings of words from $\semof{A}$ and $\semof{B}$, that constitute the intersection $\semof{A} \cap \semof{B}$. A minor technical difficulty is that the modes of $\syncfof A {A'}$ include also an assignment to the auxiliary variables of $V_\times = (\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$. Hence in the lemma, we have to restrict the models to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. This is  achieve by quantifying out the variables of $V_\times$.
 
 %We actually have even something stronger, namely, that, $\syncfof A {A'}$ has all possible allignments. How do I say this ... or do I have to say this?
 %\begin{lemma}
@@ -509,11 +512,11 @@ Informally, the models of $\syncfof A {A'}$ encode precisely the pairs of equiva
 %we have $(I\cup\pim)\cup(I'\cup\pim')\in\semof {\syncfof A {A'}}$ if and only if $\decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')$.
 %\end{lemma}
 
-\lh{TODO: put this somewhere and explain}
+\lh{removed the closed under concatenation lemma, no more true due to epsilons}
 
-\begin{lemma}
-	Symbolic flat automata are closed under concatenation.
-\end{lemma}
+%\begin{lemma}
+%	Symbolic flat automata are closed under concatenation.
+%\end{lemma}
 
 
 
