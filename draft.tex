@@ -440,9 +440,9 @@ $\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$ which constitute the inters
 Particularly, a synchronisation formula is build for two PFA  
 $A = (Q,T,\cvarone,q_i,q_f)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f')$ such that $\cvarone \cap \cvartwo = \emptyset$. 
 %
-It is extracted from the asynchronous product of $A$ and $A'$, an automaton $\syncof A {A'}$. 
+It is extracted from the \emph{asynchronous product} of $A$ and $A'$. 
 %
-The asynchronour product is an automaton that uses $Q\times Q'$ as the set of states and 
+The asynchronous product is an automaton that uses $Q\times Q'$ as the set of states and 
 $\cvarone_\epsilon\times\cvartwo_\epsilon$
 as the alphabet. 
 %
@@ -467,8 +467,8 @@ Formally, the asynchronous product automaton is a tuple $\syncof A {A'} = (Q\tim
 \end{itemize}	
 %
 %The we define of constraints that extract from $\syncof A {A'}$ pairs of united assignments (encodings of strings over $\Sigma$) that encode the same string. 
-The synchronisation formula $\syncof A {A'}$ is extracted from $\syncof A {A'}$ as follows.
-Its first, core part is the Parikh formula $\parikhfof {\syncof A {A'}}$ of the product, which encodes all runs of the product.
+The synchronisation formula $\syncfof{A} {A'}$ is extracted from $\syncof A {A'}$ as follows.
+Its first part is the Parikh formula $\parikhfof {\syncof A {A'}}$ of the product, which encodes all runs of the product.
 %
 The second part is a constraint that extracts from a run of $\syncof A {A'}$ the corresponding runs of $A$ and of $A'$:
 $$ \Psi_{\#} \defeq 
@@ -491,12 +491,13 @@ $$
 %	\item for all $v\in \cvarone$, $\#{(v,\epsilon)}>0 \rightarrow (v=\epsilon)$, and
 %	\item for all $v\in \cvartwo$,$\#{(\epsilon,v')}>0 \rightarrow (v'=\epsilon)$.
 %\end{enumerate}
-The synchronisation formula is the conjunction 
+The synchronisation formula is then the conjunction 
 $$
 %\syncfof A {A'} = \exists \pvarsof{\cvarone\times\cvartwo}\exists {(\cvarone\times\cvartwo)}.\,\parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
 \syncfof A {A'} \defeq \parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
 $$
-The correctness of this construction is expressed by Lemma~\ref{lemma:synccorrect}. The Lemma can also be understood as a precise specification the semantics of the synchronisation formula. 
+
+The correctness of this construction is expressed by Lemma~\ref{lemma:synccorrect} below. The lemma can also be understood as a precise specification the semantics of the synchronisation formula, on which we rely for correctness of the construction of underapproximations of string constraints. 
 %
 %\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
 \begin{lemma}\label{lemma:synccorrect}
