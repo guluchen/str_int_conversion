@@ -116,9 +116,12 @@ In this code, string and integer values access the same array elements interchan
 
 Now observe that {\tt{resetArray}} assigns to the array in a loop of which the size cannot, in general, be known a priori; as such, falls into the case where neither the string nor the integer in a conversion is constant and hence most SMT solvers will not be able to handle it. More specifically, in some program the assignment {\tt{x[k] = 5}} can happen before calling {\tt{resetArray(x)}}, where {\tt{k}} is an user input string. One would need to know the value of $\sti{k}$ and hence whether it will affect the size of the array {\tt{x}}. This is a rather straightforward array operation, and so this limit will cripple any model of non-trivial JavaScript code. 
 
-For the purpose of program analysis, string solver also needs to support \emph{equality constraints} (e.g. $x.y = y.x$), \emph{membership constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$). Most of the standard string operations can be encoded using the above three types of constraints\footnote{Except a few exceptions, such as {\tt{replaceALL}}, {\tt{reverse}}, and string-number conversions.}. Those are also the type of constraints supported by most state-of-the-art string constraint solvers such as Z3, CVC4, Z3Str3, and Trau+.
+For the purpose of program analysis, string solver also needs to support \emph{equality constraints} (e.g. $x.y = y.x$), \emph{membership constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$). Most of the standard string operations can be encoded using the above three types of constraints\footnote{Except a few exceptions, such as {\tt{replaceALL}}, {\tt{reverse}}, and string-number conversions.}. Those are also the type of constraints supported by most state-of-the-art string constraint solvers such as Z3, CVC4, Z3Str3, and Trau+. \yfc{maybe more concrete example?}\\
 
-Indeed, the analysis of string manipulating program is becoming more and more important nowadays. Various infamous security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string input values. In the past, a significant amount of research efforts have been investigated to symbolic execution and test case generation of string manipulating programs~\cite{saxena2010symbolic,artzi2011framework,huang2004securing,sen2013jalangi} and string constraint solving~\cite{kiezun2009hampi,abdulla2014string,zheng2013z3,abdulla2015norn,abdulla2017flatten,wang2016string,abdulla2018trau,chen2019decision,zheng2017z3str2} is the core enabling technology. 
+\yfc{I am not sure how to add other examples here in a nice way, one reason is we are very specifically focused on Javascript, but other examples, e.g., the credit card one, is very general.}
+
+\hide{
+Indeed, the analysis of string manipulating program is becoming more and more important nowadays. Various infamous security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string input values. In the past, a significant amount of research efforts have been investigated to symbolic execution and test case generation of string manipulating programs~\cite{saxena2010symbolic,artzi2011framework,huang2004securing,sen2013jalangi} and string constraint solving~\cite{kiezun2009hampi,abdulla2014string,zheng2013z3,abdulla2015norn,abdulla2017flatten,wang2016string,abdulla2018trau,chen2019decision,zheng2017z3str2} is the core enabling technology. }
 
 
 
@@ -162,28 +165,29 @@ $$
 
 Such constraint contains \textit{string-number conversion} functions (e.g., $\sti{input}$ and $\sti{index}$), \textit{equality constraints} (e.g., $index = input\cdot \its{1}$), and \textit{integer constraints} (e.g., $0 \leq \sti{input}<M$). }
 
-Solving constraint of this kind is a very challenging problem. From the theoretical point of view, this problem is already proven to be undecidable~\cite{day2018satisfiability}. In practice, in our experiments, all of the state-of-the-art string constraint solvers do not support string-number conversion correctly. Some of them handles such constraints with only over-approximation of the original formula, and is known to have one-side error (see Section~\ref{section:evaluation} for detailed explanation). 
+Solving string constraint with string-number conversion is a very challenging problem. From the theoretical point of view, this problem is already proven to be undecidable~\cite{day2018satisfiability}. In practice, in our experiments, all of the state-of-the-art string constraint solvers do not support string-number conversion correctly. Some of them handles such constraints with only over-approximation of the original formula, and is known to have one-side error (see Section~\ref{section:evaluation} for detailed explanation).  \yfc{add concrete evidence}
+
+In this paper, we adopt a framework that handles string constraints with string-number conversion efficiently. Due to the high complexity of solving the problem exactly, our framework uses both over and under-approximation of the string constraints. The over-approximation is for proving UNSAT and the under-approximation is for proving SAT of the string constraint. Both over and under-approximation should fail in a decidable fragment of string constraints that can be efficiently solved. 
+
+For over-approximation, there are a few existing algorithms~\cite{parosh2019chain,z3,chen2019decision}, our framework does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult, and the differences between the major algorithms are very small. In our implementation, we use a version that is a simple adaption of the algorithm in~\cite{parosh2019chain}.
 
 
-In this paper, we propose a framework that handles string constraints with string-number conversion efficiently. Our framework uses both over and under-approximation of the string constraints. The over-approximation is for proving UNSAT and the under-approximation is for proving SAT of the string constraint. Both over and under-approximation should fail in a decidable fragment of string constraints that can be efficiently solved. 
+The battle field is in fact those SAT instances, for which we develop solutions based on under-approximation. For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA). The approach based on PFA is very flexible yet allows very efficiently manipulation. One can pick PFA of arbitrary structure for the search space restriction and reduce the string constraint solving problem to an integer constraint solving problem. For efficiency, it avoids the \textit{alphabet 
+explosion problem} that the approach in~\cite{abdulla2017flatten} suffers.\yfc{maybe explaina a bit somewhere the alphabet explosion problem of PLDI 2017}
 
-For over-approximation, there are a few existing algorithms~\cite{parosh2019chain,z3}, our framework does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult and many approaches can handle all of them almost perfectly. The battle field is in fact those SAT instances. 
-In our prototype tool, we implement the algorithm presented in~\cite{parosh2019chain}, in addition with some additional axioms, to handle the over-approximation of string constraints with number-string conversion. 
-
-For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{symbolic flat automata} (SFA). The approach based on SFA is very flexible yet allows very efficiently manipulation. One can pick SFA of arbitrary structure for the search space restriction and reduce the string constraint solving problem to an integer constraint solving problem. For efficiency, it avoids the alphabet 
-explosion problem that the approach in~\cite{abdulla2017flatten} suffers.
-
-Based on the SFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary symbolic flat automata, one can convert the a string constraint with string-number function to an integer constraint consisting of both polynomials and exponentials. Solving such kind of constraints is a very difficult task. For simpler cases where the variables are real numbers, decision procedures for different subclass polynomial-exponential equations exists~\cite{gan2015decidability,kincaid2019closed,achatz2008deciding}. To the best of our knowledge, the satisfiability problem of polynomial-exponential equations is still open. For efficiency reason, we propose to use \emph{SFA with only one loop} to handle string-number conversion function. That is, if we encountered a constraint $y=\sti{x}$, then we always restrict the domain of $x$ to some SFA with one loop, instead of arbitrary SFAs. This allows us to convert a string constraint with string-number conversion function to a equisatisfiable linear integer constraint, which can be solved very efficiently. 
+Based on the PFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary PFA, one can convert the a string constraint with string-number function to an integer constraint consisting of both polynomials and exponentials. Solving such kind of constraints is a very difficult task. For simpler cases where the variables are real numbers, decision procedures for different subclass polynomial-exponential equations exists~\cite{gan2015decidability,kincaid2019closed,achatz2008deciding}. To the best of our knowledge, the satisfiability problem of polynomial-exponential equations is still open. For efficiency reason, we propose to use PFA with specific structural constraint to handle string-number conversion function. That is, if we encountered a constraint $y=\sti{x}$, then we always restrict the domain of $x$ to some specific kind of PFA, instead of allowing arbitrary PFAs. This allows us to convert a string constraint with string-number conversion function to an equisatisfiable linear formula, which can be solved very efficiently. 
 
 Our string constraint solving produce can be used as a theory solver in a \emph{satisfiability module theory (SMT)} solver. In this way, we can describe and solve complex constraints like those appeared in the introduction. Further details of the combination as well as some other implementation details can be found in Section~\ref{section:implementation}.
 
 \todo{Talk about experiments}
 
 
-To ease presentation, in the paper, we only consider string constraints consisting of \emph{equality constraints (a.k.a. word equation)}, \emph{length constraints}, and \emph{string-number conversion} functions. In fact, the approach can be easily extended to support transducer and membership constraints. The extension is implemented in our prototype tool \textsf{z3-Trau}. 
+
 
 
 \hide{
+To ease presentation, in the paper, we only consider string constraints consisting of \emph{equality constraints (a.k.a. word equation)}, \emph{membership constraints}, \emph{length constraints}, and \emph{string-number conversion} functions. 	
+	
 suggest restricting the string domain to $0^*[0-9]^k$, where $k$ is the maximum 
 digit allowed in the corresponding number value. In programming languages 
 such  as JavaScript or Python, a number with $k$ digits can be converted from a 
@@ -614,7 +618,7 @@ For the constraint $xy = yx$, we first restrict the domains of $x$ and $y$ to th
 	\label{fig:sfa}
 \end{figure*}
 
-Assume that $S_n=(Q,T,\cvarone,q_i,q_f)$ is the SFA of $x_1\cdot x_2 \cdots x_n$ and $S_m=(P,T',\cvartwo,p_i,p_f)$ is the SFA of $x_{n+1}\cdot x_{n+2} \cdots x_m$. Our next task is to find a model for $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$ under the domain restriction specified by $S_n$ and $S_m$. 
+Assume that $S_n=(Q,T,\cvarone,q_i,q_f)$ is the PFA of $x_1\cdot x_2 \cdots x_n$ and $S_m=(P,T',\cvartwo,p_i,p_f)$ is the PFA of $x_{n+1}\cdot x_{n+2} \cdots x_m$. Our next task is to find a model for $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$ under the domain restriction specified by $S_n$ and $S_m$. 
 Note that $\cvarone \cap \cvartwo =\emptyset$, because all variables will be renamed to some fresh variable. 
 
 
@@ -649,7 +653,7 @@ For example, in the product automaton $A_{xy=yx}$ corresponds to $xy=yx$, we hav
 	\item $((q_0,p_0), (v_0^{(0)},v_2^{(1)}),(q_1,q_1))$, because $(q_0,v_0^{(0)},q_1)$ is a transition of $A_{xy}$ and $(p_0,v_2^{(1)},p_1)$ is a transition of $A_{yx}$.
 \end{itemize}
 
-Recall that for flat automata, the number of occurrences of each symbol uniquely characterizes an accepting string (Section~\ref{section:sfa}) and for any finite automaton we can construct a Presburger formula characterizing its Parikh image (Section~\ref{section:preliminary}). For a product automaton $A$ computed from the previous step, we compute a Presburger formula $\phi(A)$ over the set of variables $\{\#{(v_i^{(j)},v_{i'}^{(j')})}\mid (v_i^{(j)},v_{i'}^{(j')}) \in \cvarone \times \cvartwo\}$ characterizing the Parikh image of $A$. We use $\#(v_i)$ and $\#(v_i^{(j)})$ to denote the number of occurrences of $v_i$ and $v_i^{(j)}$, respectively. The following formulae establish the relation of the number of occurrences of symbols between the SFAs and the product automaton.
+Recall that for flat automata, the number of occurrences of each symbol uniquely characterizes an accepting string (Section~\ref{section:sfa}) and for any finite automaton we can construct a Presburger formula characterizing its Parikh image (Section~\ref{section:preliminary}). For a product automaton $A$ computed from the previous step, we compute a Presburger formula $\phi(A)$ over the set of variables $\{\#{(v_i^{(j)},v_{i'}^{(j')})}\mid (v_i^{(j)},v_{i'}^{(j')}) \in \cvarone \times \cvartwo\}$ characterizing the Parikh image of $A$. We use $\#(v_i)$ and $\#(v_i^{(j)})$ to denote the number of occurrences of $v_i$ and $v_i^{(j)}$, respectively. The following formulae establish the relation of the number of occurrences of symbols between the PFAs and the product automaton.
 \begin{enumerate}
 	\item for all $v_i^{(j)} \in \cvarone$, $\#(v_i^{(j)}) = \sum_{v \in {\cvartwo \cup \{\epsilon\}}} \#{(v_i^{j},v)}$   
 	\item for all $v_i^{(j)} \in \cvartwo$, $\#(v_i^{(j)}) = \sum_{v \in {\cvarone \cup \{\epsilon\}}} \#{(v,v_i^{j})}$ 
@@ -663,8 +667,8 @@ Then we add the following linear constraints to enforce  condition 1. and 2. req
 \end{enumerate}
 We then add the linear constraints $\#(v_i) = \#(v_i^{(j)})$, for all $v_i\in \cvar$ and all different version numbers $j$ for $v_i$, to enforce condition 3, which says different versions of the same variable should occurs equally often in $w_n\cdot w_m$. 
 
-From the model $M$ of the linear constraints, we can obtain $w_n$, $w_m$, and $I$. The interpretation $I$ is defined as $I(v)=M(v)$ for all $v\in (\cvarone \cup \cvartwo)$. The symbolic words $w_n$ and $w_m$ can be obtained by traverse the SFAs following the number of occurrences of each character variables.
-More specifically, assume that the SFA $S_n$ is the one in Figure~\ref{fig:sfa_def}, then $$w_n = (v_0^0v_0^1v_0^2v_0^3)^{\#(v_0^0)}v_0(v_1^0v_1^1v_1^2)^{\#(v_1^0)}v_1\ldots(v_m^0v_m^1v_m^2v_m^3)^{\#(v_m^0)}$$
+From the model $M$ of the linear constraints, we can obtain $w_n$, $w_m$, and $I$. The interpretation $I$ is defined as $I(v)=M(v)$ for all $v\in (\cvarone \cup \cvartwo)$. The symbolic words $w_n$ and $w_m$ can be obtained by traverse the PFAs following the number of occurrences of each character variables.
+More specifically, assume that the PFA $S_n$ is the one in Figure~\ref{fig:sfa_def}, then $$w_n = (v_0^0v_0^1v_0^2v_0^3)^{\#(v_0^0)}v_0(v_1^0v_1^1v_1^2)^{\#(v_1^0)}v_1\ldots(v_m^0v_m^1v_m^2v_m^3)^{\#(v_m^0)}$$
 Note that $\#(v_0^0)=\#(v_0^1)=\#(v_0^2)=\#(v_0^3)$, so we just use $\#(v_0^0)$ to denote the number of times of first loop traversal. One can construct $w_m$ in a similar way. Using the same approach, one can derive the assignment to variables in $\vars$ using the corresponding count and values of variables in $\cvar$.
 
 Disequality constraint $x_1\cdot x_2 \cdots x_n \neq x_{n+1}\cdot x_{n+2} \cdots x_m$ can be converted to equal-satisfiable equality constraints in the standard way~\cite{abdulla2015norn}. We replace it with the following constraints.
@@ -684,7 +688,7 @@ $$
 \end{array}
 $$
 
-The second disjunct says that the constraints $x_1\cdot x_2 \cdots x_n$ and $x_{n+1}\cdot x_{n+2} \cdots x_m$ have a common prefix $y_1$, but the next character $y_2$ and $y'_2$ is different. In an more efficient implementation, one just project $y_2$ and $y'_2$ to a SFA that accept only symbolic words $v_1$ and $v'_1$, respectively (the SFA has no loop and only one transition). 
+The second disjunct says that the constraints $x_1\cdot x_2 \cdots x_n$ and $x_{n+1}\cdot x_{n+2} \cdots x_m$ have a common prefix $y_1$, but the next character $y_2$ and $y'_2$ is different. In an more efficient implementation, one just project $y_2$ and $y'_2$ to a PFA that accept only symbolic words $v_1$ and $v'_1$, respectively (the PFA has no loop and only one transition). 
 
 
 
@@ -698,20 +702,20 @@ The second disjunct says that the constraints $x_1\cdot x_2 \cdots x_n$ and $x_{
 \subsection{Handling String-Integer Conversion} \label{section:s2i}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this section, we discuss how to handle the constraint $n=\sti{x}$ by restricting the domain of $x$ to some SFA. Let us begin with a simple example, assume that we use the SFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee n=-1 $.
+In this section, we discuss how to handle the constraint $n=\sti{x}$ by restricting the domain of $x$ to some PFA. Let us begin with a simple example, assume that we use the PFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee n=-1 $.
 
 For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)}-1}{100-1}$. 
 The constraint uses $\#(v_0)$ to capture the total number of loop traversal.
 Notice that the constraint above contains an exponential component $\frac{100^{\#(v_0)}}{100-1}$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
 
-Let us have a look at another example. If we restrict the domain of $x$ to the SFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0^{(0)}\times 10+ v_1^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0^{(0)})-1})\times 100^{\#(v_2^{(0)})}+(v_2^{(0)}\times 10+ v_3^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_2^{(0)})-1}) =  (v_0^{(0)}\times 10+ v_1^{(0)}) \times \frac{100^{\#(v_0^{(0)})}-1}{100-1}\times 100^{\#(v_2^{(0)})} + (v_2^{(0)}\times 10+ v_3^{(0)}) \times \frac{100^{\#(v_2^{(0)})}-1}{100-1}$. Observe that the formula has two exponential components $\frac{100^{\#(v_0^{(0)})}\times 100^{\#(v_2^{(0)})} }{100-1}$ and $\frac{100^{\#(v_2^{(0)})} }{100-1}$.
+Let us have a look at another example. If we restrict the domain of $x$ to the PFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0^{(0)}\times 10+ v_1^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0^{(0)})-1})\times 100^{\#(v_2^{(0)})}+(v_2^{(0)}\times 10+ v_3^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_2^{(0)})-1}) =  (v_0^{(0)}\times 10+ v_1^{(0)}) \times \frac{100^{\#(v_0^{(0)})}-1}{100-1}\times 100^{\#(v_2^{(0)})} + (v_2^{(0)}\times 10+ v_3^{(0)}) \times \frac{100^{\#(v_2^{(0)})}-1}{100-1}$. Observe that the formula has two exponential components $\frac{100^{\#(v_0^{(0)})}\times 100^{\#(v_2^{(0)})} }{100-1}$ and $\frac{100^{\#(v_2^{(0)})} }{100-1}$.
 
-It is not difficult to observe that, for the case of an arbitrary SFA of $m$ loops, the formula to define $n$ contains $m$ exponential components, one for each loop.
+It is not difficult to observe that, for the case of an arbitrary PFA of $m$ loops, the formula to define $n$ contains $m$ exponential components, one for each loop.
 To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. As said in the introduction, the problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances. So we do not expect that this constraint can be solved efficiently.
 
-\paragraph{SFA that allows efficient string-integer conversion: } In the previous discussion, we know that it is unlikely to use arbitrary SFA and gain efficient solving procedure, due to the requirement to solve exponential integer constraints. The problem is that each loop in the SFA creates an exponential component. An immediate idea would be that maybe we can restrict the variable to some specific SFA that allow more efficient constraint solving. At the same time, we want to keep some good property, i.e., the search space covers all integers with at most $m$-digits.
+\paragraph{PFA that allows efficient string-integer conversion: } In the previous discussion, we know that it is unlikely to use arbitrary PFA and gain efficient solving procedure, due to the requirement to solve exponential integer constraints. The problem is that each loop in the PFA creates an exponential component. An immediate idea would be that maybe we can restrict the variable to some specific PFA that allow more efficient constraint solving. At the same time, we want to keep some good property, i.e., the search space covers all integers with at most $m$-digits.
 
-Our first attempt is a SFA with no loop, i.e., a straight line structure (e.g., the SFA in Fig~\ref{fig:sfa_its} without the self-loop at $q_0$). The corresponding integer constraint does not have exponential components. However, it does not ensure the property that all numbers with at most $m$-digits are covered. Consider the example $\sti{x}=10 \wedge |x|=5$. The number $10$ has only $2$-digits, at the first glance, a straight-line SFA with two transitions, i.e., the SFA \scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
+Our first attempt is a PFA with no loop, i.e., a straight line structure (e.g., the PFA in Fig~\ref{fig:sfa_its} without the self-loop at $q_0$). The corresponding integer constraint does not have exponential components. However, it does not ensure the property that all numbers with at most $m$-digits are covered. Consider the example $\sti{x}=10 \wedge |x|=5$. The number $10$ has only $2$-digits, at the first glance, a straight-line PFA with two transitions, i.e., the PFA \scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 	\begin{tikzpicture} 
 	\node[state,initial] (q0)  {$q_0$};
@@ -722,7 +726,7 @@ Our first attempt is a SFA with no loop, i.e., a straight line structure (e.g., 
 	\draw[->] (q1) edge node [below]{$v_2$} (q2) ;
 	\end{tikzpicture}}, should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable, because the length of $x$ cannot be $5$  under this domain restriction.
 
-However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$. The key is that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. In order to handle all number with at most $m$ digits, we propose to restrict the domain of $x$ to a SFA in Figure~\ref{fig:sfa_its}.  The SFA has a self-loop transition labeled $v_0$ at $q_0$ and we always add a constraint $v_0=0$ for such SFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Although this SFA still has a loop, but it will not create any exponential component because the loop only represents a sequence of `0' that occurs in the prefix of $x$. It will not affect the integer value of $n=\sti{x}$.
+However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$. The key is that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. In order to handle all number with at most $m$ digits, we propose to restrict the domain of $x$ to a PFA in Figure~\ref{fig:sfa_its}.  The PFA has a self-loop transition labeled $v_0$ at $q_0$ and we always add a constraint $v_0=0$ for such PFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Although this PFA still has a loop, but it will not create any exponential component because the loop only represents a sequence of `0' that occurs in the prefix of $x$. It will not affect the integer value of $n=\sti{x}$.
 
 \begin{figure}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
@@ -745,7 +749,7 @@ However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``0001
 	\label{fig:sfa_its}
 \end{figure}
 
-Such SFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
+Such PFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
 Remember that the character variables can be assigned $\epsilon$. In order to handle such cases efficiently, we use an encoding that if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j,m]$, i.e., we shift all the $\epsilon$-transitions to the least significant digits. In order to explain this encoding, we first define two macro function:
 
 $$\begin{array}{rl}
