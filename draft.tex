@@ -88,7 +88,7 @@
 
 
 
-String constraint solving has received considerable attention in the constraint solving community, with solvers such as CVC4 and Z3 implmenting solvers of ever-increasing sophistication.  Operations such as substring and string length are widely supported, and recent solvers such as Z3-str3 have shown impressive results.  However, these solvers have limited for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often limited to ground terms, i.e. at least one side of the conversion must be a constant.  Thus, $v = string2int("5")$ or $v = int2string(5)$ are handled but $v_1 = int2string(v_2)$ will fail.
+String constraint solving has received considerable attention in the constraint solving community, with solvers such as CVC4 and Z3 implementing solvers of ever-increasing sophistication.  Operations such as substring and string length are widely supported, and recent solvers such as Z3-str3 have shown impressive results.  However, these solvers have limited for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often limited to ground terms, i.e. at least one side of the conversion must be a constant.  Thus, $n = \sti{x}$ or $x = \its{5}$ are handled but $n = \sti{x}$ will fail.
 
 As solvers such Z3 are applied to symbolic execution of programming languages, this is increasingly becoming a severe limitation.  For many languages such as Java, conversion between integers and strings is a niche operation, and much symbolic execution can be done without supporting it; however, this is not true of some scripting languages, of which JavaScript is the most notable.  JavaScript is a key language---it powers most interactive content on the Web, and increasingly server-side code with nodejs---and it has conversions between strings and integers embedded in the core of its semantics.
 
@@ -107,17 +107,21 @@ A casual glance at the above code reveal no use of strings at all, but the seman
 \begin{tabular}{l|c}
 	{\tt{x = [0, 1, 2, 3, 4, 5]}} & [0, 1, 2, 3, 4, 5] \\
 	{\tt{resetArray(x)}} & [0, 0, 0, 0, 0, 0] \\
-	{\tt{x["3"] = 5}} & [0, 0, 0, 5, 0, 0] \\
+	{\tt{x[3] = 5}} & [0, 0, 0, 5, 0, 0] \\
 	{\tt{x["12"] = 7}} & [0, 0, 0, 5, 0, 0, , , , , , 7] \\
 	{\tt{resetArray(x)}} & [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] \\
 \end{tabular}
 
-In this code, string and integer values access the same array elements interchangeably, necessitating conversions between string and integers to faithfully model JavaScript semantics.  This conversion is mandated explicitly by JavaScript semantics: the 2019 edition of ECMAScript requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}).
+In this code, string and integer values access the same array elements interchangeably, necessitating conversions between string and integers to faithfully model JavaScript semantics.  This conversion is mandated explicitly by JavaScript semantics: the 2019 edition of ECMAScript requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}). On the other hand, the size of an array ({\tt{arr.length}} in the example) is defined as the ``largest integer index plus one'', so the integer value of element expression can affect the array size.
 
-Now observe that {\tt{resetArray}} assigns to the array in a loop of which the size cannot, in general, be known a priori; as such, falls into the case where neither the string nor the integer in a conversion are constant and hence most SMT solvers will not be able to handle it.  But this is a rather straightforward array operation, and so this limit will cripple any model of non-trivial JavaScript code.
+Now observe that {\tt{resetArray}} assigns to the array in a loop of which the size cannot, in general, be known a priori; as such, falls into the case where neither the string nor the integer in a conversion is constant and hence most SMT solvers will not be able to handle it. More specifically, in some program the assignment {\tt{x[k] = 5}} can happen before calling {\tt{resetArray(x)}}, where {\tt{k}} is an user input string. One would need to know the value of $\sti{k}$ and hence whether it will affect the size of the array {\tt{x}}. This is a rather straightforward array operation, and so this limit will cripple any model of non-trivial JavaScript code. 
+
+For the purpose of program analysis, string solver also needs to support \emph{equality constraints} (e.g. $x.y = y.x$), \emph{membership constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$). Most of the standard string operations can be encoded using the above three types of constraints\footnote{Except a few exceptions, such as {\tt{replaceALL}}, {\tt{reverse}}, and string-number conversions.}. Those are also the type of constraints supported by most state-of-the-art string constraint solvers such as Z3, CVC4, Z3Str3, and Trau+.
+
+Indeed, the analysis of string manipulating program is becoming more and more important nowadays. Various infamous security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string input values. In the past, a significant amount of research efforts have been investigated to symbolic execution and test case generation of string manipulating programs~\cite{saxena2010symbolic,artzi2011framework,huang2004securing,sen2013jalangi} and string constraint solving~\cite{kiezun2009hampi,abdulla2014string,zheng2013z3,abdulla2015norn,abdulla2017flatten,wang2016string,abdulla2018trau,chen2019decision,zheng2017z3str2} is the core enabling technology. 
 
 
-\todo{The end of Julian's current writing}
+
 
 
 \hide{Why this problem is important? Need to say it is used often, e.g., read 
@@ -125,7 +129,7 @@ from text file or user input. Why this problem is challenging? It is undecidable
 using string as array index. Bounded SAT-based encoding might not work even for 
 very simple constraints. e.g., $y=str2int(x) \wedge y>9999999$, if $x$ is a 
 ASCII string, then XXX Boolean variables are required. Or we can just propose 
-an example that all major solver fails. Maybe we still say our approach is still over-approximation + under-approximation, in this case, need to think how to present the over-approximation part. Maybe no CEGAR is fine.}
+an example that all major solver fails. Maybe we still say our approach is still over-approximation + under-approximation, in this case, need to think how to present the over-approximation part. Maybe no CEGAR is fine.
 
 String data type is omnipresent in modern programming languages. Various infamous security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values. As a results, in the past, a significant amount of research efforts have been investigated to symbolic execution and test case generation of string manipulating programs~\cite{saxena2010symbolic,artzi2011framework,huang2004securing,sen2013jalangi}. The core enabling technology for these approaches is string constraint solving~\cite{kiezun2009hampi,abdulla2014string,zheng2013z3,abdulla2015norn,abdulla2017flatten,wang2016string,abdulla2018trau,chen2019decision,zheng2017z3str2}. However, all these modern solvers fall short when \textit{string-number conversion function} occurs in the program.
 
@@ -156,7 +160,11 @@ $$
 $$
 
 
-Such constraint contains \textit{string-number conversion} functions (e.g., $\sti{input}$ and $\sti{index}$), \textit{equality constraints} (e.g., $index = input\cdot \its{1}$), and \textit{integer constraints} (e.g., $0 \leq \sti{input}<M$). Solving constraint of this kind is a very challenging problem. From the theoretical point of view, this problem is already proven to be undecidable~\cite{day2018satisfiability}. In practice, in our experiments, all of the state-of-the-art string constraint solvers do not support string-number conversion correctly. Some of them handles such constraints with only over-approximation of the original formula, and is known to have one-side error (see Section~\ref{section:evaluation} for detailed explanation). 
+Such constraint contains \textit{string-number conversion} functions (e.g., $\sti{input}$ and $\sti{index}$), \textit{equality constraints} (e.g., $index = input\cdot \its{1}$), and \textit{integer constraints} (e.g., $0 \leq \sti{input}<M$). }
+
+Solving constraint of this kind is a very challenging problem. From the theoretical point of view, this problem is already proven to be undecidable~\cite{day2018satisfiability}. In practice, in our experiments, all of the state-of-the-art string constraint solvers do not support string-number conversion correctly. Some of them handles such constraints with only over-approximation of the original formula, and is known to have one-side error (see Section~\ref{section:evaluation} for detailed explanation). 
+
+
 In this paper, we propose a framework that handles string constraints with string-number conversion efficiently. Our framework uses both over and under-approximation of the string constraints. The over-approximation is for proving UNSAT and the under-approximation is for proving SAT of the string constraint. Both over and under-approximation should fail in a decidable fragment of string constraints that can be efficiently solved. 
 
 For over-approximation, there are a few existing algorithms~\cite{parosh2019chain,z3}, our framework does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult and many approaches can handle all of them almost perfectly. The battle field is in fact those SAT instances. 
