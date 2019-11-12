@@ -50,7 +50,7 @@
 \newcommand{\semof}[1]{\modelsof{#1}}
 \newcommand{\decode}[1]{\mathit{decode_{#1}}}
 \newcommand{\parikhfof}[1]{\Phi_{\parikhof{#1}}}
-\newcommand{\pim}{\alpha}
+\newcommand{\pim}{I_{\#}}
 %\newcommand{\syncop}{\Cap}
 \newcommand{\syncop}{\times}
 \newcommand{\syncof}[2]{#1 \syncop #2}
@@ -222,7 +222,7 @@ str2int(``0000012")$. That is why we use $0^*$ at the beginning of the pattern.
 Under this domain, we can convert the string-number conversion constraints to 
 linear integer constraints, which is much easier to solve. In our experience, 
 usually, it suffices to find a solution using a small $k$ for a satisfiable 
-constraint. Note that a 64-bit integer number corresponds to a string with 
+constraint. Note that a 64-bit integer number corresponds to a word with 
 $k\leq 21$.
 
 Given a formula that is a boolean combination of different types of string constraints, e.g., $\phi=(|x| = |y| \vee \sti{x} = \sti{y})\wedge x = y$, an SMT solver based on the DPLL(T) algorithm~\cite{} treats each string constraint $|x| = |y|$, $\sti{x} = \sti{y}$, $xy=yx$ as a boolean variable, and systematically guesses possible solutions without considering their semantics as string constraints. E.g., the solver may guess $\neg(|x| = |y|)$, $(\sti{x} = \sti{y})$, and $(x =y)$. This is a valid guess if all the string constraints are just interpreted as boolean variables, but invalid when their semantics as string constraints are considered, because it cannot be the case that $x$ and $y$ are the same string $(x =y)$, but they are of different lengths $( \neg (|x| = |y|))$.
@@ -249,7 +249,7 @@ Then our procedure will restrict the domain of each string variables to the lang
 
 The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$,  as well as, the number of occurrences of each character variables $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12''$ and $y=``1212''$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4)= (1,2,1,2,1,1,2,2)$. The assignment says, for example, that $x$ is the parametric word obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12''$.
 
-If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the strings variables.  If not, our procedure step-wisely change the PFA to more expressive ones (by adding more states and transitions) to systematically search for the solution. Depending on the implementation, one may choose to report unknown after some certain steps.
+If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables.  If not, our procedure step-wisely change the PFA to more expressive ones (by adding more states and transitions) to systematically search for the solution. Depending on the implementation, one may choose to report unknown after some certain steps.
 
 
 
@@ -271,9 +271,9 @@ integers. For a set $A$, we use $|A|$ to denote its size.
 For $n,m\in\nat$, we write $[n,m]$ for the set of natural numbers 
 %(or symbols in $\Sigma$) 
 $\{k\mid n\leq k \leq m\}$. 
-An \emph{alphabet} is a finite set $\Sigma$ of \emph{characters} and a \emph{string} over $\Sigma$ is a sequence $w = a_1\ldots a_n$ of characters from $\Sigma$, with $\epsilon$ denoting the \emph{empty string}. 
-We use $w_1\cdot w_2$ to denote the \emph{concatenation} of strings $w_1$ and $w_2$.
-$\Sigma^*$ is the set of all strings over $\Sigma$, $\Sigma^+ = \Sigma^*\setminus \{\epsilon\}$, $\Sigma_\epsilon = \Sigma\cup\{\epsilon\}$, and 
+An \emph{alphabet} is a finite set $\Sigma$ of \emph{characters} and a \emph{word} over $\Sigma$ is a sequence $w = a_1\ldots a_n$ of characters from $\Sigma$, with $\epsilon$ denoting the \emph{empty word}. 
+We use $w_1\cdot w_2$ to denote the \emph{concatenation} of words $w_1$ and $w_2$.
+$\Sigma^*$ is the set of all words over $\Sigma$, $\Sigma^+ = \Sigma^*\setminus \{\epsilon\}$, $\Sigma_\epsilon = \Sigma\cup\{\epsilon\}$, and 
 A \emph{language} over $\Sigma$ is a subset $L$ of $\Sigma^*$.  
 %
 We use $|w|$ to denote the length of $w$ and $|w|_a$ to denote the number of occurrences of the character $a\in \Sigma$ in $w$.  
@@ -289,7 +289,7 @@ we denote by $I\models_V \phi$ that $I$ satisfies $\phi$ (which is defined in th
 We use $\modelsof \phi$ to denote the set all models of $\phi$ over $V$. 
 We drop the reference to $V$ and write just ``model of $\phi$'',  $\modelsof \phi$, and $\models$ when no confusion may arise. For a set of interpretations $S$, we use $S_\Sigma$ to denote the set of interpretations obtained from $S$ by projecting the domain to $\Sigma$.
 
-The \emph{Parikh image} of a string $w\in \Sigma^*$ is the assignment 
+The \emph{Parikh image} of a word $w\in \Sigma^*$ is the assignment 
 $\parikhof w$ that for every character $a\in\Sigma$ maps the \emph{Parikh variable} $\#a$ to the number of occurrences of $a$ in $w$.
 Formally, let $\pvarsof S$ denote the set of Parikh variables $\{\#s \mid s\in S\}$ obtained from a set $S$. 
 The Parikh image of $w$ is a function $\parikhof w:\pvarsof \Sigma \rightarrow \nat$ such that $\parikhof w (\#a) = |w|_a$. 
@@ -327,7 +327,7 @@ t_2$ are terms in $(\vars\cup \Sigma)^*$. The \emph{model} of $\phi_e$ is the se
 I(t_1)=I(t_2)\}$. A \emph{disequality constraint} $\phi_d$ is of the form $t_1 \neq 
 t_2$ and is interpreted analogously.
 
-An \emph{integer constraint} $\phi_i$ is a linear constraint over the variables in $\varn$ and length of a string $|x|$ for all $x \in \vars$.
+An \emph{integer constraint} $\phi_i$ is a linear constraint over the variables in $\varn$ and length of a word $|x|$ for all $x \in \vars$.
 %Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelsof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
 We define  $\modelsof{\phi_i}= \{I \mid I(\phi_i)= \true \}$.
 
@@ -346,7 +346,7 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 
 
 \section{Under-approximation} \label{section:under_approximate}
-In this section, we describe formally how to restrict the domain of string variables to patterns defined by \emph{parametric flat automata} (PFA) (Section~\ref{section:sfa}) and hence convert string constraints $\phi_s$ to a set of equisatisfiable linear integer constraints $\phi_I$ in polynomial-time. We first pick a PFA for each variable in $\vars$ and then construct the set of linear integer constraints in a stepwise manner. In each step, we take a string constraint from $\phi_s$ and depending on the type of the string constraint, we execute the corresponding procedure to produce the linear integer constraints. The procedure for equality, disequality, and membership constraints is in Section~\ref{section:eq} and the one for string/integer conversion is in Section~\ref{section:s2i}.
+In this section, we describe formally how to restrict the domain of string variables to patterns defined by \emph{parametric flat automata} (PFA) (Section~\ref{section:sfa}) and hence convert string constraints $\phi_s$ to a set of equisatisfiable linear integer constraints $\phi_I$ in polynomial-time. We first pick a PFA for each variable in $\vars$ and then construct the set of linear integer constraints in a stepwise manner. In each step, we take a string constraint from $\phi_s$ and depending on the type of the string constraint, we execute the corresponding procedure to produce the linear integer constraints. The procedure for equality, disequality, and membership constraints is in Section~\ref{section:eq} and the one for string-number conversion is in Section~\ref{section:s2i}.
 
 
 
@@ -428,11 +428,11 @@ Notice that case when $l_i = 0$ is also admissible and means that there is no cy
 
 
 %Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
-Parametric automata accept strings over $\cvar$, called \emph{parametric strings}, but we still use them as representations of languages over $\Sigma$. 
+Parametric automata accept words over $\cvar$, called \emph{parametric words}, but we still use them as representations of languages over $\Sigma$. 
 %
-Namely, string over $\cvar$ are interpreted as strings over $\Sigma$ given an assignment of characters to its character variables.  
+Namely, word over $\cvar$ are interpreted as words over $\Sigma$ given an assignment of characters to its character variables.  
 %
-Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$ and for a parametric string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
+Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$ and for a parametric word $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 %
 We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V^*$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics $\semof A$ of an PFA is the semantics of its language. 
 
@@ -440,7 +440,7 @@ The crucial feature of parametric flat automata is that their semantics can be f
 \lh{, allowing to circumvent more costly automata algorithms and decision procedures. Concretize and justify this better?}\yfc{The two sentences below read a bit strange, maybe need to rephrase it.}
 %
 Achieving this was the purpose of introducing the structural constraints of PFA. 
-Their implication central for our method is that every parametric string $x\in L(A)$ is uniquely determined by its Parikh image $\parikhof{x}$, as formalized by the following lemma.  
+Their implication central for our method is that every parametric word $x\in L(A)$ is uniquely determined by its Parikh image $\parikhof{x}$, as formalized by the following lemma.  
 
 \begin{lemma}\label{lemma:parikh}
 For an PFA $A$ and $x,y\in L(A)$, if $\parikhof x = \parikhof y$ then $x = y$. 
@@ -458,11 +458,9 @@ We may say that $\parikhof x$ is an encoding of $x$, and define the decoding fun
 For a PFA $A$, $L(A) = \{\decode A(\pim) \mid \pim\in\semof{\parikhfof A}\}$.
 \end{lemma}
 
-\yfc{Maybe we use things like $I_{\#}$ to replace $\pim$? It reads a bit strange when you put together $I$ and $\pim$, one is greek symbol and the other is roman, but both of them are interpretations.}
-
-Since every string $w \in \semof{A}$ is obtained from a parametric string $x\in L(A)$ and an interpretation of character variables $I:\cvar\rightarrow\Sigma_\epsilon$ such that $w = I(x)$, and since $x = \decode A(\parikhof x)$, 
-we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I$ and the Parikh image of the parametric string $x$ encodes $w$. Lemma~\ref{lemma:parikh} also implies that two different strings are encoded by different united assignments (the Parikh image or the interpretation must be different), and hence we may extend the decoding function $\decode A$ to united assignments so that $\decode A(I \cup \parikhof x) = w$.
-Encodings of strings in $\semof{A}$ are encodings of parametric strings of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$, which are precisely all models of the formula $\parikhfof A$ interpreted over $\cvar\cup\pvarsof \cvar$, as formulated by the following corollary of Lemma~\ref{lemma:decx}:
+Since every word $w \in \semof{A}$ is obtained from a parametric word $x\in L(A)$ and an interpretation of character variables $I:\cvar\rightarrow\Sigma_\epsilon$ such that $w = I(x)$, and since $x = \decode A(\parikhof x)$, 
+we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I$ and the Parikh image of the parametric word $x$ encodes $w$. Lemma~\ref{lemma:parikh} also implies that two different words are encoded by different united assignments (the Parikh image or the interpretation must be different), and hence we may extend the decoding function $\decode A$ to united assignments so that $\decode A(I \cup \parikhof x) = w$.
+Encodings of words in $\semof{A}$ are encodings of parametric words of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$, which are precisely all models of the formula $\parikhfof A$ interpreted over $\cvar\cup\pvarsof \cvar$, as formulated by the following corollary of Lemma~\ref{lemma:decx}:
 %
 \begin{corollary}
 For an PFA $A$ over character variables $V$,
@@ -475,11 +473,9 @@ Hence, to allow purely arithmetic formulas to talk about the value $\epsilon$, w
 In the further development, $\epsilon$ will mean $-1$ when working with arithmetic formulas constraining interpretations of character variables.
 
 \paragraph{Synchronization of PFA}
-The following construction is an important step in building under-approximations of string constraints. 
 For two PFA $A$ and $A'$ over character variables $V$ and $V'$, respectively, 
-it builds \emph{synchronization formula} $\syncfof A {A'}$, a linear formula over $\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. 
-Besides the intersection itself, it also represents the set of all pairs of string encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
-$\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$ which constitute the intersection.
+it builds \emph{synchronization formula} $\syncfof A {A'}$, a linear formula over $\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. The synchronization formula will be used in, e.g., the decision procedure of equality constraints $t_1=t_2$ to find a common interpretation of $t_1$ and $t_2$. More precisely, the models of the synchronization formula $\syncfof A {A'}$ correspond to the set of all pairs of word encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
+$\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$, which constitute the intersection.
 
 Particularly, a synchronization formula is build for two PFA  
 $A = (Q,T,\cvarone,q_i,q_f)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f')$ such that $\cvarone \cap \cvartwo = \emptyset$. 
@@ -491,16 +487,16 @@ $\cvarone_\epsilon\times\cvartwo_\epsilon$
 as the alphabet. 
 %
 Every accepting run of $\syncof A {A'}$ corresponds to a pair of accepting runs, 
-a run of $A$ over a parametric string $x$ and a run of ${A'}$ over a parametric string $x'$. 
-The word accepted by the run of $\syncof A {A'}$ induces constraints on the interpretations of $I$ of $\cvarone$ and $I'$ of $\cvartwo$ under which the two parametric strings have the same interpretation, i.e. $I(x) = I(x')$. 
+a run of $A$ over a parametric word $x$ and a run of ${A'}$ over a parametric word $x'$. 
+The word accepted by the run of $\syncof A {A'}$ induces constraints on the interpretations of $I$ of $\cvarone$ and $I'$ of $\cvartwo$ under which the two parametric words have the same interpretation, i.e. $I(x) = I(x')$. 
 
-Intuitively, when $\syncof A {A'}$ takes a transition $((q_1,q_1'), (v,v'),(q_2,q_2'))$, 
+Intuitively, when the product automaton $\syncof A {A'}$ takes a transition $((q_1,q_1'), (v,v'),(q_2,q_2'))$, 
 it means the character variable $v$ and $v'$ should be assigned the same value,
 $A$ transitions under $v$ from state $q_1$ to state $q_2$ and ${A'}$ from $q_1'$ to $q_2'$ under $v'$.
 %
 When $\syncof A {A'}$ takes a transition $((q_1,q_1'), (v,\epsilon),(q_2,q_1'))$, 
 it means that the character variable $v$ should be assigned $\epsilon$, 
-$A$ transitions under $v$ to $q_1$, and ${A'}$ takes no action, since no action is needed to match $A$s reading $\epsilon$ (hence not reading the input word). Symmetrically, ${A'}$ might read a variable $v$ assigned $\epsilon$ and $A$ may stay.
+$A$ transitions under $v$ to $q_1$, and ${A'}$ takes no action, since no action is needed to match $A$'s reading of $\epsilon$ (hence consumes no symbol from the input word). Symmetrically, ${A'}$ might read a variable $v$ assigned $\epsilon$ and $A$ may stay.
 
 Formally, the asynchronous product automaton is a tuple $\syncof A {A'} = (Q\times Q', \syncT, \cvarone_\epsilon \times \cvartwo_\epsilon, (q_i,q_i'),(q_f,q_f'))$, where the transition relation $\syncT$ is the minimal set satisfying the following:
 %
@@ -525,7 +521,7 @@ Notice that $x,x'$ are either variables or $\epsilon$.
 %	\item for all $v \in \cvarone$, $\#(v) = \sum_{v' \in \cvartwo} \#{(v,v')}$   
 %	\item for all $v \in \cvartwo$, $\#(v) = \sum_{v' \in \cvarone} \#{(v',v)}$ 
 %\end{enumerate}
-Finally, the third part forces the interpretations of the parametric strings accepted by $A$ and $A'$ be the same:
+Finally, the third part forces the interpretations of the parametric words accepted by $A$ and $A'$ to be the same:
 % condition 1. and 2. required for the pair of symbolic string $(w_n, w_m)$ and $I$, i.e., $I(w_n) = I(w_m)$ and $I$ assign the same value to all versions of the same variable (we use $-1$ as the value of $\epsilon$). 
 $$ \Psi_= \defeq
 \bigwedge_{x\in\cvarone_\epsilon,x'\in\cvartwo_\epsilon} \#(x,x')>0 \rightarrow (x=x')
@@ -541,15 +537,15 @@ $$
 \syncfof A {A'} \defeq \parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
 $$
 
-The correctness of this construction is expressed by Lemma~\ref{lemma:synccorrect} below. The lemma can also be understood as a precise specification the semantics of the synchronization formula, on which we rely for correctness of the construction of underapproximations of string constraints. 
+The correctness of this construction is expressed by Lemma~\ref{lemma:synccorrect} below. The lemma can also be understood as a precise specification the semantics of the synchronization formula, on which we rely for correctness of the construction of under-approximations of string constraints. 
 %
 %\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
 \begin{lemma}\label{lemma:synccorrect}
 %$\semof {\exists V_\times . \syncfof A {A'}}\restrict{\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
-$\semof {\exists V_\times . \syncfof A {A'}} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
+$\semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 \end{lemma}
 %
-Informally, the lemma states that the models of $\syncfof A {A'}$ encode precisely the pairs of equivalent encodings of words from $\semof{A}$ and $\semof{B}$, that constitute the intersection $\semof{A} \cap \semof{B}$. A minor technical difficulty is that the modes of $\syncfof A {A'}$ include also an assignment to the auxiliary variables of $V_\times = (\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$. Hence in the lemma, we have to restrict the models to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. This is  achieve by quantifying out the variables of $V_\times$.
+Informally, the lemma states that the models of $\syncfof A {A'}$ encode precisely the pairs of equivalent encodings of words from $\semof{A}$ and $\semof{A'}$, that constitute the intersection $\semof{A} \cap \semof{A'}$. A minor technical difficulty is that the modes of $\syncfof A {A'}$ include also an assignment to the auxiliary variables of $V_\times = (\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$. Hence in the lemma, we have to restrict the models to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. %This is  achieve by quantifying out the variables of $V_\times$.
 
 %We actually have even something stronger, namely, that, $\syncfof A {A'}$ has all possible allignments. How do I say this ... or do I have to say this?
 %\begin{lemma}
