@@ -278,28 +278,29 @@ A \emph{language} over $\Sigma$ is a subset $L$ of $\Sigma^*$.
 %
 We use $|w|$ to denote the length of $w$ and $|w|_a$ to denote the number of occurrences of the character $a\in \Sigma$ in $w$.  
 
-A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_i,q_f)$, where $Q$ is the set of \emph{states}, $T\subseteq Q\times \Sigma \times Q $ is the set of \emph{transitions}, $\Sigma$ is the alphabet, $q_i$ is the \emph{initial state}, and $q_f$ is the \emph{final state}. 
+A \emph{finite automaton} (FA) is a tuple $(Q,T,\Sigma,q_i,q_f)$, where $Q$ is the set of \emph{states}, $T\subseteq Q\times \Sigma \times Q $ is the set of \emph{transitions}, $\Sigma$ is the alphabet, $q_i$ is the \emph{initial state}, and $q_f$ is the \emph{final state}. 
 %The semantics of finite automaton is defined in the standard manner. 
 A \emph{run} of $A$ over a word $w = a_1\cdots a_n$ is a sequence of transition $(q_0,a_1,q_1),(q_1,a_1,q_2),\ldots,(q_{n-1},a_n,q_n)$. The run  is \emph{accepting} if $q_0 = q_i$ and $q_i = q_f$ and $w$ then is \emph{accepted}.
 The \emph{language} of $A$ is the set $L(A)$ of all accepted words.
 
-Through the paper, we will use quantifier-free linear integer arithmetic formulae, and call them \emph{linear formulae} for short.   
-Given a linear formula $\phi$, a set of variables $V$ that includes all variables occurring in $\phi$, and an \emph{interpretation} of $V$, a function $I:V\rightarrow \nat$, 
-we denote by $I\models_V \phi$ that $I$ satisfies $\phi$ (which is defined in the standard manner), and call $I$ a model of $\phi$ over $V$.
+Through the paper, we will use quantifier-free linear integer arithmetic formulas, and call them \emph{linear formulas} for short.   
+Given a linear formula $\phi$, a set of variables $V$ that includes all variables occurring in $\phi$, and an \emph{interpretation} of $V$, i.e., a function $I:V\rightarrow \nat$, 
+we denote by $I\models_V \phi$ that $I$ satisfies $\phi$ (which is defined in the standard manner), and call $I$ a \emph{model} of $\phi$ over $V$.
 We use $\modelsof \phi$ to denote the set all models of $\phi$ over $V$. 
-We drop the reference to $V$ and write just ``model of $\phi$'',  $\modelsof \phi$, and $\models$ when no confusion may arise.
+We drop the reference to $V$ and write just ``model of $\phi$'',  $\modelsof \phi$, and $\models$ when no confusion may arise. For a set of interpretations $S$, we use $S_\Sigma$ to denote the set of interpretations obtained from $S$ by projecting the domain to $\Sigma$.
 
-The \emph{Parikh image} of a wore $w\in \Sigma^*$ is the assignment 
+The \emph{Parikh image} of a string $w\in \Sigma^*$ is the assignment 
 $\parikhof w$ that for every character $a\in\Sigma$ maps the \emph{Parikh variable} $\#a$ to the number of occurrences of $a$ in $w$.
 Formally, let $\pvarsof S$ denote the set of Parikh variables $\{\#s \mid s\in S\}$ obtained from a set $S$. 
 The Parikh image of $w$ is a function $\parikhof w:\pvarsof \Sigma \rightarrow \nat$ such that $\parikhof w (\#a) = |w|_a$. 
 The Parikh image of a language $L$ is the set of Parikh images $\parikhof L = \{\parikhof w \mid w \in  L\}$ and the Parikh image of an FA $A$ is Parikh image of its language, $\parikhof{A} = \parikhof{L(A)}$. 
 %
-It is well known that $\parikhof A$ can be efficiently computed in the form of linear interger arithmetic formula:
+It is well known that $\parikhof A$ can be efficiently computed in the form of linear formula:
+
 
 
 \begin{lemma}[\cite{SeidlSMH04}]
-$\parikhof{A}$ of an FA $A$ can be computed in the form of a linear interger arithmetic formula  $\parikhfof{A}$ such that $\modelsof{\parikhfof A} = \parikhof{A}$, in time linear to the size of $A$.
+$\parikhof{A}$ of an FA $A$ can be computed in the form of a linear formula  $\parikhfof{A}$ such that $\modelsof{\parikhfof A} =_\Sigma \parikhof{A}$, in time linear to the size of $A$.
 \end{lemma}
 
 
@@ -435,7 +436,7 @@ Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to
 %
 We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V_\Sigma$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics $\semof A$ of an PFA is the semantics of its language. 
 
-The crucial feature of parametric flat automata is that their semantics can be faithfully represented by a linear integer arithmetic formulae and handled efficiently by an SMT solver. 
+The crucial feature of parametric flat automata is that their semantics can be faithfully represented by a linear integer arithmetic formulas and handled efficiently by an SMT solver. 
 \lh{, allowing to circumvent more costly automata algorithms and decision procedures. Concretize and justify this better?}
 %
 Achieving this was the purpose of introducing the structural constraints of PFA. 
@@ -467,10 +468,10 @@ For an PFA $A$ over character variables $V$,
 $\semof{A} = \{\decode A(I\cup \pim) \mid I\cup\pim\in\semof{\parikhfof A}_{\cvar\cup\pvar}\}$.
 \end{corollary}
 %
-A minor technical difficulty is that we wish to work with pure arithmetic formulae, 
+A minor technical difficulty is that we wish to work with pure arithmetic formulas, 
 but we may also wish to specify when a character variable is assigned $\epsilon$, which is not a number. 
-Hence, to allow purely arithmetic formulae to talk about the value $\epsilon$, we encode $\epsilon$ as $-1$.
-In the further development, $\epsilon$ will mean $-1$ when working with arithmetic formulae constraining interpretations of character variables.
+Hence, to allow purely arithmetic formulas to talk about the value $\epsilon$, we encode $\epsilon$ as $-1$.
+In the further development, $\epsilon$ will mean $-1$ when working with arithmetic formulas constraining interpretations of character variables.
 
 \paragraph{Synchronisation of PFA}
 The following construction is an important step in building underapproximations of string constraints. 
@@ -683,7 +684,7 @@ For example, in the product automaton $A_{xy=yx}$ corresponds to $xy=yx$, we hav
 	\item $((q_0,p_0), (v_0^{(0)},v_2^{(1)}),(q_1,q_1))$, because $(q_0,v_0^{(0)},q_1)$ is a transition of $A_{xy}$ and $(p_0,v_2^{(1)},p_1)$ is a transition of $A_{yx}$.
 \end{itemize}
 
-Recall that for flat automata, the number of occurrences of each symbol uniquely characterizes an accepting string (Section~\ref{section:sfa}) and for any finite automaton we can construct a Presburger formula characterizing its Parikh image (Section~\ref{section:preliminary}). For a product automaton $A$ computed from the previous step, we compute a Presburger formula $\phi(A)$ over the set of variables $\{\#{(v_i^{(j)},v_{i'}^{(j')})}\mid (v_i^{(j)},v_{i'}^{(j')}) \in \cvarone \times \cvartwo\}$ characterizing the Parikh image of $A$. We use $\#(v_i)$ and $\#(v_i^{(j)})$ to denote the number of occurrences of $v_i$ and $v_i^{(j)}$, respectively. The following formulae establish the relation of the number of occurrences of symbols between the PFAs and the product automaton.
+Recall that for flat automata, the number of occurrences of each symbol uniquely characterizes an accepting string (Section~\ref{section:sfa}) and for any finite automaton we can construct a Presburger formula characterizing its Parikh image (Section~\ref{section:preliminary}). For a product automaton $A$ computed from the previous step, we compute a Presburger formula $\phi(A)$ over the set of variables $\{\#{(v_i^{(j)},v_{i'}^{(j')})}\mid (v_i^{(j)},v_{i'}^{(j')}) \in \cvarone \times \cvartwo\}$ characterizing the Parikh image of $A$. We use $\#(v_i)$ and $\#(v_i^{(j)})$ to denote the number of occurrences of $v_i$ and $v_i^{(j)}$, respectively. The following formulas establish the relation of the number of occurrences of symbols between the PFAs and the product automaton.
 \begin{enumerate}
 	\item for all $v_i^{(j)} \in \cvarone$, $\#(v_i^{(j)}) = \sum_{v \in {\cvartwo \cup \{\epsilon\}}} \#{(v_i^{j},v)}$   
 	\item for all $v_i^{(j)} \in \cvartwo$, $\#(v_i^{(j)}) = \sum_{v \in {\cvarone \cup \{\epsilon\}}} \#{(v,v_i^{j})}$ 
