@@ -300,7 +300,7 @@ It is well known that $\parikhof A$ can be efficiently computed in the form of l
 
 
 \begin{lemma}[\cite{SeidlSMH04}]
-$\parikhof{A}$ of an FA $A$ can be computed in the form of a linear formula  $\parikhfof{A}$ such that $\modelsof{\parikhfof A} =_\Sigma \parikhof{A}$, in time linear to the size of $A$.
+$\parikhof{A}$ of an FA $A$ can be computed in the form of a linear formula  $\parikhfof{A}$ such that $\modelsof{\parikhfof A}_{\#\Sigma} = \parikhof{A}$, in time linear to the size of $A$.
 \end{lemma}
 
 
@@ -434,13 +434,13 @@ Namely, string over $\cvar$ are interpreted as strings over $\Sigma$ given an as
 %
 Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$ and for a parametric string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 %
-We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V_\Sigma$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics $\semof A$ of an PFA is the semantics of its language. 
+We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V^*$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics $\semof A$ of an PFA is the semantics of its language. 
 
-The crucial feature of parametric flat automata is that their semantics can be faithfully represented by a linear integer arithmetic formulas and handled efficiently by an SMT solver. 
-\lh{, allowing to circumvent more costly automata algorithms and decision procedures. Concretize and justify this better?}
+The crucial feature of parametric flat automata is that their semantics can be faithfully represented by a linear formula and handled efficiently by an SMT solver. 
+\lh{, allowing to circumvent more costly automata algorithms and decision procedures. Concretize and justify this better?}\yfc{The two sentences below read a bit strange, maybe need to rephrase it.}
 %
 Achieving this was the purpose of introducing the structural constraints of PFA. 
-Their implication central for our method is that every parametric string $x\in L(A)$ is uniquelly determined by its Parikh image $\parikhof{x}$, as formalised by the following lemma.  
+Their implication central for our method is that every parametric string $x\in L(A)$ is uniquely determined by its Parikh image $\parikhof{x}$, as formalized by the following lemma.  
 
 \begin{lemma}\label{lemma:parikh}
 For an PFA $A$ and $x,y\in L(A)$, if $\parikhof x = \parikhof y$ then $x = y$. 
@@ -458,10 +458,11 @@ We may say that $\parikhof x$ is an encoding of $x$, and define the decoding fun
 For a PFA $A$, $L(A) = \{\decode A(\pim) \mid \pim\in\semof{\parikhfof A}\}$.
 \end{lemma}
 
+\yfc{Maybe we use things like $I_{\#}$ to replace $\pim$? It reads a bit strange when you put together $I$ and $\pim$, one is greek symbol and the other is roman, but both of them are interpretations.}
 
-Since every string $w \in \semof{A}$ is obtained from a parametric string $x\in L(A)$ and an interpretation of character varriables $I:\cvar\rightarrow\Sigma_\epsilon$ such that $w = I(x)$, and since $x = \decode A(\parikhof x)$, 
-we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I$ and the Parikh image of the parametric string $x$ encodes $w$. Lemma~\ref{lemma:parikh} also implies that two different strings are encoded by different united assignments (the Parikh image or the interpretation must be different), and hence we may extend the decoding function $\decode A$ to united assignments so that $\decode A(I \cup x) = w$.
-Encodings of strings in $\semof{A}$ are encodings of parametric strings of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$, which are precisely all modesl of the formula $\parikhfof A$ interpreted over $\cvar\cup\pvarsof \cvar$, as formulated byt the following corollary of Lemma~\ref{lemma:decx}:
+Since every string $w \in \semof{A}$ is obtained from a parametric string $x\in L(A)$ and an interpretation of character variables $I:\cvar\rightarrow\Sigma_\epsilon$ such that $w = I(x)$, and since $x = \decode A(\parikhof x)$, 
+we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I$ and the Parikh image of the parametric string $x$ encodes $w$. Lemma~\ref{lemma:parikh} also implies that two different strings are encoded by different united assignments (the Parikh image or the interpretation must be different), and hence we may extend the decoding function $\decode A$ to united assignments so that $\decode A(I \cup \parikhof x) = w$.
+Encodings of strings in $\semof{A}$ are encodings of parametric strings of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$, which are precisely all models of the formula $\parikhfof A$ interpreted over $\cvar\cup\pvarsof \cvar$, as formulated by the following corollary of Lemma~\ref{lemma:decx}:
 %
 \begin{corollary}
 For an PFA $A$ over character variables $V$,
@@ -473,14 +474,14 @@ but we may also wish to specify when a character variable is assigned $\epsilon$
 Hence, to allow purely arithmetic formulas to talk about the value $\epsilon$, we encode $\epsilon$ as $-1$.
 In the further development, $\epsilon$ will mean $-1$ when working with arithmetic formulas constraining interpretations of character variables.
 
-\paragraph{Synchronisation of PFA}
-The following construction is an important step in building underapproximations of string constraints. 
+\paragraph{Synchronization of PFA}
+The following construction is an important step in building under-approximations of string constraints. 
 For two PFA $A$ and $A'$ over character variables $V$ and $V'$, respectively, 
-it builds \emph{synchronisation formula} $\syncfof A {A'}$, a linear formula over $\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. 
+it builds \emph{synchronization formula} $\syncfof A {A'}$, a linear formula over $\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. 
 Besides the intersection itself, it also represents the set of all pairs of string encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
 $\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$ which constitute the intersection.
 
-Particularly, a synchronisation formula is build for two PFA  
+Particularly, a synchronization formula is build for two PFA  
 $A = (Q,T,\cvarone,q_i,q_f)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f')$ such that $\cvarone \cap \cvartwo = \emptyset$. 
 %
 It is extracted from the \emph{asynchronous product} of $A$ and $A'$. 
@@ -510,7 +511,7 @@ Formally, the asynchronous product automaton is a tuple $\syncof A {A'} = (Q\tim
 \end{itemize}	
 %
 %The we define of constraints that extract from $\syncof A {A'}$ pairs of united assignments (encodings of strings over $\Sigma$) that encode the same string. 
-The synchronisation formula $\syncfof{A} {A'}$ is extracted from $\syncof A {A'}$ as follows.
+The synchronization formula $\syncfof{A} {A'}$ is extracted from $\syncof A {A'}$ as follows.
 Its first part is the Parikh formula $\parikhfof {\syncof A {A'}}$ of the product, which encodes all runs of the product.
 %
 The second part is a constraint that extracts from a run of $\syncof A {A'}$ the corresponding runs of $A$ and of $A'$:
@@ -534,13 +535,13 @@ $$
 %	\item for all $v\in \cvarone$, $\#{(v,\epsilon)}>0 \rightarrow (v=\epsilon)$, and
 %	\item for all $v\in \cvartwo$,$\#{(\epsilon,v')}>0 \rightarrow (v'=\epsilon)$.
 %\end{enumerate}
-The synchronisation formula is then the conjunction 
+The synchronization formula is then the conjunction 
 $$
 %\syncfof A {A'} = \exists \pvarsof{\cvarone\times\cvartwo}\exists {(\cvarone\times\cvartwo)}.\,\parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
 \syncfof A {A'} \defeq \parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
 $$
 
-The correctness of this construction is expressed by Lemma~\ref{lemma:synccorrect} below. The lemma can also be understood as a precise specification the semantics of the synchronisation formula, on which we rely for correctness of the construction of underapproximations of string constraints. 
+The correctness of this construction is expressed by Lemma~\ref{lemma:synccorrect} below. The lemma can also be understood as a precise specification the semantics of the synchronization formula, on which we rely for correctness of the construction of underapproximations of string constraints. 
 %
 %\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
 \begin{lemma}\label{lemma:synccorrect}
