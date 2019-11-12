@@ -1,5 +1,6 @@
 \documentclass[sigplan,review,anonymous]{acmart}\settopmatter{printfolios=true,printccs=false,printacmref=false}
 
+\usepackage{fancyvrb}
 \usepackage{xcolor}
 \usepackage{amssymb} 
 \usepackage{tikz}
@@ -19,6 +20,7 @@
 \begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\hide}[1]{}
+\newcommand{\tool}{{\textsf{Z3-pfa}}}
 
 \newcommand{\nat}{\mathbb{N}}
 \newcommand{\todo}[1]{{\color{blue}TODO: #1}}
@@ -116,7 +118,7 @@ In this code, string and integer values access the same array elements interchan
 
 Now observe that {\tt{resetArray}} assigns to the array in a loop of which the size cannot, in general, be known a priori; as such, falls into the case where neither the string nor the integer in a conversion is constant and hence most SMT solvers will not be able to handle it. More specifically, in some program the assignment {\tt{x[k] = 5}} can happen before calling {\tt{resetArray(x)}}, where {\tt{k}} is an user input string. One would need to know the value of $\sti{k}$ and hence whether it will affect the size of the array {\tt{x}}. This is a rather straightforward array operation, and so this limit will cripple any model of non-trivial JavaScript code. 
 
-For the purpose of program analysis, string solver also needs to support \emph{equality constraints} (e.g. $x.y = y.x$), \emph{membership constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$). Most of the standard string operations can be encoded using the above three types of constraints\footnote{Except a few exceptions, such as {\tt{replaceALL}}, {\tt{reverse}}, and string-number conversions.}. Those are also the type of constraints supported by most state-of-the-art string constraint solvers such as Z3, CVC4, Z3Str3, and Trau+. \yfc{maybe more concrete example?}\\
+For the purpose of program analysis, string solver also needs to support \emph{equality constraints} (e.g. $x.y = y.x$), \emph{membership constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$). Most of the standard string operations can be encoded using the above three types of constraints. For instance, $y=x.charAt(i)$ can be encoded as $x=x_1.x_2.x_3 \wedge |x_1| = i \wedge |x_2| =1 \wedge y= x_2$. Those are also the type of constraints supported by most state-of-the-art string constraint solvers such as Z3, CVC4, Z3Str3, and Trau+.
 
 \yfc{I am not sure how to add other examples here in a nice way, one reason is we are very specifically focused on Javascript, but other examples, e.g., the credit card one, is very general.}
 
@@ -169,15 +171,39 @@ Solving string constraint with string-number conversion is a very challenging pr
 
 In this paper, we adopt a framework that handles string constraints with string-number conversion efficiently. Due to the high complexity of solving the problem exactly, our framework uses both over and under-approximation of the string constraints. The over-approximation is for proving UNSAT and the under-approximation is for proving SAT of the string constraint. Both over and under-approximation should fail in a decidable fragment of string constraints that can be efficiently solved. 
 
-For over-approximation, there are a few existing algorithms~\cite{parosh2019chain,z3,chen2019decision}, our framework does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult, and the differences between the major algorithms are very small. In our implementation, we use a version that is a simple adaption of the algorithm in~\cite{parosh2019chain}.
+For over-approximation, there are a few existing algorithms~\cite{parosh2019chain,z3,chen2019decision}, our framework does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult, and the differences between the major algorithms are very small. In our tool \tool, we use a version that is a simple adaption of the algorithm in~\cite{parosh2019chain}.
+
+The battle field is in fact those SAT instances, for which we develop solutions using under-approximation. For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA) (will be defined formally in Section~\ref{section:sfa}). The approach based on PFA is very flexible yet allows very efficiently manipulation. One can pick PFA of \emph{arbitrary structure} for the search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time. Moreover, it avoids the \textit{alphabet explosion problem} that the approach in~\cite{abdulla2017flatten} suffers.\yfc{maybe explain a bit somewhere the alphabet explosion problem of PLDI 2017} In contrast to under-approximation based on bit-blasting~\cite{kiezun2009hampi} (i.e., limit the length of the strings and encode the string constraint to a Boolean formula), our linear formula for under-approximation, in general,  still encodes possibility an infinite number of models. Such symbolic encoding based on PFA is the key to handle string-number conversion. In our under-approximation approach, the original undecidable fragment, i.e., string constraint with string-number conversion, is converted to linear formulas and can be solved efficiently in a systematic manner.
+
+More concretely, based on the PFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary PFA, one can convert the a string constraint with string-number function to an integer constraint consisting of both polynomials and exponentials. Solving such kind of constraints is a very difficult task. For simpler cases where the variables are real numbers, decision procedures for different subclass polynomial-exponential equations exists~\cite{gan2015decidability,kincaid2019closed,achatz2008deciding}. To the best of our knowledge, the satisfiability problem of polynomial-exponential equations is still open. For efficiency reason, we propose to use PFA with specific structural constraint to handle string-number conversion function. That is, if we encountered a constraint $y=\sti{x}$, then we always restrict the domain of $x$ to some specific kind of PFA, instead of allowing arbitrary PFAs. This allows us to convert a string constraint with string-number conversion function to an equisatisfiable linear formula, which can be solved very efficiently. 
+
+Our string constraint solving produce can be easily integrated in a \emph{satisfiability module theory (SMT)} solver as a theory solver. The integration allows us to express string operations that cannot be reduced to the type of constraints (membership, equality, integer, string-number conversion) supported by our procedure. For example, we can encode \texttt{split} using the code fragment in Figure~\ref{fig:smt_string}. Other functions such as \texttt{replaceAll} and \texttt{reverse} can be encoded in a similar manner. The performance of such encoding might not be as good as those that provide direct support to those operations, but at least it works for some cases in our experiments. Further details of the combination as well as some other implementation details can be found in Section~\ref{section:implementation}.
+
+\begin{figure}
+	\begin{Verbatim}[fontsize=\scriptsize,xleftmargin=-4cm]
+				(define-fun-rec split ((x String)(y String)(xIdx Int)(aIdx Int)) 
+				(Array Int String)
+				(ite (= xIdx (str.len x))
+				  (store ((as const (Array Int String)) "") aIdx x)
+				  (ite (= y (str.at x xIdx)) 
+				    (store 
+				      (split (str.substr x (+ xIdx 1) (- (str.len x) 1) ) 
+				      0 (+ aIdx 1) y) 
+				      aIdx
+				      (str.substr str 0 xIdx)
+				    )
+				    (split x (+ xIdx 1) aIdx y)
+				  )
+				)
+			\end{Verbatim}
+	 	 				
+	 	\caption{Encoding \texttt{Split(x,y)} using recursive functions and the array theory. The recursive function \texttt{split (x y 0 0)} returns an array of type \texttt{(Array Int String)} that maps an index $i$ to the $i$th component (separated by the character $y$ ) of $x$.}
+	 	\label{fig:smt_string}
+\end{figure}
 
 
-The battle field is in fact those SAT instances, for which we develop solutions based on under-approximation. For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA). The approach based on PFA is very flexible yet allows very efficiently manipulation. One can pick PFA of arbitrary structure for the search space restriction and reduce the string constraint solving problem to an integer constraint solving problem. For efficiency, it avoids the \textit{alphabet 
-explosion problem} that the approach in~\cite{abdulla2017flatten} suffers.\yfc{maybe explaina a bit somewhere the alphabet explosion problem of PLDI 2017}
 
-Based on the PFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary PFA, one can convert the a string constraint with string-number function to an integer constraint consisting of both polynomials and exponentials. Solving such kind of constraints is a very difficult task. For simpler cases where the variables are real numbers, decision procedures for different subclass polynomial-exponential equations exists~\cite{gan2015decidability,kincaid2019closed,achatz2008deciding}. To the best of our knowledge, the satisfiability problem of polynomial-exponential equations is still open. For efficiency reason, we propose to use PFA with specific structural constraint to handle string-number conversion function. That is, if we encountered a constraint $y=\sti{x}$, then we always restrict the domain of $x$ to some specific kind of PFA, instead of allowing arbitrary PFAs. This allows us to convert a string constraint with string-number conversion function to an equisatisfiable linear formula, which can be solved very efficiently. 
 
-Our string constraint solving produce can be used as a theory solver in a \emph{satisfiability module theory (SMT)} solver. In this way, we can describe and solve complex constraints like those appeared in the introduction. Further details of the combination as well as some other implementation details can be found in Section~\ref{section:implementation}.
 
 \todo{Talk about experiments}
 
@@ -215,11 +241,15 @@ The approach combines techniques from both automata theory and SMT solving to ex
 \section{Overview} \label{section:overview}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Here we try to explain the approach using a toy example $\phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^*\}$. Notice that $\phi$ is satisfiable. E.g., it has a model $x=``12''$ and $y=``1212''$.
+Here we try to explain the approach using a toy example $\phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^+\}$. Notice that $\phi$ is satisfiable. E.g., it has a model $x=``12''$ and $y=``1212''$.
 
-For proving UNSAT, our framework does not set any restriction on which decision procedure to use. One can select any decision procedure they want to use and ``over-approximate'' the input constraint to one that falls in the decidable fragment, e.g., the acyclic fragment~\cite{abdulla2014string}, the straight-line fragment~\cite{chen2019decision}, or the chain-free fragment~\cite{abdulla2019chain}. For instance, we can convert $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and remove the constraint $n=\sti{x}$. This produce new formulas that over-approximate the original ones and fall in the acyclic fragment~\cite{abdulla2014string}, which is decidable. 
+For proving UNSAT, our framework does not set any restriction on which decision procedure to use. One can select any decision procedure they want to use and ``over-approximate'' the input constraint to one that falls in the decidable fragment, e.g., the acyclic fragment~\cite{abdulla2014string}, the straight-line fragment~\cite{chen2019decision}, or the chain-free fragment~\cite{abdulla2019chain}. For instance, we can convert $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and remove the constraint $n=\sti{x}$. This produce new formulas that over-approximate the original ones and fall in the acyclic fragment~\cite{abdulla2014string}, which is decidable. Since $\phi$ is satisfiable, the over-approximation module will not return UNSAT. 
 
-Since $\phi$ is satisfiable, so the over-approximation module will not return UNSAT. Then our procedure will pick patterns to restrict the domain of each string variables. More precisely, we use the so-called \emph{parametric flat automata} (PFA) to define such patterns (will be defined in Section~\ref{section:sfa}). An example of PFA can be found in Figure~\ref{fig:sfa}. The major benefit of project the domain of string variables to PFA is that then the satisfiability problem of string constraints can be reduced to the satisfiability of linear formulas in polynomial time. For most string constraints (e.g., $xy=yx$, $y \in (12)^*$ ), we can reduce them to linear constraint with arbitrary PFA for domain restriction (see Section~\ref{section:eq}) and reduce them to linear formulas. However, this does not work for \emph{string-number conversion constraints} $n = \sti{x}$. We will explain in Section~\ref{section:s2i} that restricting $x$ to general PFA reduces the string-number conversion constraint to an exponential-polynomial formula, which is unlikely to be solved efficiently~\cite{achatz2008deciding}. In this paper, we suggest that whenever $x$ is involved in a string-number conversion function, then we only use PFA in the form of the one in Figure~\ref{fig:sfa_its}. This allows us to obtain a reduction to linear formula even for string-number conversion constraints. If a model is found, then the procedure concludes SAT.  If not, one can step-wisely change the PFA to more expressive ones (by adding more states and transitions) and hope the solution can be found at some point.
+Then our procedure will restrict the domain of each string variables to the language defined by some parametric flat automata (PFA) and convert them to equisatisfiable linear formula. The details of the under-approximation component will be described in Section~\ref{section:under_approximate}. Here we try to explain what the linear formula looks like by an example. Assume that we project the domain of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. One special treatment we do in this paper is that we encoding characters as natural numbers. So $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from the formula $ y \in (12)^+$, we may derive $v_3=1$ and $v_4=2$. 
+
+The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$,  as well as, the number of occurrences of each character variables $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12''$ and $y=``1212''$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4)= (1,2,1,2,1,1,2,2)$. The assignment says, for example, that $x$ is the parametric word obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12''$.
+
+If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the strings variables.  If not, our procedure step-wisely change the PFA to more expressive ones (by adding more states and transitions) to systematically search for the solution. Depending on the implementation, one may choose to report unknown after some certain steps.
 
 
 
@@ -339,7 +369,7 @@ used by the under-approximation module to restrict the domain of string variable
 Namely, an PFA is a finite automaton $A = (Q,T,\cvar,\st{0}{0},\st{m}{0})$ operating over an alphabet $\cvar$ of \emph{character variables}, 
 and satisfying the following structural constraints:
 \begin{enumerate}
-	\item The final state $\st{m}{0}$ is reached from  the initial state $\st{0}{0}$ through a stright path of $m-1$ transitions $(\st{i}{0},v_i,\st{i+1}{0}) \in T$, $\st{i}{0} \in Q$ for $i\in[0,m-1]$. %, with pairwise distiand states $\st{i}{0} \in Q$ for $i\in[0,m-1]$.
+	\item The final state $\st{m}{0}$ is reached from  the initial state $\st{0}{0}$ through a straight path of $m-1$ transitions $(\st{i}{0},v_i,\st{i+1}{0}) \in T$, $\st{i}{0} \in Q$ for $i\in[0,m-1]$. %, with pairwise distiand states $\st{i}{0} \in Q$ for $i\in[0,m-1]$.
 	\item  
 Each state $\st{i}{0}$ is the origin of a unique simple cycle of the length $l_i\in\mathbb{N}$, consisting of states $\st{i}{j-1} \in Q$ and transitions $(\st{i}{j-1}, \sym{i}{j-1}, \st{i}{j \bmod l_i})$ for $j\in [1,l_i]$. 
 Notice that case when $l_i = 0$ is also admissible and means that there is no cycle on $q_i$.
@@ -430,7 +460,7 @@ For a PFA $A$, $L(A) = \{\decode A(\pim) \mid \pim\in\semof{\parikhfof A}\}$.
 
 Since every string $w \in \semof{A}$ is obtained from a parametric string $x\in L(A)$ and an interpretation of character varriables $I:\cvar\rightarrow\Sigma_\epsilon$ such that $w = I(x)$, and since $x = \decode A(\parikhof x)$, 
 we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I$ and the Parikh image of the parametric string $x$ encodes $w$. Lemma~\ref{lemma:parikh} also implies that two different strings are encoded by different united assignments (the Parikh image or the interpretation must be different), and hence we may extend the decoding function $\decode A$ to united assignments so that $\decode A(I \cup x) = w$.
-Encodings of strings in $\semof{A}$ are encodings of parametric strings of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$, which are precisely all modesl of the formula $\parikhfof A$ interpreted over $\cvar\cup\pvarsof \cvar$, as formulated byt the following collolary of Lemma~\ref{lemma:decx}:
+Encodings of strings in $\semof{A}$ are encodings of parametric strings of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$, which are precisely all modesl of the formula $\parikhfof A$ interpreted over $\cvar\cup\pvarsof \cvar$, as formulated byt the following corollary of Lemma~\ref{lemma:decx}:
 %
 \begin{corollary}
 For an PFA $A$ over character variables $V$,
