@@ -179,6 +179,8 @@ More concretely, based on the PFA encoding, we manage to translate the string co
 
 Our string constraint solving produce can be easily integrated in a \emph{satisfiability module theory (SMT)} solver as a theory solver. The integration allows us to express string operations that cannot be reduced to the type of constraints (membership, equality, integer, string-number conversion) supported by our procedure. For example, we can encode \texttt{split} using the code fragment in Figure~\ref{fig:smt_string}. Other functions such as \texttt{replaceAll} and \texttt{reverse} can be encoded in a similar manner. The performance of such encoding might not be as good as those that provide direct support to those operations, but at least it works for some cases in our experiments. Further details of the combination as well as some other implementation details can be found in Section~\ref{section:implementation}.
 
+
+
 \begin{figure}
 	\begin{Verbatim}[fontsize=\scriptsize,xleftmargin=-4cm]
 				(define-fun-rec split ((x String)(y String)(xIdx Int)(aIdx Int)) 
@@ -197,7 +199,7 @@ Our string constraint solving produce can be easily integrated in a \emph{satisf
 				)
 			\end{Verbatim}
 	 	 				
-	 	\caption{Encoding \texttt{Split(x,y)} using recursive functions and the array theory. The recursive function \texttt{split (x y 0 0)} returns an array of type \texttt{(Array Int String)} that maps an index $i$ to the $i$th component (separated by the character $y$ ) of $x$.}
+	 	\caption{Encoding \texttt{Split(x,y)} to an SMTLIB2 formula using recursive functions and the array theory. The recursive function \texttt{split (x y 0 0)} returns an array of type \texttt{(Array Int String)} that maps an index $i$ to the $i$th component (separated by the character $y$ ) of $x$.}
 	 	\label{fig:smt_string}
 \end{figure}
 
@@ -346,9 +348,37 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 
 
 \section{Under-approximation} \label{section:under_approximate}
-In this section, we describe formally how to restrict the domain of string variables to patterns defined by \emph{parametric flat automata} (PFA) (Section~\ref{section:sfa}) and hence convert string constraints $\phi_s$ to a set of equisatisfiable linear integer constraints $\phi_I$ in polynomial-time. We first pick a PFA for each variable in $\vars$ and then construct the set of linear integer constraints in a stepwise manner. In each step, we take a string constraint from $\phi_s$ and depending on the type of the string constraint, we execute the corresponding procedure to produce the linear integer constraints. The procedure for equality, disequality, and membership constraints is in Section~\ref{section:eq} and the one for string-number conversion is in Section~\ref{section:s2i}.
+In this section, we describe formally how to restrict the domain of string variables to patterns defined by \emph{parametric flat automata} (PFA) (Section~\ref{section:sfa}) and hence convert string constraints $\phi_I$ to a set of equisatisfiable linear formulas $\phi_O$ in polynomial-time. We assume all disequality constraint $t_1 \neq t2 \in \phi_d$ are already converted to equal-satisfiable equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}. 
+
+We pick a PFA for each variable in $\vars$ at the beginning of the decision procedure and then construct the set of linear integer constraints in a stepwise manner. In each step, we take a string constraint from $\phi_I$ and depending on the type of the string constraint, we execute the corresponding procedure to produce the linear integer constraints and add them to the output linear formulas $\phi_O$. 
+
+More concretely, at the beginning, we move all integer constraints in $\phi_I$ to the output linear formulas $\phi_O$. After this step, $\phi_I$ is the union of the three sets of constraints $\phi_e$ (equality), $\phi_m$ (membership), and $\phi_s$ (string-number conversion). For all string variables $x$ that occurs in a string-number conversion constraint $n= \sti{x} \in \phi_s$, we follow the rule that will be described in Section~\ref{section:s2i} to pick the corresponding PFA and we do not set any restriction to the selection of PFA for other string variables, i.e., the selection is an implementation decision. We will describe the PFA selection strategy of \tool in Section~\ref{section:implementation}. 
+
+After the PFA for each variable is selected, we step-wisely pick and remove a string constraint from $\phi_I$, executing the corresponding procedure to create equisatisfiable linear constraints, and add all the results to $\phi_O$. The procedure for equality and membership constraints is in Section~\ref{section:eq} and the one for string-number conversion is in Section~\ref{section:s2i}.
 
 
+ 
+
+
+
+\hide{We replace it with the following constraints.
+	
+	$$
+	\begin{array}{c}
+	(|x_1|+ |x_2|+ \cdots +|x_n| \neq |x_{n+1}| + |x_{n+2}|+ \cdots +|x_m|)\vee \\
+	\left(
+	\begin{array}{cccc}
+	
+	y_1\cdot y_2\cdot y_3 &=& x_1\cdot x_2 \cdots x_n &\wedge\\
+	y_1 \cdot y'_2 \cdot y'_3 &=& x_{n+1}\cdot x_{n+2} \cdots x_m &\wedge\\
+	|y_2|&=&|y'_2|=1
+	\end{array}
+	
+	\right)
+	\end{array}
+	$$
+	
+	The second disjunct says that the constraints $x_1\cdot x_2 \cdots x_n$ and $x_{n+1}\cdot x_{n+2} \cdots x_m$ have a common prefix $y_1$, but the next character $y_2$ and $y'_2$ is different. In an more efficient implementation, one just project $y_2$ and $y'_2$ to a PFA that accept only symbolic words $v_1$ and $v'_1$, respectively (the PFA has no loop and only one transition). }
 
 
 \yfc{say handling membership constraint can be exponential to the number of constraints, but in our under-approximation, it is polynomial.}
@@ -560,11 +590,7 @@ Informally, the lemma states that the models of $\syncfof A {A'}$ encode precise
 %\end{lemma}
 
 
-
-
-
-
-\subsection{Flat Under-approximation for Equalities and Regular Constraints} \label{section:eq}
+\subsection{Handling Equalities and Regular Constraints Symbolically} \label{section:eq}
 
 Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some PFA with disjoint alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. We rename the variables on the transitions of PFA's for different occurrences of the same variable in one equality constraint. Later we will use some arithmetic constraints to enforce that all occurrences of the variants of the same variable will be assigned the same value. For notational convenience, the renaming is done by adding a version number to the variable. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, $\ldots$.
 
@@ -699,24 +725,7 @@ From the model $M$ of the linear constraints, we can obtain $w_n$, $w_m$, and $I
 More specifically, assume that the PFA $S_n$ is the one in Figure~\ref{fig:sfa_def}, then $$w_n = (v_0^0v_0^1v_0^2v_0^3)^{\#(v_0^0)}v_0(v_1^0v_1^1v_1^2)^{\#(v_1^0)}v_1\ldots(v_m^0v_m^1v_m^2v_m^3)^{\#(v_m^0)}$$
 Note that $\#(v_0^0)=\#(v_0^1)=\#(v_0^2)=\#(v_0^3)$, so we just use $\#(v_0^0)$ to denote the number of times of first loop traversal. One can construct $w_m$ in a similar way. Using the same approach, one can derive the assignment to variables in $\vars$ using the corresponding count and values of variables in $\cvar$.
 
-Disequality constraint $x_1\cdot x_2 \cdots x_n \neq x_{n+1}\cdot x_{n+2} \cdots x_m$ can be converted to equal-satisfiable equality constraints in the standard way~\cite{abdulla2015norn}. We replace it with the following constraints.
 
-$$
-\begin{array}{c}
-(|x_1|+ |x_2|+ \cdots +|x_n| \neq |x_{n+1}| + |x_{n+2}|+ \cdots +|x_m|)\vee \\
-\left(
-	\begin{array}{cccc}
-	
-	 y_1\cdot y_2\cdot y_3 &=& x_1\cdot x_2 \cdots x_n &\wedge\\
-	 y_1 \cdot y'_2 \cdot y'_3 &=& x_{n+1}\cdot x_{n+2} \cdots x_m &\wedge\\
-	|y_2|&=&|y'_2|=1
-	\end{array}
-
-\right)
-\end{array}
-$$
-
-The second disjunct says that the constraints $x_1\cdot x_2 \cdots x_n$ and $x_{n+1}\cdot x_{n+2} \cdots x_m$ have a common prefix $y_1$, but the next character $y_2$ and $y'_2$ is different. In an more efficient implementation, one just project $y_2$ and $y'_2$ to a PFA that accept only symbolic words $v_1$ and $v'_1$, respectively (the PFA has no loop and only one transition). 
 
 
 
