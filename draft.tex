@@ -243,9 +243,9 @@ The approach combines techniques from both automata theory and SMT solving to ex
 \section{Overview} \label{section:overview}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Here we try to explain the approach using a toy example $\phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^+\}$. Notice that $\phi$ is satisfiable. E.g., it has a model $x=``12''$ and $y=``1212''$.
+Here we try to explain the approach using a toy example $\Phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^+\}$. Notice that $\Phi$ is satisfiable. E.g., it has a model $x=``12''$ and $y=``1212''$.
 
-For proving UNSAT, our framework does not set any restriction on which decision procedure to use. One can select any decision procedure they want to use and ``over-approximate'' the input constraint to one that falls in the decidable fragment, e.g., the acyclic fragment~\cite{abdulla2014string}, the straight-line fragment~\cite{chen2019decision}, or the chain-free fragment~\cite{abdulla2019chain}. For instance, we can convert $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and remove the constraint $n=\sti{x}$. This produce new formulas that over-approximate the original ones and fall in the acyclic fragment~\cite{abdulla2014string}, which is decidable. Since $\phi$ is satisfiable, the over-approximation module will not return UNSAT. 
+For proving UNSAT, our framework does not set any restriction on which decision procedure to use. One can select any decision procedure they want to use and ``over-approximate'' the input constraint to one that falls in the decidable fragment, e.g., the acyclic fragment~\cite{abdulla2014string}, the straight-line fragment~\cite{chen2019decision}, or the chain-free fragment~\cite{abdulla2019chain}. For instance, we can convert $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and remove the constraint $n=\sti{x}$. This produce new formulas that over-approximate the original ones and fall in the acyclic fragment~\cite{abdulla2014string}, which is decidable. Since $\Phi$ is satisfiable, the over-approximation module will not return UNSAT. 
 
 Then our procedure will restrict the domain of each string variables to the language defined by some parametric flat automata (PFA) and convert them to equisatisfiable linear formula. The details of the under-approximation component will be described in Section~\ref{section:under_approximate}. Here we try to explain what the linear formula looks like by an example. Assume that we project the domain of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. One special treatment we do in this paper is that we encoding characters as natural numbers. So $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from the formula $ y \in (12)^+$, we may derive $v_3=1$ and $v_4=2$. 
 
@@ -338,7 +338,7 @@ I(x) \in L(A) \}$.
 
 The \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define  $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$.
 
-A \emph{string constraint} is a constraint of the above form. We say that a set of string constraint $\phi$ is \emph{satisfiable}  iff $\bigcap_{\pi \in \phi} \modelsof{\pi}$ is not empty.
+A \emph{string constraint} is a constraint of the above form. We say that a set of string constraint $\Phi$ is \emph{satisfiable}  iff $\bigcap_{\phi \in \Phi} \modelsof{\phi}$ is not empty.
 
 Notice that only positive integer is supported in the string-number conversion function. This is the semantics used by most of the SMT solvers, and hence we follow it in this paper. The encoding has a benefit that it can also handle the case where $x$ is ``not a number'', using the condition $\sti{x} = -1$.
 
@@ -348,13 +348,13 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 
 
 \section{Under-approximation} \label{section:under_approximate}
-In this section, we describe formally how to restrict the domain of string variables to patterns defined by \emph{parametric flat automata} (PFA) (Section~\ref{section:sfa}) and hence convert string constraints $\phi_I$ to a set of equisatisfiable linear formulas $\phi_O$ in polynomial-time. We assume all disequality constraint $t_1 \neq t2 \in \phi_d$ are already converted to equal-satisfiable equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}. 
+In this section, we describe formally how to restrict the domain of string variables to patterns defined by \emph{parametric flat automata} (PFA) (Section~\ref{section:sfa}) and hence convert string constraints $\Phi_I$ to a set of equisatisfiable linear formulas $\Phi_O$ in polynomial-time. We assume all disequality constraint $t_1 \neq t2$ are already converted to equal-satisfiable equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}. 
 
-We pick a PFA for each variable in $\vars$ at the beginning of the decision procedure and then construct the set of linear integer constraints in a stepwise manner. In each step, we take a string constraint from $\phi_I$ and depending on the type of the string constraint, we execute the corresponding procedure to produce the linear integer constraints and add them to the output linear formulas $\phi_O$. 
+We pick a PFA for each variable in $\vars$ at the beginning of the decision procedure and then construct the set of linear integer constraints in a stepwise manner. In each step, we take a string constraint from $\Phi_I$ and depending on the type of the string constraint, we execute the corresponding procedure to produce the linear integer constraints and add them to the output linear formulas $\Phi_O$. 
 
-More concretely, at the beginning, we move all integer constraints in $\phi_I$ to the output linear formulas $\phi_O$. After this step, $\phi_I$ is the union of the three sets of constraints $\phi_e$ (equality), $\phi_m$ (membership), and $\phi_s$ (string-number conversion). For all string variables $x$ that occurs in a string-number conversion constraint $n= \sti{x} \in \phi_s$, we follow the rule that will be described in Section~\ref{section:s2i} to pick the corresponding PFA and we do not set any restriction to the selection of PFA for other string variables, i.e., the selection is an implementation decision. We will describe the PFA selection strategy of \tool in Section~\ref{section:implementation}. 
+More concretely, at the beginning, we move all integer constraints in $\Phi_I$ to the output linear formulas $\Phi_O$. After this step, $\Phi_I$ is the union of the three sets of constraints: the equality constraints, the membership constraints, and the string-number conversion constraints. For all string variables $x$ that occurs in a string-number conversion constraint $n= \sti{x}$, we follow the rule that will be described in Section~\ref{section:s2i} to pick the corresponding PFA. We do not set any restriction to the selection of PFA for other string variables. The selection is an implementation decision. We will describe the PFA selection strategy of \tool in Section~\ref{section:implementation}. 
 
-After the PFA for each variable is selected, we step-wisely pick and remove a string constraint from $\phi_I$, executing the corresponding procedure to create equisatisfiable linear constraints, and add all the results to $\phi_O$. The procedure for equality and membership constraints is in Section~\ref{section:eq} and the one for string-number conversion is in Section~\ref{section:s2i}.
+After the PFA for each variable is selected, we step-wisely pick and remove a string constraint from $\Phi_I$, executing the corresponding procedure to create equisatisfiable linear constraints, and add all the results to $\Phi_O$. The procedure for equality and membership constraints is in Section~\ref{section:eq} and the one for string-number conversion is in Section~\ref{section:s2i}.
 
 
  
@@ -567,7 +567,7 @@ $$
 \syncfof A {A'} \defeq \parikhfof{\syncof A {A'}} \land \Psi_{\#} \land \Psi_=
 $$
 
-The correctness of this construction is expressed by Lemma~\ref{lemma:synccorrect} below. The lemma can also be understood as a precise specification the semantics of the synchronization formula, on which we rely for correctness of the construction of under-approximations of string constraints. 
+The correctness of this construction is stated in Lemma~\ref{lemma:synccorrect} below. The lemma can also be understood as a precise specification the semantics of the synchronization formula, on which we rely for correctness of the construction of under-approximations of string constraints. 
 %
 %\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
 \begin{lemma}\label{lemma:synccorrect}
@@ -583,95 +583,115 @@ Informally, the lemma states that the models of $\syncfof A {A'}$ encode precise
 %we have $(I\cup\pim)\cup(I'\cup\pim')\in\semof {\syncfof A {A'}}$ if and only if $\decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')$.
 %\end{lemma}
 
-\lh{removed the closed under concatenation lemma, no more true due to epsilons}
+\yfc{we need to define \#{V} somewhere}
 
 %\begin{lemma}
 %	Symbolic flat automata are closed under concatenation.
 %\end{lemma}
 
 
-\subsection{Handling Equalities and Regular Constraints Symbolically} \label{section:eq}
-
-Given an equality constraint $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, we restrict the domain of all variables to some PFA with disjoint alphabet and then connect the final state and initial state of two consecutive variables with an epsilon transition. We rename the variables on the transitions of PFA's for different occurrences of the same variable in one equality constraint. Later we will use some arithmetic constraints to enforce that all occurrences of the variants of the same variable will be assigned the same value. For notational convenience, the renaming is done by adding a version number to the variable. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, $\ldots$.
-
-For the constraint $xy = yx$, we first restrict the domains of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. In the construction of the PFA for $xy$ and $yx$ (Figure~\ref{fig:sfa} (c) and (d)), we rename the variables on the PFA of $X$ and $Y$ to some fresh variable for each different occurrence of $x$ and $y$ in $xy = yx$.
-
 \begin{figure*}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
+	
+	\begin{minipage}[t]{0.15\textwidth} 
+		\begin{tikzpicture}
+		\node[state,initial,accepting] (q0)  {$q_0$};
 		
- 	\begin{minipage}[t]{0.15\textwidth} 
-	\begin{tikzpicture}
-	\node[state,initial,accepting] (q0)  {$q_0$};
-	
-	\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-
-	\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
-	\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
-	\end{tikzpicture} 
-	
-	\centering
-	(a) $A_x$
+		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
+		
+		\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
+		\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
+		\end{tikzpicture} 
+		
+		\centering
+		(a) $A_x$
 	\end{minipage}
- 	\begin{minipage}[t]{0.15\textwidth} 
-	\begin{tikzpicture} 
-	\node[state,initial,accepting] (q0)  {$p_0$};
-	
-	\node[state] (q01) [above = 0.5cm of q0] {$p_1$};
-	
-	\draw[->] (q0) edge [bend left] node [left]{$v_2$} (q01) ;
-	\draw[->] (q01) edge [bend left] node [right]{$v_3$} (q0) ;
-	\end{tikzpicture} 
-	
-	\centering
-	(b) $A_y$
+	\begin{minipage}[t]{0.15\textwidth} 
+		\begin{tikzpicture} 
+		\node[state,initial,accepting] (q0)  {$p_0$};
+		
+		\node[state] (q01) [above = 0.5cm of q0] {$p_1$};
+		
+		\draw[->] (q0) edge [bend left] node [left]{$v_2$} (q01) ;
+		\draw[->] (q01) edge [bend left] node [right]{$v_3$} (q0) ;
+		\end{tikzpicture} 
+		
+		\centering
+		(b) $A_y$
 	\end{minipage}
 	\begin{minipage}[t]{0.28\textwidth}
-	\begin{tikzpicture} 
-	\node[state,initial] (q0)  {$q_0$};
-	\node[state,accepting] (q1) [right = 1.3cm of q0] {$p_0$};
-	
-	\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-
-	\draw[->] (q0) edge [bend left] node [left]{$v_0^{(0)}$} (q01) ;
-	\draw[->] (q01) edge [bend left] node [right]{$v_1^{(0)}$} (q0) ;
-	
-	\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
-	
-	\draw[->] (q1) edge [bend left] node [left]{$v_2^{(0)}$} (q11) ;
-	\draw[->] (q11) edge [bend left] node [right]{$v_3^{(0)}$} (q1) ;
-	\draw[->] (q0) edge  node [below]{$\epsilon$} (q1) ;
-	\end{tikzpicture}
-	
-	\centering
-	(c) $A_{xy}$
+		\begin{tikzpicture} 
+		\node[state,initial] (q0)  {$q_0$};
+		\node[state,accepting] (q1) [right = 1.3cm of q0] {$p_0$};
+		
+		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
+		
+		\draw[->] (q0) edge [bend left] node [left]{$v_0^{(0)}$} (q01) ;
+		\draw[->] (q01) edge [bend left] node [right]{$v_1^{(0)}$} (q0) ;
+		
+		\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
+		
+		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(0)}$} (q11) ;
+		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(0)}$} (q1) ;
+		\draw[->] (q0) edge  node [below]{$v_{\epsilon_0}$} (q1) ;
+		\end{tikzpicture}
+		
+		\centering
+		(c) $A_{xy}$
 	\end{minipage}
 	\ \ \ 
 	\begin{minipage}[t]{0.28\textwidth}
-	\begin{tikzpicture} 
-	\node[state,accepting] (q0)  {$q_0$};
-	\node[state,initial] (q1) [left = 1.3cm of q0] {$p_0$};
-	
-	\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-	
-	\draw[->] (q0) edge [bend left] node [left]{$v_0^{(1)}$} (q01) ;
-	\draw[->] (q01) edge [bend left] node [right]{$v_1^{(1)}$} (q0) ;
-	
-	\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
-	
-	\draw[->] (q1) edge [bend left] node [left]{$v_2^{(1)}$} (q11) ;
-	\draw[->] (q11) edge [bend left] node [right]{$v_3^{(1)}$} (q1) ;
-	\draw[->] (q1) edge  node [below]{$\epsilon$} (q0) ;
-	\end{tikzpicture}
-	
-	\centering
-	(d) $A_{yx}$
+		\begin{tikzpicture} 
+		\node[state,accepting] (q0)  {$q_0$};
+		\node[state,initial] (q1) [left = 1.3cm of q0] {$p_0$};
+		
+		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
+		
+		\draw[->] (q0) edge [bend left] node [left]{$v_0^{(1)}$} (q01) ;
+		\draw[->] (q01) edge [bend left] node [right]{$v_1^{(1)}$} (q0) ;
+		
+		\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
+		
+		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(1)}$} (q11) ;
+		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(1)}$} (q1) ;
+		\draw[->] (q1) edge  node [below]{$v_{\epsilon_1}$ }(q0) ;
+		\end{tikzpicture}
+		
+		\centering
+		(d) $A_{yx}$
 	\end{minipage}
-
-	\caption{Symbolic flat automata of $x$, $y$, $xy$ and $yx$}
+	
+	\caption{Parametric flat automata of $x$, $y$, $xy$ and $yx$}
 	\label{fig:sfa}
 \end{figure*}
 
+\subsection{Handling Equalities and Membership Constraints Symbolically} \label{section:eq}
+
+Assume that the constraint we take from $\Phi_I$ is an equality constraint $\phi_e= x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$, where each string variable $x_i$ is restricted to a PFA $A_{i}$ with the set of character variables $V_{i}$, for $i\in[1,m]$. We first build two PFAs that encode the left-hand side term and the right-hand side term of the equality constraint. Intuitively, this can be achieved by connecting the PFAs of the string variables with epsilon transitions. However, there are two minor technical issues. First, our definition of PFA does not allow epsilon transition. Second, some string variable might occur multiple times in a equality constraint, but the definition of PFA allows each character variable occurs in only one transition. 
+
+We circumvent the first problem by introducing some fresh characters variables, say $v_{\epsilon_n}$, and forcing its value to be $\epsilon$ by adding new linear formulas, say $v_{\epsilon_n}= -1$, to the output linear formulas $\phi_O$. Then we can connect the final state and initial state of two consecutive variables with an ``epsilon'' transition, i.e., one with the label $v_{\epsilon_n}$. We use $V_\epsilon$ to denote the set of all variables used for ``epsilon'' transitions.
+
+For the second problem, we rename the variables on the transitions of PFAs for different occurrences of the same variable in one equality constraint. The renaming is done by adding a version number to the variable. We call variables before and after renaming the \emph{original variable} and the \emph{renamed variable}. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, etc. In this case, $v_1$ is the original variable and both $v_1^{(0)}$ and $v_1^{(1)}$ are the renamed variables. For an original variable $v$, we use $R_v$ to denote the set of variables renamed from $v$. Later we will add arithmetic constraints to enforce that variables obtained from the same original variable are assigned the same value. 
+
+Here we give a concrete example. For the equality constraint $xy = yx$, assume that we restrict the domains of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. In the construction of the PFA for $xy$ and $yx$ (Figure~\ref{fig:sfa} (c) and (d)), we rename the variables on the PFA of $X$ and $Y$ to some fresh variable for each different occurrence of $x$ and $y$ in $xy = yx$, connect the PFA after renaming with ``epsilon'' transitions (those labeled $v_{\epsilon_0}$ and $v_{\epsilon_1}$), and add linear formulas $v_{\epsilon_0}=-1$ and $v_{\epsilon_1}=-1$ to the output linear formulas $\phi_O$.
+
+Now let $A$ and $A'$ over character variables $V$ and $V'$ be the two PFAs obtained from the two sides of the equality constraint $\phi_e$. We then construct the synchronization formula $\syncfof A {A'}$ and add it to $\phi_O$. Recall that from Lemma~\ref{lemma:synccorrect}, each model of $\syncfof A {A'}$ corresponds to a pair of words in $\semof{A}$ and $\semof{A'}$. However, this does not directly correspond to a model of the equality constraint $\phi_e$. The reason is that difference occurrence of the same string variables can be assigned different values in $\semof{A}$ and $\semof{A'}$. To avoid this problem, we need to add more constraints to ensure that all variables renamed from the same original variable are assigned the same value and are occurred equally often.
+
+$$ \Psi_r \defeq
+\bigwedge_{v\in V_x, v'\in R_v} v=v' \wedge \#v = \#v'
+$$
+Here $V_x$ is the set of all character variables occurred in the PFAs of $x_1,x_2,\ldots,x_m$, i.e., $V_x=\bigcup_{i\in [1,m]}{V_{i}}$.
+
+The correctness of this procedure is stated in Lemma~\ref{lemma:eqcorrect}.
+
+
+\begin{lemma}\label{lemma:eqcorrect}
+	%$\semof {\exists V_\times . \syncfof A {A'}}\restrict{\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
+	$\semof {\syncfof A {A'}  \wedge \Psi_r}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo \setminus V_{\epsilon}} = \{\bigcup_{i\in[1,m]}(I^i\cup\pim^i)\mid w_1\cdot w_2 \cdots w_n = w_{n+1}\cdot w_{n+2} \cdots w_m \wedge \bigwedge_{i\in [1,m]}w_i=\decode A_{i}(I^i\cup\pim^i) \}$. 
+\end{lemma}
+
+\hide{
 Assume that $S_n=(Q,T,\cvarone,q_i,q_f)$ is the PFA of $x_1\cdot x_2 \cdots x_n$ and $S_m=(P,T',\cvartwo,p_i,p_f)$ is the PFA of $x_{n+1}\cdot x_{n+2} \cdots x_m$. Our next task is to find a model for $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$ under the domain restriction specified by $S_n$ and $S_m$. 
 Note that $\cvarone \cap \cvartwo =\emptyset$, because all variables will be renamed to some fresh variable. 
 
@@ -731,7 +751,7 @@ Note that $\#(v_0^0)=\#(v_0^1)=\#(v_0^2)=\#(v_0^3)$, so we just use $\#(v_0^0)$ 
 
 \todo{Maybe talk about the heuristic that we merge the list elements into one}
 
-
+}
 
 
 
