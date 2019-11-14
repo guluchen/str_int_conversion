@@ -492,7 +492,7 @@ Since every word $w \in \semof{A}$ is obtained from a parametric word $x\in L(A)
 we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I$ and the Parikh image of the parametric word $x$ encodes $w$. Lemma~\ref{lemma:parikh} also implies that two different words are encoded by different united assignments (the Parikh image or the interpretation must be different), and hence we may extend the decoding function $\decode A$ to united assignments so that $\decode A(I \cup \parikhof x) = w$.
 Encodings of words in $\semof{A}$ are encodings of parametric words of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$, which are precisely all models of the formula $\parikhfof A$ interpreted over $\cvar\cup\pvarsof \cvar$, as formulated by the following corollary of Lemma~\ref{lemma:decx}:
 %
-\begin{corollary}
+\begin{corollary}\label{corollary:pfa}
 For an PFA $A$ over character variables $V$,
 $\semof{A} = \{\decode A(I\cup \pim) \mid I\cup\pim\in\semof{\parikhfof A}_{\cvar\cup\pvar}\}$.
 \end{corollary}
@@ -569,12 +569,25 @@ $$
 
 The correctness of this construction is stated in Lemma~\ref{lemma:synccorrect} below. The lemma can also be understood as a precise specification the semantics of the synchronization formula, on which we rely for correctness of the construction of under-approximations of string constraints. 
 %
-%\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
 \begin{lemma}\label{lemma:synccorrect}
 %$\semof {\exists V_\times . \syncfof A {A'}}\restrict{\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 $\semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 \end{lemma}
 %
+Another version:
+\begin{lemma}
+$
+\semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} = 
+\{
+(I\cup\parikhof{x})\cup(I'\cup\parikhof{x'}) \mid 
+x\in L(A), x'\in L(A'), I(x) = I(x')
+\}
+$
+\end{lemma}
+Notice that if $A$ is flat (or, symmetrically, if $A'$ is flat), then $\semof A \cap \semof {A'}$ can be still decoded from $\semof {\syncfof A {A'}}$ due to Corollary~\ref{corollary:pfa}, 
+namely in the form of\\ $\semof A \cap \semof {A'} = \{\decode A(I\cup x) \mid \exists J.((I\cup x) \cup J) \in \semof{\syncfof A {A'}}\}$.  
+\bigskip
+
 Informally, the lemma states that the models of $\syncfof A {A'}$ encode precisely the pairs of equivalent encodings of words from $\semof{A}$ and $\semof{A'}$, that constitute the intersection $\semof{A} \cap \semof{A'}$. A minor technical difficulty is that the modes of $\syncfof A {A'}$ include also an assignment to the auxiliary variables of $V_\times = (\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$. Hence in the lemma, we have to restrict the models to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. %This is  achieve by quantifying out the variables of $V_\times$.
 
 %We actually have even something stronger, namely, that, $\syncfof A {A'}$ has all possible allignments. How do I say this ... or do I have to say this?
@@ -666,6 +679,7 @@ In the rest of the section, we assume each string variable $x$ is restricted to 
 	\caption{Parametric flat automata of $x$, $y$, $xy$ and $yx$}
 	\label{fig:sfa}
 \end{figure*}
+
 
 
 \subsection{Handling Equality Constraints Symbolically} \label{section:eq}
