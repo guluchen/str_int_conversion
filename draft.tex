@@ -569,12 +569,27 @@ $$
 
 The correctness of this construction is stated in Lemma~\ref{lemma:synccorrect} below. The lemma can also be understood as a precise specification the semantics of the synchronization formula, on which we rely for correctness of the construction of under-approximations of string constraints. 
 %
-%\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
 \begin{lemma}\label{lemma:synccorrect}
 %$\semof {\exists V_\times . \syncfof A {A'}}\restrict{\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 $\semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 \end{lemma}
 %
+\begin{lemma}
+$\semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo}$ 
+contains
+$(I\cup\parikhof{w})\cup(I'\cup\parikhof{w'})$
+if and only if 
+$w\in L(A)$, $w'\in L(A')$, and $I(w) = I(w')$.
+\\[5mm]
+$
+\semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} = 
+\{
+(I\cup\parikhof{w})\cup(I'\cup\parikhof{w'}) \mid 
+w\in L(A), w'\in L(A'), I(w) = I(w')
+\}
+$
+\end{lemma}
+
 Informally, the lemma states that the models of $\syncfof A {A'}$ encode precisely the pairs of equivalent encodings of words from $\semof{A}$ and $\semof{A'}$, that constitute the intersection $\semof{A} \cap \semof{A'}$. A minor technical difficulty is that the modes of $\syncfof A {A'}$ include also an assignment to the auxiliary variables of $V_\times = (\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$. Hence in the lemma, we have to restrict the models to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. %This is  achieve by quantifying out the variables of $V_\times$.
 
 %We actually have even something stronger, namely, that, $\syncfof A {A'}$ has all possible allignments. How do I say this ... or do I have to say this?
