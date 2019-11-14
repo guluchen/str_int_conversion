@@ -50,7 +50,7 @@ The second benchmark is called APLAS that was created by authors of \textsf{$Kep
 
 The next benchmark is called LeetCode~\cite{LeetCode} that was obtained by extracting constraints from Python's testing solutions provided by LeetCode platform. They provide many programming examples and their solutions gathered from technical interviews for companies. Leetcode consists of 881 satisfiable and 1785 unsatisfiable tests that, like PyEx, contain diverse string constraints.
 
-StringFuzz is our next bechmark that is named after a fuzzer~\cite{StringFuzz} for automatically generating SMT-LIB string constraints. We used StringFuzz to generate 1065 tests including word (dis)equalities, regular membership and arithmetic constraints. 
+StringFuzz is our next bechmark that is named after a fuzzer~\cite{blotsky2018stringfuzz} for automatically generating SMT-LIB string constraints. We used StringFuzz to generate 1065 tests including word (dis)equalities, regular membership and arithmetic constraints. 
 
 The last two benchmarks, called $\text{cvc4}_{\text{pred}}$ and $\text{cvc4}_{\text{term}}$, are obtained from cvc4 group~\cite{termEQ}. This set of benchmarks consists of the verification of term equivalences over strings and includes various string constraints including string-number and number-string conversion constraints.
 
@@ -66,11 +66,11 @@ LeetCode is obtiained from concolic testing LeetCode solutions written in Python
 \textbf{Comparison according to Table 1......}
 
 
-To evaluate our strategy for string-number/number-string conversion, we also prepared a benchmark \texttt{str\_int}\footnote{\url{https://github.com/plfm-iis/str_int_benchmarks}}. It is collected from two sources of Python programs that use ttexttt{int()} function: Leetcode solutions written in Python and Python core libraries. We concolic tested these Python programs by \texttt{Py-Conbyte}\footnote{\url{https://github.com/spencerwuwu/py-conbyte}}, our concolic tester for Python programs. The SMT queries during the concolic testing are collected as our benchmark. To be more precise in evalutation, we have two versions of \texttt{str\_int} benchmark: \texttt{full\_str\_int} and \texttt{filtered\_str\_int}. \texttt{full\_str\_int} is the original benchmark we collected (i.e. from Python programs using \texttt{int()}); \texttt{filtered\_str\_int} is a subset of \texttt{fill\_str\_int}. We filtered out problems that cvc4 says unsat while the unsat cores do not contain \texttt{str.to.int} or \texttt{int.to.str}. The results of experiment on \texttt{str\_int} benchmark is listed in Table~\ref{table:str_int_benchmark}. 
-%The experiments are conducted under the same condition as those one other benchmarks.
+To evaluate our strategy for string-number/number-string conversion, we also prepared a benchmark \texttt{str\_int}\footnote{\url{https://github.com/plfm-iis/str_int_benchmarks}}. It is collected from two sources of Python programs that use ttexttt{int()} function: Leetcode solutions written in Python and Python core libraries. We concolic tested these Python programs by \texttt{Py-Conbyte}\footnote{\url{https://github.com/spencerwuwu/py-conbyte}}, our concolic tester for Python programs. The SMT queries during the concolic testing are collected as our benchmark. 
+To be more precise in evalutation, we have two versions of \texttt{str\_int} benchmark: \texttt{full\_str\_int} and \texttt{filtered\_str\_int}. \texttt{full\_str\_int} is the original benchmark we collected (i.e. from Python programs using \texttt{int()}); \texttt{filtered\_str\_int} is a subset of \texttt{fill\_str\_int}. We filtered out problems that cvc4 says unsat while the unsat cores do not contain \texttt{str.to.int} or \texttt{int.to.str}. The results of experiment on \texttt{str\_int} benchmark is listed in Table~\ref{table:str_int_benchmark}.
+The experiments are conducted under the same condition as those one other benchmarks.
 
 \textbf{Comparison according to Table 2.....}
-
 
 
 \hide{
