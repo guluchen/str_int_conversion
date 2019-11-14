@@ -574,13 +574,8 @@ The correctness of this construction is stated in Lemma~\ref{lemma:synccorrect} 
 $\semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 \end{lemma}
 %
+Another version:
 \begin{lemma}
-$\semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo}$ 
-contains
-$(I\cup\parikhof{w})\cup(I'\cup\parikhof{w'})$
-if and only if 
-$w\in L(A)$, $w'\in L(A')$, and $I(w) = I(w')$.
-\\[5mm]
 $
 \semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} = 
 \{
@@ -589,6 +584,8 @@ w\in L(A), w'\in L(A'), I(w) = I(w')
 \}
 $
 \end{lemma}
+Notice that if $A$ is flat (or $A'$, symmetrically), then all the $w\in \semof A \cap \semof {A'}$ can be extracted from $\semof {\syncfof A {A'}}$ using the decoding function $\decodeof A$.  
+\bigskip
 
 Informally, the lemma states that the models of $\syncfof A {A'}$ encode precisely the pairs of equivalent encodings of words from $\semof{A}$ and $\semof{A'}$, that constitute the intersection $\semof{A} \cap \semof{A'}$. A minor technical difficulty is that the modes of $\syncfof A {A'}$ include also an assignment to the auxiliary variables of $V_\times = (\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$. Hence in the lemma, we have to restrict the models to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. %This is  achieve by quantifying out the variables of $V_\times$.
 
@@ -694,6 +691,7 @@ The correctness of this construction is expressed in Lemma~\ref{lemma:memcorrect
 	%$\semof {\exists V_\times . \syncfof A {A'}}\restrict{\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 	${\semof {\syncfof {A_x }{A'}}}_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
 \end{lemma}
+
 
 \subsection{Handling Equality Constraints Symbolically} \label{section:eq}
 
