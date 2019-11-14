@@ -585,7 +585,7 @@ x\in L(A), x'\in L(A'), I(x) = I(x')
 $
 \end{lemma}
 Notice that if $A$ is flat (or, symmetrically, if $A'$ is flat), then $\semof A \cap \semof {A'}$ can be still decoded from $\semof {\syncfof A {A'}}$ due to Corollary~\ref{corollary:pfa}, 
-namely in the form of\\ $\semof A \cap \semof {A'} = \{\decode A(I\cup x) \mid \exists J.((I\cup x) \cup J) \in \semof{\syncfof A {A'}}\}$.  
+namely in the form of\\ $\semof A \cap \semof {A'} = \{\decode A(I\cup \pim) \mid \exists J.((I\cup \pim) \cup J) \in \semof{\syncfof A {A'}}\}$.  
 \bigskip
 
 Informally, the lemma states that the models of $\syncfof A {A'}$ encode precisely the pairs of equivalent encodings of words from $\semof{A}$ and $\semof{A'}$, that constitute the intersection $\semof{A} \cap \semof{A'}$. A minor technical difficulty is that the modes of $\syncfof A {A'}$ include also an assignment to the auxiliary variables of $V_\times = (\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$. Hence in the lemma, we have to restrict the models to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. %This is  achieve by quantifying out the variables of $V_\times$.
