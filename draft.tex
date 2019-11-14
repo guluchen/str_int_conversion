@@ -637,7 +637,7 @@ Assume that the constraint we take from $\Phi_I$ is a regular constraint $\phi_r
 	\item $V' = \{ v_{(q,a,q')} \mid (q,a,q')\in T\}$
 	\item $T' = \{ (q, v_{(q,a,q')}, q')  \mid (q,a,q')\in T\}$
 \end{itemize}
-We use the linear formula $\Psi_c \defeq \bigwedge\limits_{(q,a,q')\in T} (v_{(q,a,q')} = a)$ to remember the relation between the fresh character variables in $V'$ and the symbol it represents. We add both $\syncfof {A_x }{A'} $ and $\Psi_c$ to $\Phi_O$. The relation between $A$ and $A'$ is expressed in Lemma~\ref{lemma:fa_pfa}.
+We use the linear formula $\Psi_c \defeq \bigwedge\limits_{(q,a,q')\in T} (v_{(q,a,q')} = a)$ to remember the relation between the fresh character variables in $V'$ and the symbol it represents. \lh{why  the name $\Psi_c$?} We add both $\syncfof {A_x }{A'} $ and $\Psi_c$ to $\Phi_O$. The relation between $A$ and $A'$ is expressed in Lemma~\ref{lemma:fa_pfa}.
 
 \begin{lemma}\label{lemma:fa_pfa}
 	$L(A)=	\{  I(x) \mid  I\in  \semof {\Psi_c} \wedge x \in L(A') \} $. 
@@ -660,19 +660,22 @@ The correctness of this construction is expressed in Lemma~\ref{lemma:memcorrect
 
 Lemma~\ref{lemma:memcorrect} follows from Corollary~\ref{corollary:pfa}, Lemma~\ref{lemma:synccorrect}, and Lemma~\ref{lemma:fa_pfa}. Informally, the lemma says the models of the formula we add to $\Phi_O$, i.e. $\syncfof {A_x }{A'} \wedge \Psi_c$, characterize exactly the models of $x \in  L(A)$ under the restriction of $A_x$.
 
-\lh{Simplified version:
+\lh{Sketch of a simplified version:
 Assume that the constraint we take from $\Phi_I$ is a regular constraint $\phi_r \defeq x \in L(A)$. 
 %Assume that $A=(Q,T,\Sigma,q_i,q_f)$. 
-We represent the FA $A$ by a pair of a PA $A'$ and linear formula $\phi_A$. 
+We represent the FA $A$ by a pair of a PA $A'$ and linear formula $\Psi_c$. 
 The PA $A'$ operates over fresh character variables $v_a, a\in\Sigma_\epsilon$, and is obtained from $A$ by replacing every occurrence of each character $a\in\Sigma_{\epsilon}$ on a transition by the variable $v_a$. 
-The formula $\phi_A$ then binds the fresh variables to the characters they represent, 
-namely, $\phi_A = \bigwedge_{a\in\Sigma_\epsilon} v_a = a$.
-The resultinng overapproximation of $\phi_r$ is then the formula $\syncfof{A_x} {A'} \land \phi_A$.
+The formula $\Psi_c$ then binds the fresh variables to the characters they represent, 
+namely, $\Psi_c = \bigwedge_{a\in\Sigma_\epsilon} v_a = a$.
+The resultinng overapproximation of $\Psi_r$ is then the formula $\syncfof{A_x} {A'} \land \Psi_c$.
 
-The following lemma states the correctness of this construction: Intuitively, the resulting constraint represents presicely the restriction of $L(A)$ to the domain $\semof{A_x}$, the $A_x$-encodings of the strings in $L(A)\cap\semof{A_x}$. 
+The following lemma states the correctness of this construction, and it follows from Corollary~\ref{corollary:pfa}, Lemma~\ref{lemma:synccorrect}. 
+Intuitively, it says that the resulting constraint represents presicely the restriction of $L(A)$ to the domain $\semof{A_x}$, the $A_x$-encodings of the strings in $L(A)\cap\semof{A_x}$. 
+%
+
 %
 \begin{lemma}\label{lemma:memcorrect}
-	${\semof {\syncfof {A_x }{A'} \land \phi_A} } _{V_x \cup \pvarsof{V_x}} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
+	${\semof {\syncfof {A_x }{A'} \land \Psi_c} } _{V_x \cup \pvarsof{V_x}} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
 \end{lemma}
 }
 
