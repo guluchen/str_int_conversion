@@ -612,26 +612,20 @@ Assume that the constraint we take from $\Phi_I$ is a regular constraint $\phi_r
 	\item $V' = \{ v_{(q,a,q')} \mid (q,a,q')\in T\}$
 	\item $T' = \{ (q, v_{(q,a,q'), q') } \mid (q,a,q')\in T\}$
 \end{itemize}
-We use the linear formula $\phi_c \defeq \bigwedge\limits_{(q,a,q')\in T} (v_{(q,a,q')} = a)$ to remember the relation between the fresh character variables in $V'$ and the symbol it represents. The relation between $A$ and $A'$ is expressed in Lemma~\ref{lemma:fa_pfa}.
+We use the linear formula $\Psi_c \defeq \bigwedge\limits_{(q,a,q')\in T} (v_{(q,a,q')} = a)$ to remember the relation between the fresh character variables in $V'$ and the symbol it represents. We add both $\syncfof {A_x }{A'} $ and $\Psi_c$ to $\Phi_O$. The relation between $A$ and $A'$ is expressed in Lemma~\ref{lemma:fa_pfa}.
 
 \begin{lemma}\label{lemma:fa_pfa}
-	$L(A) =  \{  \decode {A'}(I\cup\pim) \mid (I\cup\pim)\in  {\semof {\parikhfof {A'} \wedge \phi_c}} _{V' \cup \#V'} \}$. 
+	$L(A)=	\{  I(x) \mid  I\in  \semof {\Psi_c} \wedge x \in L(A') \} $. 
 \end{lemma}
 
-
-
-
-Intuitively, we create a new character variable for each transition in $T$, later we will add the relation $v_{(q,a,q')}  = a$ to $\Phi_O$.
-
-
-The correctness of this construction is expressed in Lemma~\ref{lemma:memcorrect} below. 
+The correctness of this procedure is expressed in Lemma~\ref{lemma:memcorrect} below. 
 %
 %\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
 \begin{lemma}\label{lemma:memcorrect}
-	$({\semof {\syncfof {A_x }{A'}} \cap \bigcap_{\phi\in\Phi_C} \semof {\phi} } )_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
+	$\semof {\syncfof {A_x }{A'} \wedge \Psi_c}_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
 \end{lemma}
 
-
+Lemma~\ref{lemma:memcorrect} follows from Corollary~\ref{corollary:pfa}, Lemma~\ref{lemma:synccorrect}, and Lemma~\ref{lemma:fa_pfa}. Informally, the lemma says the models of the formula we add to $\Phi_O$, i.e. $\syncfof {A_x }{A'} \wedge \Psi_c$, characterize exactly the models of $x \in  L(A)$ under the restriction of $A_x$.
 
 \begin{figure*}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
@@ -864,11 +858,23 @@ $$
 
 The function $\mathsf{epsilonAfter(k)}$ forces the first $k$ variables to be assigned some number and those after $k$ be assigned $\epsilon$. Recall that we use $-1$ to represent $\epsilon$. The function $\mathsf{toNumber(k)}$ converts the first $k$ variables to the corresponding number in $n$.
 Then we can specify the relation between $n$ and the character variables as follows:
-$$\phi_n\defeq (n=-1 \vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(k)} ) )$$
+$$\Psi_n\defeq (n=-1 \vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(k)} ) )$$
 It says either $x$ is not a number and so $n=-1$ or the first $k$ variables represent the value of $n$, for some $k\in [0,m]$. 
+We add $\Psi_n$ to $\Phi_O$.
 
-\yfc{add a Lemma for correctness}
+The correctness of this procedure is expressed in Lemma~\ref{lemma:sticorrect_pos} and Lemma~\ref{lemma:sticorrect_neg} below. We separate the lemmas to cases where $n\neq -1$ and $n=-1$. 
+\yfc{The correctness lemmas are still buggy}
+%
+%\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
+\begin{lemma}\label{lemma:sticorrect_pos}
+	$\semof {\Psi_n \wedge \parikhfof {A_x} \wedge (v_0 = 0)\wedge (n\neq -1) }_{V_x \cup \#V_x \cup \{n\}} = \{(I\cup\pim \cup I_n) \mid  I_n(n)= \sti{\decode {A_x}(I\cup\pim)}\} $. 
+\end{lemma}
+In this case, $x$ encodes a number. The lemma says when the models we add to $\Phi_O$ represents a word in $\semof{A_x}$ whose integer value is exactly the model for $n$.
 
+\begin{lemma}\label{lemma:sticorrect_neg}
+	$\semof {\Psi_n \wedge \parikhfof {A_x} \wedge (v_0 = 0)\wedge (n = -1) }_{V_x \cup \#V_x \cup \{n\}} = \{I_n\mid (I_n(n) = -1\} \times \semof {\parikhfof {A_x} \wedge (v_0 = 0) }_{V_x \cup \#V_x} $
+\end{lemma}
+In this case, $x$
 
 \hide{The length of $x$ can be specified by the following formula.
 
