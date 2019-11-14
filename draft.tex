@@ -637,21 +637,28 @@ Assume that the constraint we take from $\Phi_I$ is a regular constraint $\phi_r
 	\item $V' = \{ v_{(q,a,q')} \mid (q,a,q')\in T\}$
 	\item $T' = \{ (q, v_{(q,a,q')}, q')  \mid (q,a,q')\in T\}$
 \end{itemize}
-We use the linear formula $\phi_c \defeq \bigwedge\limits_{(q,a,q')\in T} (v_{(q,a,q')} = a)$ to remember the relation between the fresh character variables in $V'$ and the symbol it represents. The relation between $A$ and $A'$ is expressed in Lemma~\ref{lemma:fa_pfa}.
+We use the linear formula $\Psi_c \defeq \bigwedge\limits_{(q,a,q')\in T} (v_{(q,a,q')} = a)$ to remember the relation between the fresh character variables in $V'$ and the symbol it represents. We add both $\syncfof {A_x }{A'} $ and $\Psi_c$ to $\Phi_O$. The relation between $A$ and $A'$ is expressed in Lemma~\ref{lemma:fa_pfa}.
 
 \begin{lemma}\label{lemma:fa_pfa}
-	$L(A) =  \{  \decode {A'}(I\cup\pim) \mid (I\cup\pim)\in  {\semof {\parikhfof {A'} \wedge \phi_c}} _{V' \cup \#V'} \}$. 
+	$L(A)=	\{  I(x) \mid  I\in  \semof {\Psi_c} \wedge x \in L(A') \} $. 
 \end{lemma}
 
-Intuitively, we create a new character variable for each transition in $T$, later we will add the relation $v_{(q,a,q')}  = a$ to $\Phi_O$.
+%<<<<<<< HEAD
+%Intuitively, we create a new character variable for each transition in $T$, later we will add the relation $v_{(q,a,q')}  = a$ to $\Phi_O$.
 
 
 The correctness of this construction is expressed in Lemma~\ref{lemma:memcorrect} below. 
+%=======
+%The correctness of this procedure is expressed in Lemma~\ref{lemma:memcorrect} below. 
+%>>>>>>> 67b962e5df2a0689e472f2525f44d512d2c23dbd
 %
 %\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
 \begin{lemma}\label{lemma:memcorrect}
-	$({\semof {\syncfof {A_x }{A'}} \cap \bigcap_{\phi\in\Phi_C} \semof {\phi} } )_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
+	$\semof {\syncfof {A_x }{A'} \wedge \Psi_c}_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
+
 \end{lemma}
+
+Lemma~\ref{lemma:memcorrect} follows from Corollary~\ref{corollary:pfa}, Lemma~\ref{lemma:synccorrect}, and Lemma~\ref{lemma:fa_pfa}. Informally, the lemma says the models of the formula we add to $\Phi_O$, i.e. $\syncfof {A_x }{A'} \wedge \Psi_c$, characterize exactly the models of $x \in  L(A)$ under the restriction of $A_x$.
 
 \lh{Simplified version:
 Assume that the constraint we take from $\Phi_I$ is a regular constraint $\phi_r \defeq x \in L(A)$. 
@@ -834,7 +841,7 @@ Note that $\#(v_0^0)=\#(v_0^1)=\#(v_0^2)=\#(v_0^3)$, so we just use $\#(v_0^0)$ 
 
 
 
-\todo{Maybe talk about the heuristic that we merge the list elements into one}
+
 
 }
 
@@ -897,18 +904,47 @@ Such PFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and und
 Remember that the character variables can be assigned $\epsilon$. In order to simplify the construction, we an encoding to shift all the $\epsilon$-transitions to the least significant digits, i.e., if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j+1,m]$.  To explain this encoding, we first define two macro function:
 
 $$\begin{array}{rl}
-\mathsf{epsilonAfter(k)}\defeq& (0\leq v_0,\ldots, v_k\leq 9) \wedge\\
+\mathsf{epsilonAfter(k)}\defeq& (0\leq v_1,\ldots, v_k\leq 9) \wedge\\
 &v_{k+1}=\ldots =v_m = -1\\
-\mathsf{toNumber(k)}\defeq& (n = v_0\times 10^{k} + v_1\times 10^{k-1} + \ldots + v_{k})
+\mathsf{toNumber(k)}\defeq& (n = v_1\times 10^{k-1} + v_2\times 10^{k-2} + \ldots + v_{k})
 \end{array}
 $$
 
-The function $\mathsf{epsilonAfter(k)}$ forces the first $k$ variables to be assigned some number and those after $k$ be assigned $\epsilon$. Recall that we use $-1$ to represent $\epsilon$. The function $\mathsf{toNumber(k)}$ converts the first $k$ variables to the corresponding number in $n$.
-Then we can specify the relation between $n$ and the character variables as follows:
-$$\phi_n\defeq (n=-1 \vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(k)} ) )$$
-It says either $x$ is not a number and so $n=-1$ or the first $k$ variables represent the value of $n$, for some $k\in [0,m]$. 
+The function $\mathsf{epsilonAfter(k)}$ forces the first $k$ variables to be assigned some number and those after $k$ be assigned $\epsilon$. Recall that we use $-1$ to represent $\epsilon$. The function $\mathsf{toNumber(k)}$ converts the first $k$ variables to the corresponding number in $n$. \yfc{say shifting $\epsilon$ to the right will not change the language}
 
-\yfc{add a Lemma for correctness}
+The condition that when $x$ is ``not a number'' is specified by the following formula.
+
+$$\Psi_{NaN} \defeq  \bigvee_{i\in [1,m]} v_i>9$$
+
+Then we can specify the relation between $n$ and the character variables as follows:
+$$\Psi_n\defeq  (n=-1 \wedge \Psi_{NaN})\vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(k)} )$$
+It says either $x$ is not a number and so $n=-1$ or the first $k$ variables represent the value of $n$, for some $k\in [0,m]$. 
+We add $\Psi_n$ to $\Phi_O$.
+
+The correctness of this procedure is expressed in Lemma~\ref{lemma:sticorrect_pos} and Lemma~\ref{lemma:sticorrect_neg} below. We separate the lemmas to cases where $n\neq -1$ and $n=-1$. 
+\yfc{The correctness lemmas are still buggy}
+%
+%\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
+\begin{lemma}\label{lemma:sticorrect_pos}
+	$\semof {\Psi_n \wedge \parikhfof {A_x} \wedge (v_0 = 0)\wedge (n\neq -1) }_{V_x \cup \#V_x \cup \{n\}} = \{(I\cup\pim \cup I_n) \mid  I_n(n)= \sti{\decode {A_x}(I\cup\pim)}\} $. 
+\end{lemma}
+In this case, $x$ encodes a number. The lemma says when the models we add to $\Phi_O$ represents a word in $\semof{A_x}$ whose integer value is exactly the model for $n$.
+
+\begin{lemma}\label{lemma:sticorrect_neg}
+	$\semof {\Psi_n \wedge \parikhfof {A_x} \wedge (v_0 = 0)\wedge (n = -1) }_{V_x \cup \#V_x \cup \{n\}} = 
+	\{(I\cup\pim \cup I_n) \mid  I_n(n)= -1 \wedge \decode {A_x}(I\cup\pim) \in [0,9]^+  \}$
+\end{lemma}
+In this case, $x$ does not encode a number. The lemma says  the models we add to $\Phi_O$ represents words in both $\semof{A_x}$ and $[0,9]^+$, which means not a number, and $n$ is $-1$.
+
+\subsection{Handling the lengths of variables}
+After the set $\Phi_I$ becomes empty, we start to add constraints to $\Phi_O$ to relate the lengths of string variables and their PFA. To do so, we first define $\Phi_{V_x}$ that describes the number of occurrences of each non-epsilon character variable in $x$.
+
+$$\Phi_{V_x} \defeq \bigwedge_{v\in V_x} ( (s_v = 0 \wedge v = -1) \vee (s_v = \#v \wedge v \neq -1)) $$
+
+
+More concretely, for each string variable $x$, we add linear formula $\Psi_{|x|}$ to $\Phi_O$. 
+
+$$\Phi_{|x|} \defeq \Phi_{V_x}  \wedge |x| =  \sum_{v\in V_x}  s_v $$
 
 
 \hide{The length of $x$ can be specified by the following formula.
