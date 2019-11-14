@@ -667,18 +667,6 @@ In the rest of the section, we assume each string variable $x$ is restricted to 
 	\label{fig:sfa}
 \end{figure*}
 
-\subsection{Handling Regular Constraints Symbolically} \label{section:mem}
-Assume that the constraint we take from $\Phi_I$ is a regular constraint $\phi_r \defeq x \in L(A)$. Assume that $A=(Q,T,\Sigma,q_i,q_f)$. First we create a PFA $A' = (Q,T', V',q_i,q_f)$ that has exactly the same set of states as $A$. The set of transitions $T'$ and character variables $V'$ can be obtained by the following procedure.
-Initially, both $V'$ and $T'$ are empty sets.
-For each transition $(q, a, q') \in T$, we add a fresh character variable $v$ to $V'$, add the transition $(q,v,q')$ to $T'$, and add the constraint $v = \modelsof{a}$ to $\Phi_O$. Recall that $\modelsof{a}$ is the numerical encoding of the character $a$. After $A'$ is built, we add the synchronization formula $\syncfof {A_x }{A'}$ to $\Phi_O$. 
-
-The correctness of this construction is expressed in Lemma~\ref{lemma:memcorrect} below. 
-%
-%\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
-\begin{lemma}\label{lemma:memcorrect}
-	%$\semof {\exists V_\times . \syncfof A {A'}}\restrict{\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
-	${\semof {\syncfof {A_x }{A'}}}_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
-\end{lemma}
 
 \subsection{Handling Equality Constraints Symbolically} \label{section:eq}
 
@@ -766,13 +754,40 @@ Note that $\#(v_0^0)=\#(v_0^1)=\#(v_0^2)=\#(v_0^3)$, so we just use $\#(v_0^0)$ 
 
 }
 
+\subsection{Handling Regular Constraints Symbolically} \label{section:mem}
+
+\yfc{The version here is buggy, but fixable. I am not sure what is the best fix, so for now I just leave it here. The problem is we cannot synchronize a PFA and a general parametric automaton (which can be non-flat)}
+Assume that the constraint we take from $\Phi_I$ is a regular constraint $\phi_r \defeq x \in L(A)$. Assume that $A=(Q,T,\Sigma,q_i,q_f)$. First we create a PFA $A' = (Q,T', V',q_i,q_f)$ that has exactly the same set of states as $A$. The set of transitions $T'$ and character variables $V'$ is defined as follows:
+
+\begin{itemize}
+	\item $V' = \{ v_{(q,a,q')} \mid (q,a,q')\in T\}$
+	\item $T' = \{ (q, v_{(q,a,q'), q') } \mid (q,a,q')\in T\}$
+\end{itemize}
+We use the linear formula $\phi_c \defeq \bigwedge_{(q,a,q')\in T} {v_{(q,a,q')} = a}$ to remember the relation between the fresh character variables in $V'$ and the symbol it represents. The relation between $A$ and $A'$ is expressed in Lemma~\ref{lemma:fa_pfa}.
+
+\begin{lemma}\label{lemma:fa_pfa}
+	$L(A) = ( {\semof {\syncfof {A_x }{A'}} \cap \bigcap_{\phi\in\Phi_C} \semof {\phi} } )_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
+\end{lemma}
+
+
+Intuitively, we create a new character variable for each transition in $T$, later we will add the relation $v_{(q,a,q')}  = a$ to $\Phi_O$.
+
+
+The correctness of this construction is expressed in Lemma~\ref{lemma:memcorrect} below. 
+%
+%\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
+\begin{lemma}\label{lemma:memcorrect}
+	$({\semof {\syncfof {A_x }{A'}} \cap \bigcap_{\phi\in\Phi_C} \semof {\phi} } )_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
+\end{lemma}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Handling String-Integer Conversion} \label{section:s2i}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-In this section, we discuss how to handle the constraint $n=\sti{x}$ by restricting the domain of $x$ to some PFA. Let us begin with a simple example, assume that we use the PFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee n=-1 $.
+Assume that the constraint we take from $\Phi_I$ is a string-number conversion constraint  $\phi_s \defeq n=\sti{x}$. We will discuss how to make the corresponding linear formulas in this section.
+
+Let us begin the discussion with a simple example, assume that we use the PFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee n=-1 $.
 
 For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)}-1}{100-1}$. 
 The constraint uses $\#(v_0)$ to capture the total number of loop traversal.
@@ -785,7 +800,7 @@ To the best of our knowledge, the satisfiability problem of integer constraints 
 
 \paragraph{PFA that allows efficient string-integer conversion: } In the previous discussion, we know that it is unlikely to use arbitrary PFA and gain efficient solving procedure, due to the requirement to solve exponential integer constraints. The problem is that each loop in the PFA creates an exponential component. An immediate idea would be that maybe we can restrict the variable to some specific PFA that allow more efficient constraint solving. At the same time, we want to keep some good property, i.e., the search space covers all integers with at most $m$-digits.
 
-Our first attempt is a PFA with no loop, i.e., a straight line structure (e.g., the PFA in Fig~\ref{fig:sfa_its} without the self-loop at $q_0$). The corresponding integer constraint does not have exponential components. However, it does not ensure the property that all numbers with at most $m$-digits are covered. Consider the example $\sti{x}=10 \wedge |x|=5$. The number $10$ has only $2$-digits, at the first glance, a straight-line PFA with two transitions, i.e., the PFA \scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
+Our first attempt is a PFA with no loop, i.e., a straight line structure. The corresponding integer constraint does not have exponential components. However, it does not ensure the property that all numbers with at most $m$-digits are covered. Consider the example $\sti{x}=10 \wedge |x|=5$. The number $10$ has only $2$-digits, at the first glance, a straight-line PFA with two transitions, i.e., the PFA \scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 	\begin{tikzpicture} 
 	\node[state,initial] (q0)  {$q_0$};
@@ -794,9 +809,9 @@ Our first attempt is a PFA with no loop, i.e., a straight line structure (e.g., 
 	
 	\draw[->] (q0) edge node [below]{$v_1$} (q1) ;
 	\draw[->] (q1) edge node [below]{$v_2$} (q2) ;
-	\end{tikzpicture}}, should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable, because the length of $x$ cannot be $5$  under this domain restriction.
+	\end{tikzpicture}} should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable, because the length of $x$ cannot be $5$  under this domain restriction.
 
-However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$. The key is that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. In order to handle all number with at most $m$ digits, we propose to restrict the domain of $x$ to a PFA in Figure~\ref{fig:sfa_its}.  The PFA has a self-loop transition labeled $v_0$ at $q_0$ and we always add a constraint $v_0=0$ for such PFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Although this PFA still has a loop, but it will not create any exponential component because the loop only represents a sequence of `0' that occurs in the prefix of $x$. It will not affect the integer value of $n=\sti{x}$.
+However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$. The key is that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. In order to handle all number with at most $m$ digits, we propose to restrict the domain of $x$ to a PFA in Figure~\ref{fig:sfa_its}.  The PFA has a self-loop transition labeled $v_0$ at $q_0$ and we add a constraint $v_0=0$ to $\Phi_O$ for such PFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Although this PFA still has a loop, but it will not create any exponential component because the loop only represents a sequence of `0' that occurs in the prefix of $x$. It will not affect the integer value of $n=\sti{x}$.
 
 \begin{figure}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
@@ -820,19 +835,21 @@ However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``0001
 \end{figure}
 
 Such PFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
-Remember that the character variables can be assigned $\epsilon$. In order to handle such cases efficiently, we use an encoding that if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j,m]$, i.e., we shift all the $\epsilon$-transitions to the least significant digits. In order to explain this encoding, we first define two macro function:
+Remember that the character variables can be assigned $\epsilon$. In order to simplify the construction, we an encoding to shift all the $\epsilon$-transitions to the least significant digits, i.e., if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j+1,m]$.  To explain this encoding, we first define two macro function:
 
 $$\begin{array}{rl}
-\mathsf{epsilonAfter(k)}::=& (0\leq v_0,\ldots, v_k\leq 9) \wedge\\
+\mathsf{epsilonAfter(k)}\defeq& (0\leq v_0,\ldots, v_k\leq 9) \wedge\\
 &v_{k+1}=\ldots =v_m = -1\\
-\mathsf{toNumber(k)}::=& (n = v_0\times 10^{k} + v_1\times 10^{k-1} + \ldots + v_{k})
+\mathsf{toNumber(k)}\defeq& (n = v_0\times 10^{k} + v_1\times 10^{k-1} + \ldots + v_{k})
 \end{array}
 $$
 
 The function $\mathsf{epsilonAfter(k)}$ forces the first $k$ variables to be assigned some number and those after $k$ be assigned $\epsilon$. Recall that we use $-1$ to represent $\epsilon$. The function $\mathsf{toNumber(k)}$ converts the first $k$ variables to the corresponding number in $n$.
 Then we can specify the relation between $n$ and the character variables as follows:
-$$(n=-1 \vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(k)} ) )$$
-It says either $x$ is not a number and so $n=-1$ or the first $k$ variables represent the value of $n$, for some $k\in [0,m]$ .
+$$\phi_n\defeq (n=-1 \vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(k)} ) )$$
+It says either $x$ is not a number and so $n=-1$ or the first $k$ variables represent the value of $n$, for some $k\in [0,m]$. 
+
+\yfc{add a Lemma for correctness}
 
 
 \hide{The length of $x$ can be specified by the following formula.
@@ -852,7 +869,7 @@ $\begin{array}{ccc}
 
 \section{Implementation}\label{section:implementation}
 \input{evaluation}
-
+\newpage
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{refs}
 
