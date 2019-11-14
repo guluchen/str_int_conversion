@@ -394,11 +394,12 @@ After the PFA for each variable is selected, we step-wisely pick and remove a st
 %We use $v$ and its variants for character variables. We call a string over $\cvar$ (character variables) a \emph{symbolic string}.
 %An \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$. For a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 
+
+
 We introduce \emph{parametric flat automata} (PFA) that will be used to define patterns 
-%for the string variable domain restriction. 
 used by the under-approximation module to restrict the domain of string variables. 
-Namely, an PFA is a finite automaton $A = (Q,T,\cvar,\st{0}{0},\st{m}{0})$ operating over an alphabet $\cvar$ of \emph{character variables}, 
-and satisfying the following structural constraints:
+A \emph{parametric automaton} (PA) is a finite automaton operating over an alphabet $\cvar$ of \emph{character variables}. 
+A parametric flat automaton is a parametric automaton $A = (Q,T,\cvar,\st{0}{0},\st{m}{0})$ satisfying the following structural constraints:
 \begin{enumerate}
 	\item The final state $\st{m}{0}$ is reached from  the initial state $\st{0}{0}$ through a straight path of $m-1$ transitions $(\st{i}{0},v_i,\st{i+1}{0}) \in T$, $\st{i}{0} \in Q$ for $i\in[0,m-1]$. %, with pairwise distiand states $\st{i}{0} \in Q$ for $i\in[0,m-1]$.
 	\item  
@@ -502,12 +503,12 @@ but we may also wish to specify when a character variable is assigned $\epsilon$
 Hence, to allow purely arithmetic formulas to talk about the value $\epsilon$, we encode $\epsilon$ as $-1$.
 In the further development, $\epsilon$ will mean $-1$ when working with arithmetic formulas constraining interpretations of character variables.
 
-\paragraph{Synchronization of PFA}
-For two PFA $A$ and $A'$ over character variables $V$ and $V'$, respectively, 
+\paragraph{Synchronization of PAs}
+For two PAs $A$ and $A'$ over character variables $V$ and $V'$, respectively, 
 it builds \emph{synchronization formula} $\syncfof A {A'}$, a linear formula over $\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo$ encoding the semantic intersection $\semof A \cap \semof {A'}$. The synchronization formula will be used in, e.g., the decision procedure of equality constraints $t_1=t_2$ to find a common interpretation of $t_1$ and $t_2$. More precisely, the models of the synchronization formula $\syncfof A {A'}$ correspond to the set of all pairs of word encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
 $\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$, which constitute the intersection.
 
-Particularly, a synchronization formula is build for two PFA  
+Particularly, a synchronization formula is build for two PAs  
 $A = (Q,T,\cvarone,q_i,q_f)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f')$ such that $\cvarone \cap \cvartwo = \emptyset$. 
 %
 It is extracted from the \emph{asynchronous product} of $A$ and $A'$. 
@@ -569,13 +570,14 @@ $$
 
 The correctness of this construction is stated in Lemma~\ref{lemma:synccorrect} below. The lemma can also be understood as a precise specification the semantics of the synchronization formula, on which we rely for correctness of the construction of under-approximations of string constraints. 
 %
+\hide{
 \begin{lemma}\label{lemma:synccorrect}
 %$\semof {\exists V_\times . \syncfof A {A'}}\restrict{\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 $\semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
 \end{lemma}
 %
-Another version:
-\begin{lemma}
+Another version:}
+\begin{lemma}\label{lemma:synccorrect}
 $
 \semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} = 
 \{
@@ -585,8 +587,7 @@ x\in L(A), x'\in L(A'), I(x) = I(x')
 $
 \end{lemma}
 Notice that if $A$ is flat (or, symmetrically, if $A'$ is flat), then $\semof A \cap \semof {A'}$ can be still decoded from $\semof {\syncfof A {A'}}$ due to Corollary~\ref{corollary:pfa}, 
-namely in the form of\\ $\semof A \cap \semof {A'} = \{\decode A(I\cup x) \mid \exists J.((I\cup x) \cup J) \in \semof{\syncfof A {A'}}\}$.  
-\bigskip
+namely in the form of $\semof A \cap \semof {A'} = \{\decode A(I\cup \pim) \mid (I\cup \pim) \in \semof{\syncfof A {A'}}_{\cvarone\cup \pvarone}\}$.  
 
 Informally, the lemma states that the models of $\syncfof A {A'}$ encode precisely the pairs of equivalent encodings of words from $\semof{A}$ and $\semof{A'}$, that constitute the intersection $\semof{A} \cap \semof{A'}$. A minor technical difficulty is that the modes of $\syncfof A {A'}$ include also an assignment to the auxiliary variables of $V_\times = (\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$. Hence in the lemma, we have to restrict the models to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. %This is  achieve by quantifying out the variables of $V_\times$.
 
@@ -602,6 +603,34 @@ In the rest of the section, we assume each string variable $x$ is restricted to 
 %\begin{lemma}
 %	Symbolic flat automata are closed under concatenation.
 %\end{lemma}
+
+\subsection{Handling Regular Constraints Symbolically} \label{section:mem}
+
+Assume that the constraint we take from $\Phi_I$ is a regular constraint $\phi_r \defeq x \in L(A)$. Assume that $A=(Q,T,\Sigma,q_i,q_f)$. First we create a PA $A' = (Q,T', V',q_i,q_f)$ that has exactly the same set of states as $A$. The set of transitions $T'$ and character variables $V'$ is defined as follows:
+
+\begin{itemize}
+	\item $V' = \{ v_{(q,a,q')} \mid (q,a,q')\in T\}$
+	\item $T' = \{ (q, v_{(q,a,q'), q') } \mid (q,a,q')\in T\}$
+\end{itemize}
+We use the linear formula $\phi_c \defeq \bigwedge\limits_{(q,a,q')\in T} (v_{(q,a,q')} = a)$ to remember the relation between the fresh character variables in $V'$ and the symbol it represents. The relation between $A$ and $A'$ is expressed in Lemma~\ref{lemma:fa_pfa}.
+
+\begin{lemma}\label{lemma:fa_pfa}
+	$L(A) =  \{  \decode {A'}(I\cup\pim) \mid (I\cup\pim)\in  {\semof {\parikhfof {A'} \wedge \phi_c}} _{V' \cup \#V'} \}$. 
+\end{lemma}
+
+
+
+
+Intuitively, we create a new character variable for each transition in $T$, later we will add the relation $v_{(q,a,q')}  = a$ to $\Phi_O$.
+
+
+The correctness of this construction is expressed in Lemma~\ref{lemma:memcorrect} below. 
+%
+%\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
+\begin{lemma}\label{lemma:memcorrect}
+	$({\semof {\syncfof {A_x }{A'}} \cap \bigcap_{\phi\in\Phi_C} \semof {\phi} } )_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
+\end{lemma}
+
 
 
 \begin{figure*}
@@ -768,31 +797,6 @@ Note that $\#(v_0^0)=\#(v_0^1)=\#(v_0^2)=\#(v_0^3)$, so we just use $\#(v_0^0)$ 
 
 }
 
-\subsection{Handling Regular Constraints Symbolically} \label{section:mem}
-
-\yfc{The version here is buggy, but fixable. I am not sure what is the best fix, so for now I just leave it here. The problem is we cannot synchronize a PFA and a general parametric automaton (which can be non-flat)}
-Assume that the constraint we take from $\Phi_I$ is a regular constraint $\phi_r \defeq x \in L(A)$. Assume that $A=(Q,T,\Sigma,q_i,q_f)$. First we create a PFA $A' = (Q,T', V',q_i,q_f)$ that has exactly the same set of states as $A$. The set of transitions $T'$ and character variables $V'$ is defined as follows:
-
-\begin{itemize}
-	\item $V' = \{ v_{(q,a,q')} \mid (q,a,q')\in T\}$
-	\item $T' = \{ (q, v_{(q,a,q'), q') } \mid (q,a,q')\in T\}$
-\end{itemize}
-We use the linear formula $\phi_c \defeq \bigwedge_{(q,a,q')\in T} {v_{(q,a,q')} = a}$ to remember the relation between the fresh character variables in $V'$ and the symbol it represents. The relation between $A$ and $A'$ is expressed in Lemma~\ref{lemma:fa_pfa}.
-
-\begin{lemma}\label{lemma:fa_pfa}
-	$L(A) = ( {\semof {\syncfof {A_x }{A'}} \cap \bigcap_{\phi\in\Phi_C} \semof {\phi} } )_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
-\end{lemma}
-
-
-Intuitively, we create a new character variable for each transition in $T$, later we will add the relation $v_{(q,a,q')}  = a$ to $\Phi_O$.
-
-
-The correctness of this construction is expressed in Lemma~\ref{lemma:memcorrect} below. 
-%
-%\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
-\begin{lemma}\label{lemma:memcorrect}
-	$({\semof {\syncfof {A_x }{A'}} \cap \bigcap_{\phi\in\Phi_C} \semof {\phi} } )_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
-\end{lemma}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -812,7 +816,7 @@ Let us have a look at another example. If we restrict the domain of $x$ to the P
 It is not difficult to observe that, for the case of an arbitrary PFA of $m$ loops, the formula to define $n$ contains $m$ exponential components, one for each loop.
 To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. As said in the introduction, the problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances. So we do not expect that this constraint can be solved efficiently.
 
-\paragraph{PFA that allows efficient string-integer conversion: } In the previous discussion, we know that it is unlikely to use arbitrary PFA and gain efficient solving procedure, due to the requirement to solve exponential integer constraints. The problem is that each loop in the PFA creates an exponential component. An immediate idea would be that maybe we can restrict the variable to some specific PFA that allow more efficient constraint solving. At the same time, we want to keep some good property, i.e., the search space covers all integers with at most $m$-digits.
+\paragraph{PFA that allows efficient string-number conversion: } In the previous discussion, we know that it is unlikely to use arbitrary PFA and gain efficient solving procedure, due to the requirement to solve exponential integer constraints. The problem is that each loop in the PFA creates an exponential component. An immediate idea would be that maybe we can restrict the variable to some specific PFA that allow more efficient constraint solving. At the same time, we want to keep some good property, i.e., the search space covers all integers with at most $m$-digits.
 
 Our first attempt is a PFA with no loop, i.e., a straight line structure. The corresponding integer constraint does not have exponential components. However, it does not ensure the property that all numbers with at most $m$-digits are covered. Consider the example $\sti{x}=10 \wedge |x|=5$. The number $10$ has only $2$-digits, at the first glance, a straight-line PFA with two transitions, i.e., the PFA \scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
