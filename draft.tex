@@ -291,6 +291,7 @@ Given a linear formula $\phi$, a set of variables $V$, and an \emph{interpretati
 we denote by $I\models_V \phi$ that $I$ satisfies $\phi$ (which is defined in the standard manner), and call $I$ a \emph{model} of $\phi$ over $V$. \lh{Our use of indexing by $V$ in the text later is not very nice. Add this for clarity?: If $V$ contain additional variables not present in $\phi$, the these might be assigned arbitrary values by $I$. If $V$ is missing some of the variables of $\phi$, then it must be possible to complete $I$ with assignment of the missing variables into a satisfying assignment of $\phi$ (as in existential quantification).}
 We use $\modelsof \phi$ to denote the set all models of $\phi$ over $V$. 
 We drop the reference to $V$ and write just ``model of $\phi$'',  $\modelsof \phi$, and $\models$ when no confusion may arise. For a set of interpretations $S$, we use $S_\Sigma$ to denote the set of interpretations obtained from $S$ by projecting the domain to $\Sigma$.
+\lh{or really have just an equivalence of semantics indexed by variables?}
 
 The \emph{Parikh image} of a word $w\in \Sigma^*$ is the assignment 
 $\parikhof w$ that for every character $a\in\Sigma$ maps the \emph{Parikh variable} $\#a$ to the number of occurrences of $a$ in $w$.
@@ -383,6 +384,22 @@ After the PFA for each variable is selected, we step-wisely pick and remove a st
 
 
 \yfc{say handling regular constraint can be exponential to the number of constraints, but in our under-approximation, it is polynomial.}
+
+\newcommand{\encode}[1]{\mathit{encode}_{#1}}
+\lh{What about to put this somewhere, it will simplify formulation of the correctness lemmas. Roughly, formulation need to be polished a and explained:}
+Given a PFA $A$, and a language $L\subseteq \Sigma^*$, we define the set of $A$ encodings of $L\cap \semof A$ as
+the set $\encode A (L) = \{(I\cup\pim) \mid \decode A (I\cup \pim) \in L \cap \semof{A}\}$.
+%
+A domain restriction $R$ for a string contraint $\phi$ over variables $X$ is a mapping that assigns to every variable $x\in X$ a PFA $R(x)$ such that for different variables $x,y \in X$, $R(x)$ and $R(y)$ have disjoint sets of variables. 
+%
+For an interpretation $I:X\rightarrow \Sigma^*$, we define its $R$-encoding as the set $\encode R(I) = \bigcup_{x\in X} \encode A(I(x))$, and we left this notation to sets of interpretation in the standard manner, i.e. $\encode R J = \bigcup_{I \in J}\encode R (I)$.
+%
+In the following section, we will discuss how, given a string contraint $\phi$ and a domain restriction $R$,
+to build an arithmetic formula $\Psi$ such that $\semof\Psi_{V_R\cup\#V_R} = \encode R(\semof{\phi})$. 
+Tha is, formula $\Psi$ will capture $R$-encodings of soltuions of $\phi$ under the domain restriction given by $R$.
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Parametric Flat Automata} \label{section:sfa}
@@ -643,6 +660,11 @@ Intuitively, it says that the resulting constraint represents precisely the rest
 %	${\semof {\syncfof {A_x }{A'} \land \Psi_{char}} } _{V_x \cup \pvarsof{V_x}} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
 \end{lemma}
 
+\lh{
+\begin{lemma}
+${\semof {\syncfof {A_x }{A'} \land \Psi_{char}} } _{V_x \cup \pvarsof{V_x}} = \encode {A_x}(L(A))$
+\end{lemma}
+}
 
 
 
@@ -767,6 +789,16 @@ The correctness of this procedure is stated in Lemma~\ref{lemma:eqcorrect} below
 		$w_1\cdot w_2 \cdots w_n = w_{n+1}\cdot w_{n+2} \cdots w_m$.
 	\end{center}
 \end{lemma}
+
+\lh{Assume that we were working with a domain restriction $R:[x_i]_1^m\rightarrow \text{PFAs}$.
+\begin{lemma}
+$\semof {\syncfof A {A'}  \wedge \Psi_{rename}}_{V_{x_1} \cup\ldots\cup V_{x_m}  \cup \#V_{x_1} \cup\ldots\cup \#V_{x_m} } = \encode R (\semof{\phi_e})$.
+\end{lemma}
+Also, we could denote by $V_R$ the varsiables $V_{x_1} \cup\ldots\cup V_{x_m}$ (these are the variables used by the domain restriction), 
+and use $\# V_R$, so the lemma becomes \\ 
+$\semof {\syncfof A {A'}  \wedge \Psi_{rename}}_{V_R \cup \# V_R} = \encode R (\semof{\phi_e})$.
+
+}
 
 
 \hide{
@@ -965,7 +997,19 @@ In this case, $x$ encodes a number. The lemma says when the models we add to $\P
 	$\semof {\Psi_n \wedge \parikhfof {A_x} \wedge (v_0 = 0)\wedge (n = -1) }_{V_x \cup \#V_x \cup \{n\}} = 
 	\{(I\cup\pim \cup I_n) \mid  I_n(n)= -1 \wedge \decode {A_x}(I\cup\pim) \not\in [0,9]^+  \}$
 \end{lemma}
+
 In this case, $x$ does not encode a number. The lemma says  the models we add to $\Phi_O$ represents words in both $\semof{A_x}$ and $[0,9]^+$, which means not a number, and $n$ is $-1$.}
+
+\lh{
+\begin{lemma}
+$
+\semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} = \encode  R(\semof{\phi_s})
+$
+\end{lemma}
+The $n$ must somehow be handled properly by $\encode  R(\phi_s)$, I did not have time to think about it yet.
+}
+
+
 
 \subsection{Handling the lengths of variables}
 After the set $\Phi_I$ becomes empty, we start to add constraints to $\Phi_O$ to relate the lengths of string variables and their PFA. To do so, we first define $\Phi_{V_x}$ that describes the number of occurrences of each non-epsilon character variable in $x$.
@@ -992,6 +1036,7 @@ $\begin{array}{ccc}
 % \section{Evaluation}
 %  \label{section:evaluation}
 % \todo{copy a few tables from our test site to here}
+
 
 \section{Implementation}\label{section:implementation}
 \input{evaluation}
