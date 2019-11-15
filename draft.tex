@@ -351,7 +351,7 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 \section{Under-approximation} \label{section:under_approximate}
 In this section, we describe formally how to restrict the domain of string variables to patterns defined by \emph{parametric flat automata} (PFA) (Section~\ref{section:sfa}) and hence convert string constraints $\Phi_I$ to a set of equisatisfiable linear formulas $\Phi_O$ in polynomial-time. We assume all disequality constraint $t_1 \neq t2$ are already converted to equal-satisfiable equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}. 
 
-We pick a PFA for each variable in $\vars$ at the beginning of the decision procedure and then construct the set of linear integer constraints in a stepwise manner. In each step, we take a string constraint from $\Phi_I$ and depending on the type of the string constraint, we execute the corresponding procedure to produce the linear integer constraints and add them to the output linear formulas $\Phi_O$. 
+We pick a PFA for each variable in $\vars$ at the beginning of the decision procedure and then construct the set of linear integer constraints in a stepwise manner. In each step, we take a string constraint from $\Phi_I$ and depending on the type of the string constraint, we execute the corresponding procedure to produce the linear integer constraints and add them to the output linear formulas $\Phi_O$. We also add constraints to $\Phi_O$ to ensure all character variables of the PFAs only pick values from $\Sigma_\epsilon$.
 
 More concretely, at the beginning, we move all integer constraints in $\Phi_I$ to the output linear formulas $\Phi_O$. After this step, $\Phi_I$ is the union of the three sets of constraints: the equality constraints, the regular constraints, and the string-number conversion constraints. For all string variables $x$ that occurs in a string-number conversion constraint $n= \sti{x}$, we follow the rule that will be described in Section~\ref{section:s2i} to pick the corresponding PFA. We do not set any restriction to the selection of PFA for other string variables. The selection is an implementation decision. We will describe the PFA selection strategy of \tool in Section~\ref{section:implementation}. 
 
@@ -817,9 +817,9 @@ Note that $\#(v_0^0)=\#(v_0^1)=\#(v_0^2)=\#(v_0^3)$, so we just use $\#(v_0^0)$ 
 \subsection{Handling String-Integer Conversion} \label{section:s2i}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Assume that the constraint we take from $\Phi_I$ is a string-number conversion constraint  $\phi_s \defeq n=\sti{x}$. We will discuss how to make the corresponding linear formulas in this section.
+Assume that the constraint we take from $\Phi_I$ is a string-number conversion constraint  $\phi_s \defeq n=\sti{x}$. In this section, we how to make the corresponding linear formulas for $\Phi_O$.
 
-Let us begin the discussion with a simple example, assume that we use the PFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee n=-1 $.
+We begin the discussion with a simple example, assume that we use the PFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee (n=-1 \wedge (v_0 >9 \vee v_1 >9))$.
 
 For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)}-1}{100-1}$. 
 The constraint uses $\#(v_0)$ to capture the total number of loop traversal.
@@ -830,9 +830,25 @@ Let us have a look at another example. If we restrict the domain of $x$ to the P
 It is not difficult to observe that, for the case of an arbitrary PFA of $m$ loops, the formula to define $n$ contains $m$ exponential components, one for each loop.
 To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. As said in the introduction, the problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances. So we do not expect that this constraint can be solved efficiently.
 
-\paragraph{PFA that allows efficient string-number conversion: } In the previous discussion, we know that it is unlikely to use arbitrary PFA and gain efficient solving procedure, due to the requirement to solve exponential integer constraints. The problem is that each loop in the PFA creates an exponential component. An immediate idea would be that maybe we can restrict the variable to some specific PFA that allow more efficient constraint solving. At the same time, we want to keep some good property, i.e., the search space covers all integers with at most $m$-digits.
+\paragraph{PFA that allows efficient string-number conversion: } Now we know that it is unlikely to use arbitrary PFA and gain efficient solving procedure, due to the requirement to solve exponential integer constraints. The cause of the problem is that each loop in the PFA creates an exponential component in the constraint. An immediate idea would be that maybe we can pick some specific PFA that allow more efficient constraint solving. At the same time, we want to keep a good property, that is, the search space covers all integers up to $m$-digits.
 
-Our first attempt is a PFA with no loop, i.e., a straight line structure. The corresponding integer constraint does not have exponential components. However, it does not ensure the property that all numbers with at most $m$-digits are covered. Consider the example $\sti{x}=10 \wedge |x|=5$. The number $10$ has only $2$-digits, at the first glance, a straight-line PFA with two transitions, i.e., the PFA \scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
+Our first attempt is a PFA without loop, i.e., a straight line structure 
+\scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
+			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
+	\begin{tikzpicture} 
+		\node[state,initial] (q0)  {$q_0$};
+		\node[state] (q1) [right = 1cm of q0] {$q_1$};
+		\node (q2) [right = 0.8cm of q1]{};
+		\node (q3) [right = 1cm of q2]{};
+		\node[state,accepting] (qm) [right = 1cm of q3] {$q_m$};
+		
+		\draw[->] (q0) edge node [below]{$v_1$} (q1) ;
+		\draw[->] (q1) edge node [below]{$v_2$} (q2) ;
+		\draw[dotted] (q2) edge (q3) ;
+		\draw[->] (q3) edge node [below]{$v_m$} (qm) ;
+	\end{tikzpicture}}
+. The corresponding integer constraint does not have exponential components. However, it does cover all numbers with at most $m$-digits. Consider the example $\sti{x}=10 \wedge |x|=5$. The number $10$ has only $2$-digits, at the first glance, a straight-line PFA with two transitions, i.e., the PFA
+    \scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 	\begin{tikzpicture} 
 	\node[state,initial] (q0)  {$q_0$};
@@ -841,9 +857,10 @@ Our first attempt is a PFA with no loop, i.e., a straight line structure. The co
 	
 	\draw[->] (q0) edge node [below]{$v_1$} (q1) ;
 	\draw[->] (q1) edge node [below]{$v_2$} (q2) ;
-	\end{tikzpicture}} should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable, because the length of $x$ cannot be $5$  under this domain restriction.
+	\end{tikzpicture}
+	} should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable, because the length of $x$ cannot be $5$  under this domain restriction.
 
-However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$. The key is that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. In order to handle all number with at most $m$ digits, we propose to restrict the domain of $x$ to a PFA in Figure~\ref{fig:sfa_its}.  The PFA has a self-loop transition labeled $v_0$ at $q_0$ and we add a constraint $v_0=0$ to $\Phi_O$ for such PFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Although this PFA still has a loop, but it will not create any exponential component because the loop only represents a sequence of `0' that occurs in the prefix of $x$. It will not affect the integer value of $n=\sti{x}$.
+However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$. The key is that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. In order to handle all numbers with up to $m$-digits, we propose to restrict the domain of $x$ to a PFA in Figure~\ref{fig:sfa_its}.  The PFA has a self-loop transition labeled $v_0$ at $q_0$ and we add a constraint $\Psi_{v_0}\defeq v_0=0$ to $\Phi_O$ for such PFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Although this PFA still has a loop, it will not create any exponential component because the loop only represents a sequence of ``0'' at the front of $x$. It will not affect the integer value of $n=\sti{x}$.
 
 \begin{figure}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
@@ -862,12 +879,12 @@ However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``0001
 	\path (q0) edge [loop above] node {$v_0$} (q0);
 	\end{tikzpicture} 
 	
-	\caption{An example of a symbolic flat automaton}
+	\caption{PFA for string-number conversion constraints}
 	\label{fig:sfa_its}
 \end{figure}
 
 Such PFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
-Remember that the character variables can be assigned $\epsilon$. In order to simplify the construction, we an encoding to shift all the $\epsilon$-transitions to the least significant digits, i.e., if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j+1,m]$.  To explain this encoding, we first define two macro function:
+Remember that the character variables can be assigned $\epsilon$. In order to simplify the construction, we use an encoding to shift all the $\epsilon$-transitions to the least significant digits, i.e., if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j+1,m]$.  To explain this encoding, we first define two macro function:
 
 $$\begin{array}{rl}
 \mathsf{epsilonAfter(k)}\defeq& (0\leq v_1,\ldots, v_k\leq 9) \wedge\\
@@ -887,20 +904,39 @@ $$\Psi_n\defeq  (n=-1 \wedge \Psi_{NaN})\vee \bigvee_{k\in [0,m]} (\mathsf{epsAf
 It says either $x$ is not a number and so $n=-1$ or the first $k$ variables represent the value of $n$, for some $k\in [0,m]$. 
 We add $\Psi_n$ to $\Phi_O$.
 
-The correctness of this procedure is expressed in Lemma~\ref{lemma:sticorrect_pos} and Lemma~\ref{lemma:sticorrect_neg} below. We separate the lemmas to cases where $n\neq -1$ and $n=-1$. 
-\yfc{The correctness lemmas are still buggy}
+The correctness of this procedure is expressed in Lemma~\ref{lemma:sticorrect} below. We separate the lemmas to cases where $n\neq -1$ and $n=-1$. 
+
 %
 %\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
+
+
+\begin{lemma}\label{lemma:sticorrect}
+	
+	The interpretation $(I\cup\pim \cup I_n)  \in \semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} $ if and only if 
+	\begin{center}
+	 $\left(\begin{array}{c} 
+	 I_n(n)= \sti{\decode {A_x}(I\cup\pim)} \ \wedge \\
+	 I(v_i)=-1 \wedge i<j \Longrightarrow  I(v_j)=-1
+	 \end{array}\right)$\\ or\\
+	 $\left(\begin{array}{c} 
+	 I_n(n)= -1\ \wedge \decode {A_x}(I\cup\pim) \not\in [0,9]^+
+	 \end{array}\right)$
+	\end{center}
+
+\end{lemma}
+\yfc{sorry still ugly, the shifting of epsilon makes it a mess here}
+
+\hide{
 \begin{lemma}\label{lemma:sticorrect_pos}
-	$\semof {\Psi_n \wedge \parikhfof {A_x} \wedge (v_0 = 0)\wedge (n\neq -1) }_{V_x \cup \#V_x \cup \{n\}} = \{(I\cup\pim \cup I_n) \mid  I_n(n)= \sti{\decode {A_x}(I\cup\pim)}\} $. 
+	$\semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} = \{(I\cup\pim \cup I_n) \mid  I_n(n)= \sti{\decode {A_x}(I\cup\pim)}\} $. 
 \end{lemma}
 In this case, $x$ encodes a number. The lemma says when the models we add to $\Phi_O$ represents a word in $\semof{A_x}$ whose integer value is exactly the model for $n$.
 
 \begin{lemma}\label{lemma:sticorrect_neg}
 	$\semof {\Psi_n \wedge \parikhfof {A_x} \wedge (v_0 = 0)\wedge (n = -1) }_{V_x \cup \#V_x \cup \{n\}} = 
-	\{(I\cup\pim \cup I_n) \mid  I_n(n)= -1 \wedge \decode {A_x}(I\cup\pim) \in [0,9]^+  \}$
+	\{(I\cup\pim \cup I_n) \mid  I_n(n)= -1 \wedge \decode {A_x}(I\cup\pim) \not\in [0,9]^+  \}$
 \end{lemma}
-In this case, $x$ does not encode a number. The lemma says  the models we add to $\Phi_O$ represents words in both $\semof{A_x}$ and $[0,9]^+$, which means not a number, and $n$ is $-1$.
+In this case, $x$ does not encode a number. The lemma says  the models we add to $\Phi_O$ represents words in both $\semof{A_x}$ and $[0,9]^+$, which means not a number, and $n$ is $-1$.}
 
 \subsection{Handling the lengths of variables}
 After the set $\Phi_I$ becomes empty, we start to add constraints to $\Phi_O$ to relate the lengths of string variables and their PFA. To do so, we first define $\Phi_{V_x}$ that describes the number of occurrences of each non-epsilon character variable in $x$.
