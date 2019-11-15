@@ -289,9 +289,9 @@ The \emph{language} of $A$ is the set $L(A)$ of all accepted words.
 Through the paper, we will use quantifier-free linear integer arithmetic formulas, and call them \emph{linear formulas} for short.   
 Given a linear formula $\phi$, a set of variables $V$, and an \emph{interpretation} of $V$, i.e., a function $I:V\rightarrow \nat$, 
 we denote by $I\models_V \phi$ that $I$ satisfies $\phi$ (which is defined in the standard manner), and call $I$ a \emph{model} of $\phi$ over $V$. \lh{Our use of indexing by $V$ in the text later is not very nice. Add this for clarity?: If $V$ contain additional variables not present in $\phi$, the these might be assigned arbitrary values by $I$. If $V$ is missing some of the variables of $\phi$, then it must be possible to complete $I$ with assignment of the missing variables into a satisfying assignment of $\phi$ (as in existential quantification).}
+\lh{or really have just an equivalence of semantics indexed by variables?}
 We use $\modelsof \phi$ to denote the set all models of $\phi$ over $V$. 
 We drop the reference to $V$ and write just ``model of $\phi$'',  $\modelsof \phi$, and $\models$ when no confusion may arise. For a set of interpretations $S$, we use $S_\Sigma$ to denote the set of interpretations obtained from $S$ by projecting the domain to $\Sigma$.
-\lh{or really have just an equivalence of semantics indexed by variables?}
 
 The \emph{Parikh image} of a word $w\in \Sigma^*$ is the assignment 
 $\parikhof w$ that for every character $a\in\Sigma$ maps the \emph{Parikh variable} $\#a$ to the number of occurrences of $a$ in $w$.
