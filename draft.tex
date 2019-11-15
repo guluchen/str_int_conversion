@@ -287,7 +287,7 @@ A \emph{run} of $A$ over a word $w = a_1\cdots a_n$ is a sequence of transition 
 The \emph{language} of $A$ is the set $L(A)$ of all accepted words.
 
 Through the paper, we will use quantifier-free linear integer arithmetic formulas, and call them \emph{linear formulas} for short.   
-Given a linear formula $\phi$, a set of variables $V$ \lh{remove this?: that includes all variables occurring in $\phi$}, and an \emph{interpretation} of $V$, i.e., a function $I:V\rightarrow \nat$, 
+Given a linear formula $\phi$, a set of variables $V$, and an \emph{interpretation} of $V$, i.e., a function $I:V\rightarrow \nat$, 
 we denote by $I\models_V \phi$ that $I$ satisfies $\phi$ (which is defined in the standard manner), and call $I$ a \emph{model} of $\phi$ over $V$. \lh{Our use of indexing by $V$ in the text later is not very nice. Add this for clarity?: If $V$ contain additional variables not present in $\phi$, the these might be assigned arbitrary values by $I$. If $V$ is missing some of the variables of $\phi$, then it must be possible to complete $I$ with assignment of the missing variables into a satisfying assignment of $\phi$ (as in existential quantification).}
 We use $\modelsof \phi$ to denote the set all models of $\phi$ over $V$. 
 We drop the reference to $V$ and write just ``model of $\phi$'',  $\modelsof \phi$, and $\models$ when no confusion may arise. For a set of interpretations $S$, we use $S_\Sigma$ to denote the set of interpretations obtained from $S$ by projecting the domain to $\Sigma$.
@@ -355,7 +355,7 @@ We pick a PFA for each variable in $\vars$ at the beginning of the decision proc
 
 More concretely, at the beginning, we move all integer constraints in $\Phi_I$ to the output linear formulas $\Phi_O$. After this step, $\Phi_I$ is the union of the three sets of constraints: the equality constraints, the regular constraints, and the string-number conversion constraints. For all string variables $x$ that occurs in a string-number conversion constraint $n= \sti{x}$, we follow the rule that will be described in Section~\ref{section:s2i} to pick the corresponding PFA. We do not set any restriction to the selection of PFA for other string variables. The selection is an implementation decision. We will describe the PFA selection strategy of \tool in Section~\ref{section:implementation}. 
 
-After the PFA for each variable is selected, we step-wisely pick and remove a string constraint from $\Phi_I$, executing the corresponding procedure to create equisatisfiable linear constraints, and add all the results to $\Phi_O$. The procedures for regular, equality and string-number conversion constraints are in Sections~\ref{section:mem},~\ref{section:eq}, and~\ref{section:s2i}, respectively.
+After the PFA for each variable is selected, we step-wisely pick and remove a string constraint from $\Phi_I$, executing the corresponding procedure to create equisatisfiable linear constraints, and add all the results to $\Phi_O$. The procedures for regular, equality and string-number conversion constraints are in Sections~\ref{section:mem},~\ref{section:eq}, and~\ref{section:s2i}, respectively. In the rest of the section, we assume each string variable $x$ is restricted to a PFA $A_x$ with the set of character variables~$V_x$.
 
 
  
@@ -469,7 +469,7 @@ Formally, an \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to
 We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V^*$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics $\semof A$ of an PFA is the semantics of its language. 
 
 The crucial feature of parametric flat automata is that their semantics can be faithfully represented by a linear formula and handled efficiently by an SMT solver. 
-\lh{, allowing to circumvent more costly automata algorithms and decision procedures. Concretize and justify this better?}\yfc{The two sentences below read a bit strange, maybe need to rephrase it.}\lh{made an attempt}
+\lh{, allowing to circumvent more costly automata algorithms and decision procedures. Concretize and justify this better?}
 %
 This is facilitated by the structural constraints of PFA, which guarantee that 
 every parametric word $x\in L(A)$ is uniquely determined by its Parikh image $\parikhof{x}$, as formalized by the following lemma.  
@@ -490,6 +490,7 @@ We may say that $\parikhof x$ is an encoding of $x$, and define the decoding fun
 \begin{lemma}\label{lemma:decx}
 For a PFA $A$, $L(A) = \{\decode A(\pim) \mid \pim\in\semof{\parikhfof A}\}$.
 \lh{should we replace $\semof{\parikhfof A}$ by $\parikhof{A}$ here and almost everywhere?}
+\yfc{Is $\parikhof{A}$ defined only over $\#I$? Does this work for Corollary~\ref{corollary:pfa}?}
 \end{lemma}
 %
 \begin{proof}
@@ -515,7 +516,6 @@ Hence, to allow purely arithmetic formulas to talk about the value $\epsilon$, w
 In the further development, $\epsilon$ will mean $-1$ when working with arithmetic formulas constraining interpretations of character variables.
 
 \paragraph{Synchronization of PAs}
-\ \lh{changed the formulation of the next two paragraphs a bit, is it ok?}
 We will now discuss a construction of the \emph{synchronization formula} for two PAs $A$ and $A'$. 
 %over character variables $V$ and $V'$. 
 It is a linear formula $\syncfof A {A'}$ 
@@ -526,14 +526,14 @@ More precisely, the models of $\syncfof A {A'}$ represent pairs of word
 encodings $(I\cup \parikhof{x})$ and $(I'\cup \parikhof{x'})$ such that $x\in L(A)$, $x'\in L(A')$, and 
 $I(x) = I'(x')$.
 % \in \semof{A}\cap\semof{A'}$.
-The synchronization formula will be used in, e.g., the decision procedure of equality constraints $t_1=t_2$ to find a common interpretation of $t_1$ and $t_2$.  
+The synchronization formula will be used in, e.g., the decision procedure of equality constraints $t_1=t_2$ to find a common interpretation~of~$t_1$~and~$t_2$.  
 %More precisely, the models of the synchronization formula $\syncfof A {A'}$ correspond to the set of all pairs of word
 %encodings $(I\cup \parikhof{x})$ and $(I'\cup \parikhof{x'})$ such that $x\in L(A)$, $x'\in L(A')$, and 
 %$I(x) = I'(x') \in \semof{A}\cap\semof{A'}$.%, which constitute the intersection.
 % encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
 %$I(\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$, which constitute the intersection.
 
-Particularly, the synchronization formula is build for two PAs  
+Particularly, the synchronization formula is built for two PAs  
 $A = (Q,T,\cvarone,q_i,q_f)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f')$ such that $\cvarone \cap \cvartwo = \emptyset$. 
 %
 It is extracted from the \emph{asynchronous product} of $A$ and $A'$. 
@@ -595,13 +595,6 @@ $$
 
 The correctness of this construction is stated in Lemma~\ref{lemma:synccorrect} below. The lemma can also be understood as a precise specification of the semantics of the synchronization formula, on which we rely for correctness of the construction of under-approximations of string constraints in Sections~\ref{section:mem}, \ref{section:eq}, and \ref{section:s2i}. 
 %
-\hide{
-\begin{lemma}\label{lemma:synccorrect}
-%$\semof {\exists V_\times . \syncfof A {A'}}\restrict{\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
-$\semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} = \{(I\cup\pim)\cup(I'\cup\pim') \mid \decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')\}$. 
-\end{lemma}
-%
-Another version:}
 \begin{lemma}\label{lemma:synccorrect}
 $
 \semof {\syncfof A {A'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} = 
@@ -623,62 +616,24 @@ Namely, due to Corollary~\ref{corollary:pfa}, we have that $\semof A \cap \semof
 %we have $(I\cup\pim)\cup(I'\cup\pim')\in\semof {\syncfof A {A'}}$ if and only if $\decode A(I\cup\pim) = \decode {A'}(I'\cup\pim')$.
 %\end{lemma}
 
-\lh{this following sentence appears to be in a wrong place here. Would be nicer in some introductory part to the underapproximation which talks about this, but I don't know where it should be.}
-In the rest of the section, we assume each string variable $x$ is restricted to a PFA $A_x$ with the set of character variables~$V_x$.
-
-\yfc{we need to define \#{V} somewhere}
-\lh{it is in prelims next to Parikh im. definition}
-
 \subsection{Handling Regular Constraints Symbolically} \label{section:mem}
 
-Assume that the constraint we take from $\Phi_I$ is a regular constraint $\phi_r \defeq x \in L(A)$. Assume that $A=(Q,T,\Sigma,q_i,q_f)$. First we create a PA $A' = (Q,T', V',q_i,q_f)$ that has exactly the same set of states as $A$. The set of transitions $T'$ and character variables $V'$ is defined as follows:
-
-\begin{itemize}
-	\item $V' = \{ v_{(q,a,q')} \mid (q,a,q')\in T\}$
-	\item $T' = \{ (q, v_{(q,a,q')}, q')  \mid (q,a,q')\in T\}$
-\end{itemize}
-We use the linear formula $\Psi_c \defeq \bigwedge\limits_{(q,a,q')\in T} (v_{(q,a,q')} = a)$ to remember the relation between the fresh character variables in $V'$ and the symbol it represents. \lh{why  the name $\Psi_c$?} We add both $\syncfof {A_x }{A'} $ and $\Psi_c$ to $\Phi_O$. The relation between $A$ and $A'$ is expressed in Lemma~\ref{lemma:fa_pfa}.
-
-\begin{lemma}\label{lemma:fa_pfa}
-	$L(A)=	\{  I(x) \mid  I\in  \semof {\Psi_c} \wedge x \in L(A') \} $. 
-\end{lemma}
-
-%<<<<<<< HEAD
-%Intuitively, we create a new character variable for each transition in $T$, later we will add the relation $v_{(q,a,q')}  = a$ to $\Phi_O$.
-
-
-The correctness of this construction is expressed in Lemma~\ref{lemma:memcorrect} below. 
-%=======
-%The correctness of this procedure is expressed in Lemma~\ref{lemma:memcorrect} below. 
-%>>>>>>> 67b962e5df2a0689e472f2525f44d512d2c23dbd
-%
-%\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
-\begin{lemma}\label{lemma:memcorrect}
-	$\semof {\syncfof {A_x }{A'} \wedge \Psi_c}_{V_x \cup \#V_x} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
-
-\end{lemma}
-
-Lemma~\ref{lemma:memcorrect} follows from Corollary~\ref{corollary:pfa}, Lemma~\ref{lemma:synccorrect}, and Lemma~\ref{lemma:fa_pfa}. Informally, the lemma says the models of the formula we add to $\Phi_O$, i.e. $\syncfof {A_x }{A'} \wedge \Psi_c$, characterize exactly the models of $x \in  L(A)$ under the restriction of $A_x$.
-
-\lh{Sketch of a simplified version:
 Assume that the constraint we take from $\Phi_I$ is a regular constraint $\phi_r \defeq x \in L(A)$. 
 %Assume that $A=(Q,T,\Sigma,q_i,q_f)$. 
-We represent the FA $A$ by a pair of a PA $A'$ and linear formula $\Psi_c$. 
+We represent the FA $A$ by a pair of a PA $A'$ and linear formula $\Psi_{char}$. 
 The PA $A'$ operates over fresh character variables $v_a, a\in\Sigma_\epsilon$, and is obtained from $A$ by replacing every occurrence of each character $a\in\Sigma_{\epsilon}$ on a transition by the variable $v_a$. 
-The formula $\Psi_c$ then binds the fresh variables to the characters they represent, 
-namely, $\Psi_c = \bigwedge_{a\in\Sigma_\epsilon} v_a = a$.
-The resultinng overapproximation of $\Psi_r$ is then the formula $\syncfof{A_x} {A'} \land \Psi_c$.
+The formula $\Psi_{char}$ then binds the fresh character variables to the character values they represent, 
+namely, $\Psi_{char} = \bigwedge_{a\in\Sigma_\epsilon} v_a = a$.
+The resulting under-approximation of $\Psi_r$ is then the formula $\syncfof{A_x} {A'} \land \Psi_{char}$, which will be added to $\Phi_O$.
 
 The following lemma states the correctness of this construction, and it follows from Corollary~\ref{corollary:pfa}, Lemma~\ref{lemma:synccorrect}. 
-Intuitively, it says that the resulting constraint represents presicely the restriction of $L(A)$ to the domain $\semof{A_x}$, the $A_x$-encodings of the strings in $L(A)\cap\semof{A_x}$. 
+Intuitively, it says that the resulting constraint represents precisely the restriction of $L(A)$ to the domain $\semof{A_x}$, the $A_x$-encodings of the strings in $L(A)\cap\semof{A_x}$. 
 %
 
 %
 \begin{lemma}\label{lemma:memcorrect}
-	${\semof {\syncfof {A_x }{A'} \land \Psi_c} } _{V_x \cup \pvarsof{V_x}} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
+	${\semof {\syncfof {A_x }{A'} \land \Psi_{char}} } _{V_x \cup \pvarsof{V_x}} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
 \end{lemma}
-}
-
 
 
 
@@ -763,27 +718,35 @@ Intuitively, it says that the resulting constraint represents presicely the rest
 
 \subsection{Handling Equality Constraints Symbolically} \label{section:eq}
 
-Assume that the constraint we take from $\Phi_I$ is an equality constraint $\phi_e\defeq x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$. We first build two PFAs that encode the left-hand side term and the right-hand side term of the equality constraint. Intuitively, this can be achieved by connecting the PFAs of the string variables with epsilon transitions. However, there are two minor technical issues. First, our definition of PFA does not allow epsilon transition. Second, some string variable might occur multiple times in a equality constraint, but the definition of PFA allows each character variable occurs in only one transition. \lh{the second is maybe not a minor technical issue}
+Assume that the constraint we take from $\Phi_I$ is an equality constraint $\phi_e\defeq x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$. We first build two PFAs that encode the left-hand side term and the right-hand side term of the equality constraint. Intuitively, this can be achieved by connecting the PFAs of the string variables with epsilon transitions. However, there are two technical issues. First, our definition of PFA does not allow epsilon transition. The second issue is more severe, some string variable might occur multiple times in an equality constraint, but the definition of PFA allows each character variable occurs in only one transition. We will need a way to force that all occurrences of the same string variable are assigned the same value.
 
 We circumvent the first problem by introducing some fresh characters variables, say $v_{\epsilon_n}$, and forcing its value to be $\epsilon$ by adding new linear formulas, say $v_{\epsilon_n}= -1$, to the output linear formulas $\phi_O$. Then we can connect the final state and initial state of two consecutive variables with an ``epsilon'' transition, i.e., one with the label $v_{\epsilon_n}$. %We use $V_\epsilon$ to denote the set of all variables used for ``epsilon'' transitions.
 
-For the second problem, we rename the variables on the transitions of PFAs for different occurrences of the same variable in one equality constraint. The renaming is done by adding a version number to the variable. We call variables before and after renaming the \emph{original variable} and the \emph{renamed variable}. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, etc. In this case, $v_1$ is the original variable and both $v_1^{(0)}$ and $v_1^{(1)}$ are the renamed variables. For an original variable $v$, we use $R_v$ to denote the set of variables renamed from $v$. Later we will add arithmetic constraints to enforce that variables obtained from the same original variable are assigned the same value. 
-\lh{I did not find those, are they somewhere or forgoten?}
+For the second issue, we rename the variables on the transitions of PFAs for different occurrences of the same variable in one equality constraint. The renaming is done by adding a version number to the variable. We call variables before and after renaming the \emph{original variable} and the \emph{renamed variable}. For example, we can rename $v_1$ to $v_1^{(0)}$, $v_1^{(1)}$, etc. In this case, $v_1$ is the original variable and both $v_1^{(0)}$ and $v_1^{(1)}$ are the renamed variables. We will an add arithmetic constraint $\Psi_{rename}$ (will be defined later) to enforce that variables renamed from the same variable are assigned the same value. 
+
 
 Here we give a concrete example. For the equality constraint $xy = yx$, assume that we restrict the domains of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. In the construction of the PFA for $xy$ and $yx$ (Figure~\ref{fig:sfa} (c) and (d)), we rename the variables on the PFA of $X$ and $Y$ to some fresh variable for each different occurrence of $x$ and $y$ in $xy = yx$, connect the PFA after renaming with ``epsilon'' transitions (those labeled $v_{\epsilon_0}$ and $v_{\epsilon_1}$), and add linear formulas $v_{\epsilon_0}=-1$ and $v_{\epsilon_1}=-1$ to the output linear formulas $\phi_O$.
 
-Now let $A$ and $A'$ over character variables $V$ and $V'$ be the two PFAs obtained from the two sides of the equality constraint $\phi_e$. We then construct the synchronization formula $\syncfof A {A'}$ and add it to $\Phi_O$. Recall that from Lemma~\ref{lemma:synccorrect}, each model of $\syncfof A {A'}$ corresponds to a pair of words in $\semof{A}$ and $\semof{A'}$. However, this does not directly correspond to a model of the equality constraint $\phi_e$. The reason is that difference occurrence of the same string variables can be assigned different values in $\semof{A}$ and $\semof{A'}$. To avoid this problem, we need to add the constraint $\Psi_r$ below to $\Phi_O$ to ensure that all variables renamed from the same original variable are assigned the same value and are occurred equally often.
+Now let $A$ and $A'$ over character variables $V$ and $V'$ be the two PFAs obtained from the two sides of the equality constraint $\phi_e$. We then construct the synchronization formula $\syncfof A {A'}$ and add it to $\Phi_O$. Recall that from Lemma~\ref{lemma:synccorrect}, each model of $\syncfof A {A'}$ corresponds to a pair of words in $\semof{A}$ and $\semof{A'}$. However, this does not directly correspond to a model of the equality constraint $\phi_e$. The reason is that different occurrences of the same string variables can be assigned different values in $\semof{A}$ and $\semof{A'}$. To avoid this problem, we need to add the constraint $\Psi_{rename}$ that is defined below to $\Phi_O$ to ensure that all variables renamed from the same original variable are assigned the same value and are occurred equally often.
 
-$$ \Psi_r \defeq
-\bigwedge_{v\in V_X, v'\in R_v} v=v' \wedge \#v = \#v'
+$$ \Psi_{rename} \defeq
+\bigwedge_{v\in V_{x_1} \cup\ldots\cup V_{x_m} , v'\in R_v} v=v' \wedge \#v = \#v'
 $$
-Here $V_X$ is the set of all character variables occurred in the PFAs of $x_1,x_2,\ldots,x_m$, i.e., $V_X=\bigcup_{i\in [1,m]}{V_{x_i}}$. \lh{what is $R_v$?}
-
-The correctness of this procedure is stated in Lemma~\ref{lemma:eqcorrect}.
-
+Here $R_v$ is the set of variables renamed from the the original variable $v$. 
+The correctness of this procedure is stated in Lemma~\ref{lemma:eqcorrect} below. In the lemma, each tuple of words $(w_1,\ldots, w_m) \in \semof{A_{x_1}}\times\ldots\times\semof{A_{x_m}}$ represents a model of the equality constraint. Each tuple $(w_1,\ldots, w_m)$ satisfies the condition that if $x_i$ and $x_j$ are the same variable, then $w_i$ and $w_j$ should be the same word.
 
 \begin{lemma}\label{lemma:eqcorrect}
-	$\semof {\syncfof A {A'}  \wedge \Psi_r}_{V_X \cup \#V_X} = \{\bigcup_{i\in[1,m]}(I^i\cup\pim^i)\mid w_1\cdot w_2 \cdots w_n = w_{n+1}\cdot w_{n+2} \cdots w_m \wedge \bigwedge_{i\in [1,m]}w_i=\decode A_{x_i}(I^i\cup\pim^i) \}$.\lh{aaarrrghhh ... } 
+	$\semof {\syncfof A {A'}  \wedge \Psi_{rename}}_{V_{x_1} \cup\ldots\cup V_{x_m}  \cup \#V_{x_1} \cup\ldots\cup \#V_{x_m} } = \\
+	    \left\{\begin{array}{c|cl}
+			(I^1\cup\pim^1)\ \cup&w_1=\decode A_{x_1}(I^1\cup\pim^1) & \wedge \\
+			(I^2\cup\pim^2)\ \cup&w_2=\decode A_{x_2}(I^2\cup\pim^2) & \wedge \\
+			\ldots&\ldots\\
+%			(I^{m-1}\cup\pim^{m-1}) &\cup&w_{m-1}=\decode A_{x_{m-1}}(I^{m-1}\cup\pim^{m-1}) & \wedge \\
+			(I^m\cup\pim^m)      &w_m=\decode A_{x_m}(I^m\cup\pim^m) & \wedge \\
+			&w_1\cdot w_2 \cdots w_n = w_{n+1}\cdot w_{n+2} \cdots w_m & \wedge \\
+			&\forall i,j \in [1,m]: x_i=x_j \Longrightarrow w_i=w_j &  \\
+        \end{array}\right\}
+	$
 \end{lemma}
 
 \hide{
