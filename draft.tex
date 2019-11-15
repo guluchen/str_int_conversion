@@ -629,10 +629,18 @@ The resulting under-approximation of $\Psi_r$ is then the formula $\syncfof{A_x}
 The following lemma states the correctness of this construction, and it follows from Corollary~\ref{corollary:pfa}, Lemma~\ref{lemma:synccorrect}. 
 Intuitively, it says that the resulting constraint represents precisely the restriction of $L(A)$ to the domain $\semof{A_x}$, the $A_x$-encodings of the strings in $L(A)\cap\semof{A_x}$. 
 %
-
+\begin{lemma}\label{lemma:memcorrect}  ${\semof {\syncfof {A_x }{A'} \land \Psi_{char}} } _{V_x \cup \pvarsof{V_x}} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
+\end{lemma}
 %
-\begin{lemma}\label{lemma:memcorrect}
-	${\semof {\syncfof {A_x }{A'} \land \Psi_{char}} } _{V_x \cup \pvarsof{V_x}} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
+(An alternative description)
+\begin{lemma}\label{lemma:memcorrect} For all $w\in \semof{A_x}$, %$(I\cup\pim)$ in ${\semof {\syncfof {A_x }{A'} \land \Psi_{char}} } _{V_x \cup \pvarsof{V_x}}$ such that $w =\decode {A_x}(I\cup\pim)$ if and only if $w \in L(A)$.
+%	$$\exists (I\cup\pim) \in {\semof {\syncfof {A_x }{A'} \land \Psi_{char}} } _{V_x \cup \pvarsof{V_x}}. w =\decode {A_x}(I\cup\pim)$$
+	\begin{center}
+	$\exists (I\cup\pim)$ in ${\semof {\syncfof {A_x }{A'} \land \Psi_{char}} } _{V_x \cup \pvarsof{V_x}}$ s.t. $w =\decode {A_x}(I\cup\pim)$\\
+		iff\\
+		$w \in L(A)$.
+	\end{center}
+%	${\semof {\syncfof {A_x }{A'} \land \Psi_{char}} } _{V_x \cup \pvarsof{V_x}} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
 \end{lemma}
 
 
@@ -748,6 +756,19 @@ The correctness of this procedure is stated in Lemma~\ref{lemma:eqcorrect} below
         \end{array}\right\}
 	$
 \end{lemma}
+
+(An alternative description)
+
+\begin{lemma}\label{lemma:eqcorrect} For all $w_1 \in \semof{A_{x_1}} \ldots w_m \in \semof{A_{x_m}}$, we have 
+	
+	\begin{center}
+		$\exists (I^1\cup\pim^1)\cup\ldots\cup (I^m\cup\pim^m)$ in $\semof {\syncfof A {A'}  \wedge \Psi_{rename}}_{V_{x_1} \cup\ldots\cup V_{x_m}  \cup \#V_{x_1} \cup\ldots\cup \#V_{x_m} }$ s.t. $w_1=\decode A_{x_1}(I^1\cup\pim^1),\ldots,w_m=\decode A_{x_m}(I^m\cup\pim^m)$\\
+		iff\\
+		$w_1\cdot w_2 \cdots w_n = w_{n+1}\cdot w_{n+2} \cdots w_m$ and\\
+		$\forall i,j \in [1,m]: x_i=x_j \Longrightarrow w_i=w_j$.
+	\end{center}
+\end{lemma}
+
 
 \hide{
 Assume that $S_n=(Q,T,\cvarone,q_i,q_f)$ is the PFA of $x_1\cdot x_2 \cdots x_n$ and $S_m=(P,T',\cvartwo,p_i,p_f)$ is the PFA of $x_{n+1}\cdot x_{n+2} \cdots x_m$. Our next task is to find a model for $x_1\cdot x_2 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$ under the domain restriction specified by $S_n$ and $S_m$. 
@@ -925,7 +946,16 @@ The correctness of this procedure is expressed in Lemma~\ref{lemma:sticorrect} b
 
 \end{lemma}
 \yfc{sorry still ugly, the shifting of epsilon makes it a mess here}
-
+(An alternative description)
+\begin{lemma}\label{lemma:sticorrect}
+	For all $w \in \semof{A_{x}}$ and $c \in \mathbb{Z}$, we have 
+	\begin{center}
+		$\exists (I\cup\pim \cup I_n)  \in \semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}}$ s.t. $w=\decode {A_x}(I\cup\pim)$ and $I_n(n)=c$\\
+		iff\\
+		$c= \sti{w}$.
+	\end{center}
+	
+\end{lemma}
 \hide{
 \begin{lemma}\label{lemma:sticorrect_pos}
 	$\semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} = \{(I\cup\pim \cup I_n) \mid  I_n(n)= \sti{\decode {A_x}(I\cup\pim)}\} $. 
