@@ -753,8 +753,8 @@ Namely, due to Corollary~\ref{corollary:pfa}, we have that
 $$\semof A \cap \semof {A'} = \decode A (\semof{\syncfof A {A'}}_{\cvarone\cup \pvarone})$$  
 
 \paragraph{Concatenation of PFAs}
-Concatenation is another operation over PFAs needed when constructing underapproximations. Its implementation is straightforward, connect the final state of the first PFA with the initial state of the second by an $\epsilon$-transition. Sinco our automata do not allow $\epsilon$-transition, 
-the connecting transition is labeled by a fres variable $v_\epsilon$ and the constraint $v_\epsilon$ is added to the interpretation contraint.  
+Concatenation is another operation over PFAs needed when constructing underapproximations. Its implementation is straightforward, connect the final state of the first PFA with the initial state of the second by an $\epsilon$-transition. Since our automata do not allow transition directly labeled by $\epsilon$, 
+the $\epsilon$-transition is labeled by a fresh variable $v_\epsilon$ contrained by the constraint $v_\epsilon = \epsilon$.  
 
 Formally, given PFA $A = (Q,T,\cvarone,q_i,q_f,\pfaf)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f',\pfaf')$ with $Q\cap Q'=\emptyset = \cvarone\cap\cvartwo$, 
 their concatenation is the PFA $A\cdot A' = (Q\cup Q',T\cup T'\cup \{(q_f,v_\epsilon,q_i')\},\cvarone\cup\cvartwo\cup\{v_\epsilon\},q_i,q_f',\pfaf\land\pfaf'\land v_\epsilon = \epsilon)$ where $v_\epsilon$ is fresh, not from $\cvarone\cup\cvartwo$. 
