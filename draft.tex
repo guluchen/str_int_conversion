@@ -28,6 +28,8 @@
 \newcommand{\lh}[1]{{\color{orange}Lukas: #1}}
 \newcommand{\yfc}[1]{{\color{blue}YFC: #1}}
 \newcommand{\petr}[1]{{\color{pink}Petr: #1}}
+\newcommand{\chatAt}[2]{\mbox{\textsf{charAt}($#1$, $#2$)}}
+\newcommand{\ite}[3]{\mbox{\textsf{ite}($#1$, $#2$, $#3$)}}
 \newcommand{\sti}[1]{\mbox{\textsf{toInt}($#1$)}}
 \newcommand{\its}[1]{\mbox{\textsf{toStr}($#1$)}}
 \newcommand{\varn}{\mbox{$\mathbb{V}_{\mathbb{Z}}$}}
@@ -107,9 +109,49 @@
 \section{Introduction} \label{section:introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+The path feasibility problem is a critical module in the analysis of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}. Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
+
+The string-number conversion operations are widely used in string manipulating programs and algorithms. For example, the program fragment below is an implementation of the Luhn test algorithm that is often used in credit card or personal ID validation.
+
+\begin{verbatim}
+function checkLuhn(value) {
+  var sum = 0;
+  for (var i = value.length - 1; i >= 0; i-=2) {
+    var d = parseInt(value.charAt(i));
+    sum += d;
+  }	
+  for (var i = value.length - 2; i >= 0; i-=2) {
+    var d = parseInt(value.charAt(i));
+    if ((d *= 2) > 9) digit -= 9;
+    sum += d;
+  }
+  var last= sum.toString().charAt(sum.length-1);
+  return last == '0';
+}
+\end{verbatim}
 
 
-String constraint solving has received considerable attention in the constraint solving community, with solvers such as CVC4 and Z3 implementing solvers of ever-increasing sophistication.  Operations such as substring and string length are widely supported, and recent solvers such as Z3-str3 have shown impressive results.  However, these solvers have limited for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often limited to ground terms, i.e. at least one side of the conversion must be a constant.  Thus, $n = \sti{x}$ or $x = \its{5}$ are handled but $n = \sti{x}$ will fail.
+The input \verb|value| is a sequence of digits. The algorithm process the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) substracts its value by $9$ if the doubled-value is bigger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends in $0$.
+
+To check whether the program path that traverses both loop exactly once and finally passes this test has a valid input, we create the following string constraint:
+
+$$\begin{array}{lc}
+1&	value_0 \in [0,9]^+ \wedge 	sum_0 = 0 \wedge \\
+2&	i_0 = |value_0| -1 \wedge \\
+%	value_0 = prefix_0\cdot charAt_0 \cdot suffix_0 \wedge\\
+%	|prefix_0| = i_0 \wedge |charAt_0| = 1 \wedge \\
+3&	d_0 = \sti{\chatAt{value_0}{i_0}} \wedge \\
+4&	sum_1 = sum_0 + d_0 \wedge\\
+5&	i_1 = |value_0| -2 \wedge \\
+6&	d_1 = \sti{\chatAt{value_0}{i_1}} \wedge \\
+7&	sum_2 = sum_1 + \ite{d_1*2>9}{d_1*2 -9}{d_1*2} \wedge\\
+8&	last_0 = \chatAt{\its{sum_2}}{|\its{sum_2}|-1} \wedge\\
+9&	last_0 ==``0"
+\end{array}$$
+
+\yfc{explain the constraints and say all membership, concatenation, length, string-number conversion are required.}
+
+\hide{String constraint solving has received considerable attention in the constraint solving community, with solvers such as CVC4 and Z3 implementing solvers of ever-increasing sophistication.  Operations such as substring and string length are widely supported, and recent solvers such as Z3-str3 have shown impressive results.  However, these solvers have limited for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often limited to ground terms, i.e. at least one side of the conversion must be a constant.  Thus, $n = \sti{"15"}$ or $x = \its{5}$ are handled but $n = \sti{x}$ will fail.}
 
 As solvers such Z3 are applied to symbolic execution of programming languages, this is increasingly becoming a severe limitation.  For many languages such as Java, conversion between integers and strings is a niche operation, and much symbolic execution can be done without supporting it; however, this is not true of some scripting languages, of which JavaScript is the most notable.  JavaScript is a key language---it powers most interactive content on the Web, and increasingly server-side code with nodejs---and it has conversions between strings and integers embedded in the core of its semantics.
 
