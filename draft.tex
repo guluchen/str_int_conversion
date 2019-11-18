@@ -193,10 +193,8 @@ Currently, even for a simple constraint like the above one, most solvers already
 %As solvers are applied to symbolic execution of programming languages, this is increasingly becoming a severe limitation.  For many languages such as Java, conversion between integers and strings is a niche operation, and much symbolic execution can be done without supporting it; however, this is not true of some scripting languages, of which JavaScript is the most notable.  JavaScript is a key language---it powers most interactive content on the Web, and increasingly server-side code with Node.js---and it has conversions between strings and integers embedded in the core of its semantics. 
 
 \begin{verbatim}
-function resetArray(arr) {
-  for(var i = 0; i < 10; i++) {
-    arr[i] = 0
-  }
+for(var i = 0; i < 10; i++) {
+  arr[i] = 0
 }
 \end{verbatim}
 
@@ -205,14 +203,15 @@ A casual glance at the above code reveal no use of strings at all, but the seman
 \hspace{-4mm}\begin{tabular}{l|l|c}
 1&	{\tt{x = [0, 0, 0, 0, 0]}} & [0, 0, 0, 0, 0] \\
 2&	{\tt{x[3] = 4}} & [0, 0, 0, 4, 0] \\
-3&	{\tt{x["3"] = 5}} & [0, 0, 0, 5, 0] \\
-4&	{\tt{x["03"] = 7}} & [0, 0, 0, 5, 0] and x["03"] = 7\\
-5&	{\tt{x["03"-1] = 2}} & [0, 0, 2, 5, 0] and x["03"] = 7\\
+3&	{\tt{x[03] = 2}} & [0, 0, 0, 2, 0] \\
+4&	{\tt{x["3"] = 5}} & [0, 0, 0, 5, 0] \\
+5&	{\tt{x["03"] = 7}} & [0, 0, 0, 5, 0] and x["03"] = 7\\
+6&	{\tt{x["03"-1] = 2}} & [0, 0, 2, 5, 0] and x["03"] = 7\\
 \end{tabular}
 
-Here both \texttt{x[3]} in line 2 and \texttt{x["3"]} in line 3 denote the array element of \texttt{x["3"]}, but \texttt{x["03"]} denotes a completely different element. So na\"ive idea of modeling array index with integers will not work -- it cannot distinguish the indexes \texttt{"3"} and \texttt{"03"}. 
+Here \texttt{x[3]} in line 2,  \texttt{x[03]} in line 3, and \texttt{x["3"]} in line 4 all denote the same array element of \texttt{x["3"]}, but \texttt{x["03"]} denotes a completely different element. So na\"ive idea of modeling array index with integers will not work -- it cannot distinguish the indexes \texttt{"3"} and \texttt{"03"}. 
 
-If array indexes are modeled as strings, we need to face the problem of handling of arithmetics in the array index. Let us look at the case of line 4, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather straightforward array operation, and so this limit will cripple any model of non-trivial JavaScript code. 
+If array indexes are modeled as strings, we need to face the problem of handling of arithmetics in the array index. Let us look at the case of line 6, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather straightforward array operation, and so this limit will cripple any model of non-trivial JavaScript code. 
 
 
 
@@ -444,7 +443,7 @@ handled by automata-based solvers in a complete manner.
 
 Here we try to explain the approach using a toy example $\Phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^+\}$. Notice that $\Phi$ is satisfiable. E.g., it has a model $x=``12''$ and $y=``1212''$.
 
-For proving UNSAT, our framework does not set any restriction on which decision procedure to use. One can select any decision procedure they want to use and ``over-approximate'' the input constraint to one that falls in the decidable fragment, e.g., the acyclic fragment~\cite{abdulla2014string}, the straight-line fragment~\cite{chen2019decision}, or the chain-free fragment~\cite{abdulla2019chain}. For instance, we can convert $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and remove the constraint $n=\sti{x}$. This produce new formulas that over-approximate the original ones and fall in the acyclic fragment~\cite{abdulla2014string}, which is decidable. Since $\Phi$ is satisfiable, the over-approximation module will not return UNSAT. 
+For proving UNSAT, our framework does not set any restriction on which decision procedure to use. One can select any decision procedure they want to use and ``over-approximate'' the input constraint to one that falls in the decidable fragment, e.g., the acyclic fragment~\cite{abdulla2014string}, the straight-line fragment~\cite{chen2019decision}, or the chain-free fragment~\cite{abdulla2019chain}. For instance, we can convert $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and replace the constraint $n=\sti{x}$ with $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$). This produce new formulas that over-approximate the original ones and fall in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Since $\Phi$ is satisfiable, the over-approximation module will not return UNSAT. In our implementation \tool, we further add heuristics trying to derive the constant value of any side of the constraint $n=\sti{x}$ to refine the over-approximation. For instance, assume in some other cases, we can derive the value of $n=12$ from some integer constraints. In such case, we can further derive the value of $x$ is in the regular language $(0^*12)$. 
 
 Then our procedure will restrict the domain of each string variables to the language defined by some parametric flat automata (PFA) and convert them to equisatisfiable linear formula. The details of the under-approximation component will be described in Section~\ref{section:under_approximate}. Here we try to explain what the linear formula looks like by an example. Assume that we project the domain of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. One special treatment we do in this paper is that we encoding characters as natural numbers. So $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from the formula $ y \in (12)^+$, we may derive $v_3=1$ and $v_4=2$. 
 
@@ -1493,7 +1492,7 @@ $
 
 \section{Implementation}\label{section:implementation}
 \input{evaluation}
-\newpage
+
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{refs}
 
