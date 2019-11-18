@@ -11,6 +11,9 @@
 
 \usetikzlibrary{positioning}
 \usetikzlibrary{arrows,automata}
+\sloppy
+
+
 
 \title{Handling String-Number Conversion in String Constraint Solving}
 \author{}
@@ -81,7 +84,8 @@
 \newcommand\insc{\phi_{\mathit{in}}}
 \newcommand\outlf{\Psi_{\mathit{out}}}
 
-
+\newcommand{\st}[2]{q_{#1}^{#2}}
+\newcommand{\sym}[2]{v_{#1}^{#2}}
 
 \maketitle
 
@@ -112,9 +116,9 @@
 Symbolic execution is a very popular technique that allows the programmers to check the feasibility of a path in a given program (i.e., determining the value of the inputs under which the given path can be executed) \cite{????}).
 The path feasibility problem is usually solved by a reduction to the satisfiability problem of a formula. More precisely, program statements in the path are usually translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{satisfiability module theory (SMT)}  solvers. The types of constraints that needed to be solved by the SMT solvers depend on the type of program variables. Therefore, there is a need for SMT solvers that support different combinations of theories (i.e., depending on the types of the manipulated variables). 
 
-Among all types of program variables, \emph{string data type}  is omnipresent in modern programming languages.  Various infamous security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values.  Therefore, string constraint solving has received considerable attention in the constraint solving community.
-Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$), are widely supported by most state-of-the-art string constraint solvers such as Z3  \cite{?}, CVC4  \cite{?}, Z3Str3  \cite{?}, and Trau+ \cite{?}. 
- However,   solvers have limited support for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often very limited. Thus, $n = \sti{\\texttt{"2"}}$  or $x = \its{5}$  are handled but $n = \sti{x}$ (i.e., converting the string $x$ to the integer $n$) and  $x = \its{n}$ (i.e.,  converting the integer $n$ to the string $x$)
+Among all types of program variables, \emph{string data type}  is omnipresent in modern programming languages.  Various  security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values.  Therefore, string constraint solving has received considerable attention in the constraint solving community.
+Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$), are widely supported by most state-of-the-art string constraint solvers such as, CVC4  \cite{?}, OSTRICH \cite{}, Sloth \cite{},   Trau+ \cite{?},  Z3  \cite{?} and Z3Str3  \cite{?}. 
+ However,   solvers have limited support for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often very limited. Thus, $n = \sti{\texttt{"2"}}$  or $x = \its{5}$  are handled but $n = \sti{x}$ (i.e., converting the string $x$ to the integer $n$) and  $x = \its{n}$ (i.e.,  converting the integer $n$ to the string $x$)
 are ones of the core operations that require stronger solver support.
 
 
@@ -133,7 +137,7 @@ are ones of the core operations that require stronger solver support.
 
 %The path feasibility problem is a critical module in the symbolic execution of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}. Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
 
-In fact, for many languages such as Java, the string-number conversion operations are is a niche operation, and much symbolic execution can not  be done without supporting it. For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
+In fact, for many languages such as Java, the string-number conversion operations are   niche operations, and much symbolic execution can not  be done without supporting them. For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
 
 \begin{Verbatim}[fontsize=\small]
 function checkLuhn(value) {
@@ -153,7 +157,7 @@ function checkLuhn(value) {
 \end{Verbatim}
 
 
-The input \verb|value| is a sequence of digits. The algorithm process the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) subtracts its value by $9$ if the doubled-value is bigger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends by an $0$ (i.e., \verb| sum mod 10=0|).
+The input \verb|value|  of the Luhn test algorithm is a sequence of digits. The algorithm process the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) subtracts its value by $9$ if the doubled-value is bigger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends by an $0$ (i.e., \verb| sum mod 10=0|).
 
 To check whether the program path that traverses both loop exactly once and finally passes this test has a valid input, we create the following (string) constraint:
 
@@ -180,7 +184,7 @@ Here $value_0$ and $last_0$ are string variables and the others are integer vari
 	\item \emph{string-number conversion} (e.g., $\its{sum_2}$, which is the string value of the number $sum_2$).
 \end{itemize}
 
-Currently, even for a simple constraint like the above one, most solvers already fail to provide a correct answer. Therefore, there is an urgent need for developing efficient techniques for solving the combination of above constraints. To make matters worse, many scripting languages, of which JavaScript is the most notable ---it powers most interactive content on the Web, and increasingly server-side code with Node.js---, has conversions between strings and integers embedded in the core of its semantics. To see how, consider the following program:
+Currently, even for a simple constraint like the  one above, most solvers  fail to provide a correct answer. Therefore, there is an urgent need for developing efficient techniques for solving such string constraints. To make matters worse, many scripting languages, of which JavaScript is the most notable ---it powers most interactive content on the Web, and increasingly server-side code with Node.js---, has conversions between strings and integers embedded in the core of its semantics. To see how, consider the following program:
 
 
 %Most of the state-of-the-art string constraint solvers provide only very limited support to the combination of above constraints. Even for a simple constraint like the above one, most solvers already fail to provide a correct answer.
@@ -198,7 +202,7 @@ for(var i = 0; i < 10; i++) {
 }
 \end{verbatim}
 
-A casual glance at the above code reveal no use of strings at all, but the semantics of field access is somewhat unusual in JavaScript: the arrays are indexed by strings, and numeric indexes are converted to strings. This conversion is mandated explicitly by JavaScript semantics: the 2019 edition of ECMAScript \ref{?}requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}). Any faithful symbolic execution of JavaScript must handle such conversions for even basic array operations to work correctly; consider the following code snippet that manipulates an array \texttt{x}, with its value shown on the right:
+A casual glance at the above code reveal no use of strings at all, but the semantics of field access is somewhat unusual in JavaScript: the arrays are indexed by strings, and numeric indexes are converted to strings. This conversion is mandated explicitly by JavaScript semantics: the 2019 edition of ECMAScript \cite{?} requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}). Any faithful symbolic execution of JavaScript must handle such conversions for even basic array operations to work correctly; consider the following code snippet that manipulates an array \texttt{x}, with its value shown on the right:
 
 \hspace{-4mm}\begin{tabular}{l|l|c}
 1&	{\tt{x = [0, 0, 0, 0, 0]}} & [0, 0, 0, 0, 0] \\
@@ -211,7 +215,7 @@ A casual glance at the above code reveal no use of strings at all, but the seman
 
 Here \texttt{x[3]} in line 2,  \texttt{x[03]} in line 3, and \texttt{x["3"]} in line 4 all denote the same array element of \texttt{x["3"]}, but \texttt{x["03"]} denotes a completely different element (which is stored at the index \texttt{"03"} of the array). So na\"ive idea of modeling array index with integers will not work -- it cannot distinguish the indexes \texttt{"3"} and \texttt{"03"}. 
 
-If array indexes are modelled as strings, we need to face the problem of handling of arithmetics in the array index. Let us look at the case of line 6, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather basic array operation in Javascript, and so having only limited capability for handling string-number conversion operations  will cripple any analysis of non-trivial JavaScript code.
+If array indexes are modelled as strings, we need to face the problem of handling of arithmetics in the array index. Let us look at the case of line 6, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather basic array operation in Javascript, and so having only limited capability for handling string-number conversion operations  will cripple any analysis of any non-trivial JavaScript code.
 
 
 
@@ -280,13 +284,162 @@ Such constraint contains \textit{string-number conversion} functions (e.g., $\st
 
 Solving string constraint with string-number conversion is a very challenging problem. From the theoretical point of view, this problem is already proven to be undecidable~\cite{day2018satisfiability}. In practice, in our experiments (Section \ref{section:evaluation}), the state-of-the-art string constraint solvers provide only limited support to string-number conversion. 
 
-In this paper, we propose a framework that handles string constraints with string-number conversion efficiently. Due to the high complexity of solving the exact problem, our framework uses both over and under-approximation of the string constraints. The over-approximation is for proving UNSAT and the under-approximation is for proving SAT of the string constraint. Both over and under-approximation  fall in a decidable fragment of string constraints that can we can efficiently solved. 
+In this paper, we propose a framework that handles efficiently string constraints with string-number conversion. Due to the high complexity of solving the exact problem, our framework uses both over and under-approximation of the string constraints. The over-approximation is for proving UNSAT while the under-approximation is for proving SAT of the string constraint. Both over and under-approximation  fall in a decidable fragment of string constraints that can we can efficiently solve.
 
-For over-approximation, there are a few existing algorithms~\cite{parosh2019chain,z3,chen2019decision}, our framework does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult, and the differences between the major algorithms are very small. In our tool \tool, we use a version that is a simple adaption of the algorithm in~\cite{parosh2019chain}.
 
-The battle field is in fact those SAT instances, for which we develop solutions using under-approximation. For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA) (will be defined formally in Section~\ref{section:sfa}). The approach based on PFA is very flexible yet allows very efficiently manipulation. One can pick PFA of \emph{arbitrary structure} for the search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time. Moreover, it avoids the \textit{alphabet explosion problem} that the approach in~\cite{abdulla2017flatten} suffers. 
-%In contrast to under-approximation based on bit-blasting~\cite{kiezun2009hampi} (i.e., limit the length of the strings and encode the string constraint to a Boolean formula), our linear formula for under-approximation still encodes possibility an infinite number of models. 
-Such reduction based on PFA is the key to handle string-number conversion efficiently. When we restrict the solution space to those defined by PFAs, the original undecidable problem (i.e., string constraint with string-number conversion) is reduced to linear formulas and can be solved efficiently. We can step-wisely enrich the PFAs and hence solve the satisfiability problem of string constraints in a systematic manner.
+For ease of presentation, we will use  the following  toy example $$\Phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^+\}$$
+
+to explain the main ideas behind our decision procedure. Notice that $\Phi$ is satisfiable. E.g., it has a model $x=``12''$ and $y=``1212''$.
+
+
+Our decision procedure proceeds in two steps: The first step consists in over-approximating the set of input constraints into a one that  falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Observe that we can also over-approximate the input constraint to one that falls in the decidable fragment the acyclic fragment~\cite{abdulla2014string} or the straight-line fragment~\cite{chen2019decision}. Our choice of the   chain-free fragment~\cite{abdulla2019chain} is motivated by the fact that  the chain-free fragment is the {\em largest} known decidable fragment for that class of string constraints as far as we know.  In our settings, we over-approximate the formula $\Phi$ by converting $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and replace the constraint $n=\sti{x}$ with $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$).  The over-approximation module uses also  some heuristics  to derive the constant value of any side of the constraint $n=\sti{x}$ to refine the over-approximation. For instance, assume in some other cases, we can derive the value of $n=12$ from some integer constraints. In such case, we can further derive the value of $x$ is in the regular language $(0^*12)$. 
+Observe that if the over-approximated module returns UNSAT then  our decision procedure   declares that the original formula is also UNSAT and terminates. Since $\Phi$ is satisfiable, the over-approximation module will not return UNSAT. 
+
+\begin{figure*}
+	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
+			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
+	\begin{tikzpicture} 
+		\node[state,initial] (q0)  {$\st{0}{0}$};
+		\node[state] (q1) [right = 3cm of q0] {$\st{1}{0}$};
+		\node (q2) [right = 1.8cm of q1]{};
+		\node (q3) [right = 1cm of q2]{};
+		\node[state,accepting] (qm) [right = 1.8cm of q3] {$\st{m}{0}$};
+		
+		\node[state] (q01) [above left = 0.6cm of q0] {$\st{0}{1}$};
+		\node[state] (q02) [above = 1cm of q0] {$\st{0}{2}$};
+		\node[state] (q03) [above right = 0.6cm of q0] {$\st{0}{3}$};
+
+		\node[state] (q11) [above left = 0.8cm of q1] {$\st{1}{1}$};
+		\node[state] (q12) [above right = 0.8cm of q1] {$\st{1}{2}$};
+
+		\node[state] (qm1) [above left = 0.6cm of qm] {$\st{m}{1}$};
+		\node[state] (qm2) [above = 1cm of qm] {$\st{m}{2}$};
+		\node[state] (qm3) [above right = 0.6cm of qm] {$\st{m}{3}$};
+
+  		\draw[->] (q0) edge [bend left] node [left]{$\sym{0}{0}$} (q01) ;
+  		\draw[->] (q01) edge [bend left] node [left]{$\sym{0}{1}$} (q02) ;
+  		\draw[->] (q02) edge [bend left] node [right]{$\sym{0}{2}$} (q03) ;
+  		\draw[->] (q03) edge [bend left] node [right]{$\sym{0}{3}$} (q0) ;
+  		
+  		\draw[->] (q0) edge node [below]{$v_0$} (q1) ;
+  		\draw[->] (q1) edge node [below]{$v_1$} (q2) ;
+  		\draw[dotted] (q2) edge (q3) ;
+  		\draw[->] (q3) edge node [below]{$v_{m-1}$} (qm) ;
+
+  		\draw[->] (qm) edge [bend left] node [left]{$\sym{m}{0}$} (qm1) ;
+		\draw[->] (qm1) edge [bend left] node [left]{$\sym{m}{1}$} (qm2) ;
+		\draw[->] (qm2) edge [bend left] node [right]{$\sym{m}{2}$} (qm3) ;
+		\draw[->] (qm3) edge [bend left] node [right]{$\sym{m}{3}$} (qm) ;
+
+  		\draw[->] (q1) edge [bend left] node [left]{$\sym{1}{0}$} (q11) ;
+		\draw[->] (q11) edge [bend left] node [above]{$\sym{1}{1}$} (q12) ;
+		\draw[->] (q12) edge [bend left] node [right]{$\sym{1}{2}$} (q1) ;
+	\end{tikzpicture} 
+
+	\caption{An example of a parametric flat automaton}
+	\label{fig:sfa_def}
+\end{figure*}
+
+
+The second step of our decision procedure is only enabled  if the first step returns SAT. In this case,  our decision procedure  restricts the domain of each string variables  to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In this paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA). A PFA is a {\em flat} finite state automaton consisting of a predefined sequence of loops each of fixed length (see Figure \ref{fig:sfa_def}).  The approach based on PFA is very flexible yet allows very efficiently manipulation. One can pick PFA of \emph{arbitrary structure} for the search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time.  Furthermore, we associate for each character a unique natural number. This allows us to assume that the input alphabet is a subset of natural numbers. To avoids the \textit{alphabet explosion problem} that the approach in~\cite{abdulla2017flatten} suffers,  we  labeled each transition between two states of a  PFA by a unique  \emph{character} variable (whose domain is the set of natural numbers) instead of having a transition between each two states for each symbol in the alphabet.    
+Such reduction based on PFA is the key to handle string-number conversion efficiently. When we restrict the solution space to those defined by PFAs, the original undecidable problem (i.e., string constraint with string-number conversion) is reduced to the satisfiability problem of linear formulas that can  be solved efficiently. 
+
+%The battle field is in fact those SAT instances, for which we develop solutions using under-approximation. For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA) (will be defined formally in Section~\ref{section:sfa}). The approach based on PFA is very flexible yet allows very efficiently manipulation. One can pick PFA of \emph{arbitrary structure} for the search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time. Moreover, it avoids the \textit{alphabet explosion problem} that the approach in~\cite{abdulla2017flatten} suffers. 
+%%In contrast to under-approximation based on bit-blasting~\cite{kiezun2009hampi} (i.e., limit the length of the strings and encode the string constraint to a Boolean formula), our linear formula for under-approximation still encodes possibility an infinite number of models. 
+%Such reduction based on PFA is the key to handle string-number conversion efficiently. When we restrict the solution space to those defined by PFAs, the original undecidable problem (i.e., string constraint with string-number conversion) is reduced to linear formulas and can be solved efficiently. We can step-wisely enrich the PFAs and hence solve the satisfiability problem of string constraints in a systematic manner.
+
+
+\begin{figure*}
+	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
+			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
+	
+	\begin{minipage}[t]{0.15\textwidth} 
+		\begin{tikzpicture}
+		\node[state,initial,accepting] (q0)  {$q_0$};
+		
+		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
+		
+		\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
+		\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
+		\end{tikzpicture} 
+		
+		\centering
+		(a) $A_x$
+	\end{minipage}
+	\begin{minipage}[t]{0.15\textwidth} 
+		\begin{tikzpicture} 
+		\node[state,initial,accepting] (q0)  {$p_0$};
+		
+		\node[state] (q01) [above = 0.5cm of q0] {$p_1$};
+		
+		\draw[->] (q0) edge [bend left] node [left]{$v_2$} (q01) ;
+		\draw[->] (q01) edge [bend left] node [right]{$v_3$} (q0) ;
+		\end{tikzpicture} 
+		
+		\centering
+		(b) $A_y$
+	\end{minipage}
+	\begin{minipage}[t]{0.28\textwidth}
+		\begin{tikzpicture} 
+		\node[state,initial] (q0)  {$q_0$};
+		\node[state,accepting] (q1) [right = 1.3cm of q0] {$p_0$};
+		
+		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
+		
+		\draw[->] (q0) edge [bend left] node [left]{$v_0^{(0)}$} (q01) ;
+		\draw[->] (q01) edge [bend left] node [right]{$v_1^{(0)}$} (q0) ;
+		
+		\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
+		
+		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(0)}$} (q11) ;
+		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(0)}$} (q1) ;
+		\draw[->] (q0) edge  node [below]{$v_{\epsilon_0}$} (q1) ;
+		\end{tikzpicture}
+		
+		\centering
+		(c) $A_{xy}$
+	\end{minipage}
+	\ \ \ 
+	\begin{minipage}[t]{0.28\textwidth}
+		\begin{tikzpicture} 
+		\node[state,accepting] (q0)  {$q_0$};
+		\node[state,initial] (q1) [left = 1.3cm of q0] {$p_0$};
+		
+		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
+		
+		\draw[->] (q0) edge [bend left] node [left]{$v_0^{(1)}$} (q01) ;
+		\draw[->] (q01) edge [bend left] node [right]{$v_1^{(1)}$} (q0) ;
+		
+		\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
+		
+		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(1)}$} (q11) ;
+		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(1)}$} (q1) ;
+		\draw[->] (q1) edge  node [below]{$v_{\epsilon_1}$ }(q0) ;
+		\end{tikzpicture}
+		
+		\centering
+		(d) $A_{yx}$
+	\end{minipage}
+	
+	\caption{Parametric flat automata of $x$, $y$, $xy$ and $yx$}
+	\label{fig:sfa}
+\end{figure*}
+
+
+In the following,  we try to explain the construction of the linear formula using the formula $\Phi$ as an example. Assume that we project the domain of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables.Thus,  $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from the formula $ y \in (12)^+$, we may derive $v_3=1$ and $v_4=2$. 
+
+The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$,  as well as, the number of occurrences of each character variables $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12''$ and $y=``1212''$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4)= (1,2,1,2,1,1,2,2)$. The assignment says, for example, that $x$ is the parametric word obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12''$.
+
+If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables.  If not, our procedure step-wisely change the PFA to more expressive ones (by adding more states and transitions) to systematically search for the solution. Depending on the implementation, one may choose to report unknown after some certain steps.
+
+
+
+
+%For over-approximation, there are a few existing algorithms~\cite{parosh2019chain,z3,chen2019decision}, our framework does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult, and the differences between the major algorithms are very small. In our tool \tool, we use a version that is a simple adaption of the algorithm in~\cite{parosh2019chain}.
+
+%The battle field is in fact those SAT instances, for which we develop solutions using under-approximation. For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA) (will be defined formally in Section~\ref{section:sfa}). The approach based on PFA is very flexible yet allows very efficiently manipulation. One can pick PFA of \emph{arbitrary structure} for the search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time. Moreover, it avoids the \textit{alphabet explosion problem} that the approach in~\cite{abdulla2017flatten} suffers. 
+%%In contrast to under-approximation based on bit-blasting~\cite{kiezun2009hampi} (i.e., limit the length of the strings and encode the string constraint to a Boolean formula), our linear formula for under-approximation still encodes possibility an infinite number of models. 
+%Such reduction based on PFA is the key to handle string-number conversion efficiently. When we restrict the solution space to those defined by PFAs, the original undecidable problem (i.e., string constraint with string-number conversion) is reduced to linear formulas and can be solved efficiently. We can step-wisely enrich the PFAs and hence solve the satisfiability problem of string constraints in a systematic manner.
 
 \hide{More concretely, based on the PFA encoding, we manage to translate the string constraint with string-number function to an equisatisfiable pure numerical constraints. Thus the problem is significantly simplified. We show that if we restrict the variable to arbitrary PFA, one can convert the a string constraint with string-number function to an integer constraint consisting of both polynomials and exponentials. Solving such kind of constraints is a very difficult task. For simpler cases where the variables are real numbers, decision procedures for different subclass polynomial-exponential equations exists~\cite{gan2015decidability,kincaid2019closed,achatz2008deciding}. To the best of our knowledge, the satisfiability problem of polynomial-exponential equations is still open. For efficiency reason, we propose to use PFA with specific structural constraint to handle string-number conversion function. That is, if we encountered a constraint $y=\sti{x}$, then we always restrict the domain of $x$ to some specific kind of PFA, instead of allowing arbitrary PFAs. This allows us to convert a string constraint with string-number conversion function to an equisatisfiable linear formula, which can be solved very efficiently. }
 
@@ -318,13 +471,32 @@ Such reduction based on PFA is the key to handle string-number conversion effici
 
 }
 
-\todo{Talk about related works}
 
-
+To demonstrate  the usefulness of our approach, we have implemented our decision procedure in an open source solver, called {\sc } ....
 \todo{Talk about experiments}
 
+\smallskip
+
+\noindent
+{\bf Summary of the Contributions}
+
+\begin{itemize}
+
+\item An {\em efficient} procedure  for checking satisfiability
+of string constraints with string-number conversion constraints.
 
 
+
+\item The introduction of  the class of \emph{parametric flat automata} which uses character variables as transition labels instead of characters. This allows us to avoid  the {alphabet explosion problem} that the approach in~\cite{abdulla2017flatten} when it comes to handle string-number conversion constraints.
+
+
+\item An algorithm that translates the satisfiability string constraints to the  satisfiability of a linear formula   in polynomial-time when   the search space restricted by PFAs.
+
+
+\item An open source tool  with experimental
+results that demonstrate the efficiency  of
+our approach on both existing and real-life benchmarks
+\end{itemize}
 
 
 \hide{
@@ -351,106 +523,20 @@ The approach combines techniques from both automata theory and SMT solving to ex
 
 }
 
-
-\paragraph{Related works:} 
-Already in  1946, Quine \cite{Quine46} showed that the first order theory
-of string equations is undecidable.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\section{Overview} \label{section:overview}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-An important line of work has been to identify subclasses
-for which decidability can be achieved.
+%Here we try to explain the approach using a toy example $\Phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^+\}$. Notice that $\Phi$ is satisfiable. E.g., it has a model $x=``12''$ and $y=``1212''$.
 %
-The pioneering work by Makanin \cite{makanin} proposed a decision
-procedure for quantifier-free word equations, i.e., Boolean combinations of
-equalities and disequalities, where the variables may denote words of 
-arbitrary lengths.
+%For proving UNSAT, our framework does not set any restriction on which decision procedure to use. One can select any decision procedure they want to use and ``over-approximate'' the input constraint to one that falls in the decidable fragment, e.g., the acyclic fragment~\cite{abdulla2014string}, the straight-line fragment~\cite{chen2019decision}, or the chain-free fragment~\cite{abdulla2019chain}. For instance, we can convert $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and replace the constraint $n=\sti{x}$ with $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$). This produce new formulas that over-approximate the original ones and fall in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Since $\Phi$ is satisfiable, the over-approximation module will not return UNSAT. In our implementation \tool, we further add heuristics trying to derive the constant value of any side of the constraint $n=\sti{x}$ to refine the over-approximation. For instance, assume in some other cases, we can derive the value of $n=12$ from some integer constraints. In such case, we can further derive the value of $x$ is in the regular language $(0^*12)$. 
 %
-The decidability and complexity of different subclasses
-have been considered by several works, e.g.
-\cite{Plandowski99,Plandowski06,Matiyasevich08,Robson90,Schulz90,Ganesh13decide,DBLP:journals/corr/GaneshB16}.
-Generalizations of the work of Makanin by adding
-new types of constraints have been difficult to achieve.
+%Then our procedure will restrict the domain of each string variables to the language defined by some parametric flat automata (PFA) and convert them to equisatisfiable linear formula. The details of the under-approximation component will be described in Section~\ref{section:under_approximate}. Here we try to explain what the linear formula looks like by an example. Assume that we project the domain of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. One special treatment we do in this paper is that we encoding characters as natural numbers. So $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from the formula $ y \in (12)^+$, we may derive $v_3=1$ and $v_4=2$. 
 %
-For instance, the satisfiability of word equations combined with length
-constraints of the form $\left|x\right|=\left|y\right|$ is open
-\cite{buchi:definability}.
+%The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$,  as well as, the number of occurrences of each character variables $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12''$ and $y=``1212''$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4)= (1,2,1,2,1,1,2,2)$. The assignment says, for example, that $x$ is the parametric word obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12''$.
 %
-Recently, 
-regular and especially relational transducers constraints were identified
+%If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables.  If not, our procedure step-wisely change the PFA to more expressive ones (by adding more states and transitions) to systematically search for the solution. Depending on the implementation, one may choose to report unknown after some certain steps.
 %
-as a strongly desirable feature of string languages 
-%
-especially in the context software analysis with an emphasis on security. 
-%
-Adding these to the mix leads immediately to undecidability \cite{morvan}
-%
-and hence numerous decidable fragments were proposed \cite{string14,BFL13,BL16,Chen:2018,Chen:2019}. 
-%
-From these, the straight line fragment of \cite{BL16} is the most general decidable combination of concatenation and transducers. It is however incomparable to the acyclic fragment of \cite{string14} (which does not have transducers but could be extended with them in a straightforward manner).
-%
-Some works add also other syntactic features, such as \cite{Chen:2018,Chen:2019}, 
-but the limit of decidable combinations of the core string features---transducers/regular constraints, length constraints, and concatenation stays at \cite{BL16} and \cite{string14}.
-%
-The weakly chaining decidable fragment present in this paper significantly generalises both these fragments in a practically relevant direction.
-
-
-The strong practical motivation in string solving led to a rise of a number of SMT solvers that do not always provide completeness guarantees but concentrate on solving practical problem instances, 
-through applying a variety of calculi and algorithms.
-%
-A number of tools handle string constraints by means of {\it length-based under-approximation} and
-translation to
-bit-vectors~\cite{Kiezun09hampi,Saxena10:kaluza,saxena:flax}, assuming
-a fixed upper bound on the length of the possible solutions. 
-%
-Our method on the other hand allows to analyse constraints without a length limit and with completeness guarantees.
-%
-More recently, also {\it DPLL(T)-based} string solvers lift the
-restriction of strings of bounded length; this generation of solvers
-includes Z3-str3 \cite{Berzish2017Z3str3AS}, Z3-str2~\cite{Zheng13z3str}, 
-CVC4~\cite{LiaEtAl-CAV-14}, S3P~\cite{trinh2014:s3,Trinh2016},
-Norn~\cite{norn15}, 
-Trau~\cite{trau18}, 
-Sloth~\cite{sloth}, 
-and 
-Ostrich~\cite{Chen:2019}. DPLL(T)-based solvers
-handle a variety of string constraints, including word equations, regular expression membership, length constraints, and (more rarely)
-regular/rational relations; the solvers are not complete for the full
-combination of those constraints though, and often only decide a (more
-or less well-defined) fragment of the individual constraints. 
-Equality constraints are normally handled by means of splitting into simpler
-sub-cases, in combination with powerful techniques for Boolean
-reasoning to curb the resulting exponential search space. 
-%
-Our implementation is combining strong completeness guarantees of \cite{sloth} extended to handle the fragment proposed in this paper with an efficient approximation techniques of \cite{trau18} 
-and its performance on existing benchmarks compares favourably with the most efficient of the above tools.
-%
-
-A further direction is {\it automata-based} solvers for analyzing
-string-manipulated programs. Stranger~\cite{fangyu:stranger} soundly
-over-approximates string constraints using regular languages, and
-outperforms DPLL(T)-based solvers when checking single execution
-traces, according to some evaluations~\cite{KauslerS14}.  It has
-recently also been observed~\cite{DBLP:conf/cav/WangTLYJ16,sloth} that
-automata-based algorithms can be combined with model checking
-algorithms, in particular IC3/PDR, for more efficient checking of the emptiness for automata. However, many kinds of constraints, including length
-constraints and word equations, cannot be
-handled by automata-based solvers in a complete manner.  
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Overview} \label{section:overview}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-Here we try to explain the approach using a toy example $\Phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^+\}$. Notice that $\Phi$ is satisfiable. E.g., it has a model $x=``12''$ and $y=``1212''$.
-
-For proving UNSAT, our framework does not set any restriction on which decision procedure to use. One can select any decision procedure they want to use and ``over-approximate'' the input constraint to one that falls in the decidable fragment, e.g., the acyclic fragment~\cite{abdulla2014string}, the straight-line fragment~\cite{chen2019decision}, or the chain-free fragment~\cite{abdulla2019chain}. For instance, we can convert $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and replace the constraint $n=\sti{x}$ with $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$). This produce new formulas that over-approximate the original ones and fall in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Since $\Phi$ is satisfiable, the over-approximation module will not return UNSAT. In our implementation \tool, we further add heuristics trying to derive the constant value of any side of the constraint $n=\sti{x}$ to refine the over-approximation. For instance, assume in some other cases, we can derive the value of $n=12$ from some integer constraints. In such case, we can further derive the value of $x$ is in the regular language $(0^*12)$. 
-
-Then our procedure will restrict the domain of each string variables to the language defined by some parametric flat automata (PFA) and convert them to equisatisfiable linear formula. The details of the under-approximation component will be described in Section~\ref{section:under_approximate}. Here we try to explain what the linear formula looks like by an example. Assume that we project the domain of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. One special treatment we do in this paper is that we encoding characters as natural numbers. So $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from the formula $ y \in (12)^+$, we may derive $v_3=1$ and $v_4=2$. 
-
-The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$,  as well as, the number of occurrences of each character variables $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12''$ and $y=``1212''$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4)= (1,2,1,2,1,1,2,2)$. The assignment says, for example, that $x$ is the parametric word obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12''$.
-
-If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables.  If not, our procedure step-wisely change the PFA to more expressive ones (by adding more states and transitions) to systematically search for the solution. Depending on the implementation, one may choose to report unknown after some certain steps.
-
 
 
 
@@ -607,8 +693,7 @@ After the PFA for each variable is selected, we step-wisely pick and remove a st
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parametric Flat Automata} \label{section:sfa}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\newcommand{\st}[2]{q_{#1}^{#2}}
-\newcommand{\sym}[2]{v_{#1}^{#2}}
+
 \todo{additional presburget constraints to encode $\epsilon$ added at translation to a formula}
 %We use $\cvar$ to denote a finite set of \emph{character variables}  ranging over $\Sigma_\epsilon$. 
 %Sometimes we use index to denote different set of variables over the same range, e.g., $\cvarone$ and $\cvartwo$. 
@@ -674,52 +759,52 @@ $w_i = (a_i^0 \cdots a_i^{l_{i-1}})^{\pvarsof {a_i^0}}$ if $l_i >0$ and $w_i = \
 \paragraph{Parametric (flat) automata}
 Next we define \emph{parametric automaton} (PA) as a tuple $A = (Q,T,\cvar,\st{0}{0},\st{m}{0},\pfaf)$ where $\pfaf$ is an \emph{interpretation constraint}, a linear formula over $\cvar$, and $(Q,T,\cvar,\st{0}{0},\st{m}{0})$ is an automaton operating over an alphabet $\cvar$ of \emph{character variables}.  \emph{Parametric flat automaton (PFA)} then is a parametric automaton with its finite automaton flat.
 
-
-\begin{figure*}
-	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
-			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
-	\begin{tikzpicture} 
-		\node[state,initial] (q0)  {$\st{0}{0}$};
-		\node[state] (q1) [right = 3cm of q0] {$\st{1}{0}$};
-		\node (q2) [right = 1.8cm of q1]{};
-		\node (q3) [right = 1cm of q2]{};
-		\node[state,accepting] (qm) [right = 1.8cm of q3] {$\st{m}{0}$};
-		
-		\node[state] (q01) [above left = 0.6cm of q0] {$\st{0}{1}$};
-		\node[state] (q02) [above = 1cm of q0] {$\st{0}{2}$};
-		\node[state] (q03) [above right = 0.6cm of q0] {$\st{0}{3}$};
-
-		\node[state] (q11) [above left = 0.8cm of q1] {$\st{1}{1}$};
-		\node[state] (q12) [above right = 0.8cm of q1] {$\st{1}{2}$};
-
-		\node[state] (qm1) [above left = 0.6cm of qm] {$\st{m}{1}$};
-		\node[state] (qm2) [above = 1cm of qm] {$\st{m}{2}$};
-		\node[state] (qm3) [above right = 0.6cm of qm] {$\st{m}{3}$};
-
-  		\draw[->] (q0) edge [bend left] node [left]{$\sym{0}{0}$} (q01) ;
-  		\draw[->] (q01) edge [bend left] node [left]{$\sym{0}{1}$} (q02) ;
-  		\draw[->] (q02) edge [bend left] node [right]{$\sym{0}{2}$} (q03) ;
-  		\draw[->] (q03) edge [bend left] node [right]{$\sym{0}{3}$} (q0) ;
-  		
-  		\draw[->] (q0) edge node [below]{$v_0$} (q1) ;
-  		\draw[->] (q1) edge node [below]{$v_1$} (q2) ;
-  		\draw[dotted] (q2) edge (q3) ;
-  		\draw[->] (q3) edge node [below]{$v_{m-1}$} (qm) ;
-
-  		\draw[->] (qm) edge [bend left] node [left]{$\sym{m}{0}$} (qm1) ;
-		\draw[->] (qm1) edge [bend left] node [left]{$\sym{m}{1}$} (qm2) ;
-		\draw[->] (qm2) edge [bend left] node [right]{$\sym{m}{2}$} (qm3) ;
-		\draw[->] (qm3) edge [bend left] node [right]{$\sym{m}{3}$} (qm) ;
-
-  		\draw[->] (q1) edge [bend left] node [left]{$\sym{1}{0}$} (q11) ;
-		\draw[->] (q11) edge [bend left] node [above]{$\sym{1}{1}$} (q12) ;
-		\draw[->] (q12) edge [bend left] node [right]{$\sym{1}{2}$} (q1) ;
-	\end{tikzpicture} 
-
-	\caption{An example of a parametric flat automaton}
-	\label{fig:sfa_def}
-\end{figure*}
-
+%
+%\begin{figure*}
+%	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
+%			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
+%	\begin{tikzpicture} 
+%		\node[state,initial] (q0)  {$\st{0}{0}$};
+%		\node[state] (q1) [right = 3cm of q0] {$\st{1}{0}$};
+%		\node (q2) [right = 1.8cm of q1]{};
+%		\node (q3) [right = 1cm of q2]{};
+%		\node[state,accepting] (qm) [right = 1.8cm of q3] {$\st{m}{0}$};
+%		
+%		\node[state] (q01) [above left = 0.6cm of q0] {$\st{0}{1}$};
+%		\node[state] (q02) [above = 1cm of q0] {$\st{0}{2}$};
+%		\node[state] (q03) [above right = 0.6cm of q0] {$\st{0}{3}$};
+%
+%		\node[state] (q11) [above left = 0.8cm of q1] {$\st{1}{1}$};
+%		\node[state] (q12) [above right = 0.8cm of q1] {$\st{1}{2}$};
+%
+%		\node[state] (qm1) [above left = 0.6cm of qm] {$\st{m}{1}$};
+%		\node[state] (qm2) [above = 1cm of qm] {$\st{m}{2}$};
+%		\node[state] (qm3) [above right = 0.6cm of qm] {$\st{m}{3}$};
+%
+%  		\draw[->] (q0) edge [bend left] node [left]{$\sym{0}{0}$} (q01) ;
+%  		\draw[->] (q01) edge [bend left] node [left]{$\sym{0}{1}$} (q02) ;
+%  		\draw[->] (q02) edge [bend left] node [right]{$\sym{0}{2}$} (q03) ;
+%  		\draw[->] (q03) edge [bend left] node [right]{$\sym{0}{3}$} (q0) ;
+%  		
+%  		\draw[->] (q0) edge node [below]{$v_0$} (q1) ;
+%  		\draw[->] (q1) edge node [below]{$v_1$} (q2) ;
+%  		\draw[dotted] (q2) edge (q3) ;
+%  		\draw[->] (q3) edge node [below]{$v_{m-1}$} (qm) ;
+%
+%  		\draw[->] (qm) edge [bend left] node [left]{$\sym{m}{0}$} (qm1) ;
+%		\draw[->] (qm1) edge [bend left] node [left]{$\sym{m}{1}$} (qm2) ;
+%		\draw[->] (qm2) edge [bend left] node [right]{$\sym{m}{2}$} (qm3) ;
+%		\draw[->] (qm3) edge [bend left] node [right]{$\sym{m}{3}$} (qm) ;
+%
+%  		\draw[->] (q1) edge [bend left] node [left]{$\sym{1}{0}$} (q11) ;
+%		\draw[->] (q11) edge [bend left] node [above]{$\sym{1}{1}$} (q12) ;
+%		\draw[->] (q12) edge [bend left] node [right]{$\sym{1}{2}$} (q1) ;
+%	\end{tikzpicture} 
+%
+%	\caption{An example of a parametric flat automaton}
+%	\label{fig:sfa_def}
+%\end{figure*}
+%
 %A finite automaton $D=(Q,T',\Sigma,q_0,q_m)$ is an \emph{instance} of a PFA $S=(Q,T,\cvar,q_0,q_m)$, if there exists an interpretation $I: \cvar \cup \{\epsilon\} \rightarrow \Sigma_\epsilon$ satisfying $I(\epsilon)=\epsilon$ and $T'=\{(q,I(c),q')\mid (q,c,q')\in T\}$. We write $I(S)$ to denote the instance of $S$ wrt. $I$. The language of $S$ is defined as $L(S)= \cup\{L(D) \mid D \mbox{ is an instance of } S\}$. Notice that $L(S)$ is regular because every PFA has only finitely many instance and the finite union of regular languages are also regular.
 
 
@@ -998,83 +1083,6 @@ The following lemma states the correctness of this construction, and it follows 
 %\end{lemma}
 %}
 
-
-
-\begin{figure*}
-	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
-			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
-	
-	\begin{minipage}[t]{0.15\textwidth} 
-		\begin{tikzpicture}
-		\node[state,initial,accepting] (q0)  {$q_0$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
-		\end{tikzpicture} 
-		
-		\centering
-		(a) $A_x$
-	\end{minipage}
-	\begin{minipage}[t]{0.15\textwidth} 
-		\begin{tikzpicture} 
-		\node[state,initial,accepting] (q0)  {$p_0$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$p_1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_2$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_3$} (q0) ;
-		\end{tikzpicture} 
-		
-		\centering
-		(b) $A_y$
-	\end{minipage}
-	\begin{minipage}[t]{0.28\textwidth}
-		\begin{tikzpicture} 
-		\node[state,initial] (q0)  {$q_0$};
-		\node[state,accepting] (q1) [right = 1.3cm of q0] {$p_0$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_0^{(0)}$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_1^{(0)}$} (q0) ;
-		
-		\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
-		
-		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(0)}$} (q11) ;
-		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(0)}$} (q1) ;
-		\draw[->] (q0) edge  node [below]{$v_{\epsilon_0}$} (q1) ;
-		\end{tikzpicture}
-		
-		\centering
-		(c) $A_{xy}$
-	\end{minipage}
-	\ \ \ 
-	\begin{minipage}[t]{0.28\textwidth}
-		\begin{tikzpicture} 
-		\node[state,accepting] (q0)  {$q_0$};
-		\node[state,initial] (q1) [left = 1.3cm of q0] {$p_0$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_0^{(1)}$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_1^{(1)}$} (q0) ;
-		
-		\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
-		
-		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(1)}$} (q11) ;
-		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(1)}$} (q1) ;
-		\draw[->] (q1) edge  node [below]{$v_{\epsilon_1}$ }(q0) ;
-		\end{tikzpicture}
-		
-		\centering
-		(d) $A_{yx}$
-	\end{minipage}
-	
-	\caption{Parametric flat automata of $x$, $y$, $xy$ and $yx$}
-	\label{fig:sfa}
-\end{figure*}
 
 
 
@@ -1492,6 +1500,96 @@ $
 
 \section{Implementation}\label{section:implementation}
 \input{evaluation}
+
+
+
+\paragraph{Related works:} 
+Already in  1946, Quine \cite{Quine46} showed that the first order theory
+of string equations is undecidable.
+%
+An important line of work has been to identify subclasses
+for which decidability can be achieved.
+%
+The pioneering work by Makanin \cite{makanin} proposed a decision
+procedure for quantifier-free word equations, i.e., Boolean combinations of
+equalities and disequalities, where the variables may denote words of 
+arbitrary lengths.
+%
+The decidability and complexity of different subclasses
+have been considered by several works, e.g.
+\cite{Plandowski99,Plandowski06,Matiyasevich08,Robson90,Schulz90,Ganesh13decide,DBLP:journals/corr/GaneshB16}.
+Generalizations of the work of Makanin by adding
+new types of constraints have been difficult to achieve.
+%
+For instance, the satisfiability of word equations combined with length
+constraints of the form $\left|x\right|=\left|y\right|$ is open
+\cite{buchi:definability}.
+%
+Recently, 
+regular and especially relational transducers constraints were identified
+%
+as a strongly desirable feature of string languages 
+%
+especially in the context software analysis with an emphasis on security. 
+%
+Adding these to the mix leads immediately to undecidability \cite{morvan}
+%
+and hence numerous decidable fragments were proposed \cite{string14,BFL13,BL16,Chen:2018,Chen:2019}. 
+%
+From these, the straight line fragment of \cite{BL16} is the most general decidable combination of concatenation and transducers. It is however incomparable to the acyclic fragment of \cite{string14} (which does not have transducers but could be extended with them in a straightforward manner).
+%
+Some works add also other syntactic features, such as \cite{Chen:2018,Chen:2019}, 
+but the limit of decidable combinations of the core string features---transducers/regular constraints, length constraints, and concatenation stays at \cite{BL16} and \cite{string14}.
+%
+The weakly chaining decidable fragment present in this paper significantly generalises both these fragments in a practically relevant direction.
+
+
+The strong practical motivation in string solving led to a rise of a number of SMT solvers that do not always provide completeness guarantees but concentrate on solving practical problem instances, 
+through applying a variety of calculi and algorithms.
+%
+A number of tools handle string constraints by means of {\it length-based under-approximation} and
+translation to
+bit-vectors~\cite{Kiezun09hampi,Saxena10:kaluza,saxena:flax}, assuming
+a fixed upper bound on the length of the possible solutions. 
+%
+Our method on the other hand allows to analyse constraints without a length limit and with completeness guarantees.
+%
+More recently, also {\it DPLL(T)-based} string solvers lift the
+restriction of strings of bounded length; this generation of solvers
+includes Z3-str3 \cite{Berzish2017Z3str3AS}, Z3-str2~\cite{Zheng13z3str}, 
+CVC4~\cite{LiaEtAl-CAV-14}, S3P~\cite{trinh2014:s3,Trinh2016},
+Norn~\cite{norn15}, 
+Trau~\cite{trau18}, 
+Sloth~\cite{sloth}, 
+and 
+Ostrich~\cite{Chen:2019}. DPLL(T)-based solvers
+handle a variety of string constraints, including word equations, regular expression membership, length constraints, and (more rarely)
+regular/rational relations; the solvers are not complete for the full
+combination of those constraints though, and often only decide a (more
+or less well-defined) fragment of the individual constraints. 
+Equality constraints are normally handled by means of splitting into simpler
+sub-cases, in combination with powerful techniques for Boolean
+reasoning to curb the resulting exponential search space. 
+%
+Our implementation is combining strong completeness guarantees of \cite{sloth} extended to handle the fragment proposed in this paper with an efficient approximation techniques of \cite{trau18} 
+and its performance on existing benchmarks compares favourably with the most efficient of the above tools.
+%
+
+A further direction is {\it automata-based} solvers for analyzing
+string-manipulated programs. Stranger~\cite{fangyu:stranger} soundly
+over-approximates string constraints using regular languages, and
+outperforms DPLL(T)-based solvers when checking single execution
+traces, according to some evaluations~\cite{KauslerS14}.  It has
+recently also been observed~\cite{DBLP:conf/cav/WangTLYJ16,sloth} that
+automata-based algorithms can be combined with model checking
+algorithms, in particular IC3/PDR, for more efficient checking of the emptiness for automata. However, many kinds of constraints, including length
+constraints and word equations, cannot be
+handled by automata-based solvers in a complete manner.  
+
+
+
+
+
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{refs}
