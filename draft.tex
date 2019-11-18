@@ -109,9 +109,33 @@
 \section{Introduction} \label{section:introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The path feasibility problem is a critical module in the symbolic execution of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}. Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
+Symbolic execution is very popular technique that allows the programmers to check the feasibility of a path in a given program (i.e., determining the value of the inputs under which the given path can be executed) \cite{????}).
+The path feasibility problem is usually solved by a reduction to the satisfiability problem of a formula. More precisely, program statements in the path are usually translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{satisfiability module theory (SMT)}  solvers. The types of constraints that needed to be solved by the SMT solvers depend on the type of program variables. Therefore, there is a need for SMT solvers that support different combinations of theories (i.e., depending on the types of the manipulated variables). 
 
-The string-number conversion operations are widely used in string manipulating programs and algorithms. For example, the program fragment below is an implementation of the Luhn test algorithm that is often used in credit card or personal ID validation.
+Among all types of program variables, \emph{String data type}  is omnipresent in modern programming languages. For many languages such as Java, conversion between integers and strings is a niche operation, and much symbolic execution can be done without supporting it; however, this is not true of some scripting languages, of which JavaScript is the most notable.  JavaScript is a key language---it powers most interactive content on the Web, and increasingly server-side code with nodejs---and it has conversions between strings and integers embedded in the core of its semantics.
+
+
+Therefore, string constraint solving has received considerable attention in the constraint solving community.
+Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$), are widely supported by most state-of-the-art string constraint solvers such as Z3  \cite{?}, CVC4  \cite{?}, Z3Str3  \cite{?}, and Trau+ \cite{?}. However, these solvers have limited support for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often very limited to ground terms. Thus, $n = \sti{"003"}$  or $x = \its{5}$  are handled but $n = \sti{x}$ (i.e., converting the string $x$ to the integer $n$) and  $x = \sti{n}$ (i.e.,  converting the integer $n$ to the string $x$)
+are ones of the core operations that require stronger solver support.
+
+
+
+
+
+
+
+
+
+
+
+%The path feasibility problem is a critical module in the symbolic execution of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}.  Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
+
+
+
+%The path feasibility problem is a critical module in the symbolic execution of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}. Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
+
+In fact, the string-number conversion operations are widely used in string manipulating programs and algorithms. For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
 
 \begin{Verbatim}[fontsize=\small]
 function checkLuhn(value) {
@@ -122,7 +146,7 @@ function checkLuhn(value) {
   }	
   for (var i = value.length - 2; i >= 0; i-=2) {
     var d = parseInt(value.charAt(i));
-    if ((d *= 2) > 9) digit -= 9;
+    if ((d *= 2) > 9) d -= 9;
     sum += d;
   }
   var last= sum.toString().charAt(sum.length-1);
@@ -131,9 +155,9 @@ function checkLuhn(value) {
 \end{Verbatim}
 
 
-The input \verb|value| is a sequence of digits. The algorithm process the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) substracts its value by $9$ if the doubled-value is bigger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends in $0$.
+The input \verb|value| is a sequence of digits. The algorithm process the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) subtracts its value by $9$ if the doubled-value is bigger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends by an $0$ (i.e., \verb| sum mod 10=0|).
 
-To check whether the program path that traverses both loop exactly once and finally passes this test has a valid input, we create the following string constraint:
+To check whether the program path that traverses both loop exactly once and finally passes this test has a valid input, we create the following (string) constraint:
 
 $$\begin{array}{lc}
 1&	value_0 \in [1,9]^+ \wedge 	sum_0 = 0 \wedge \\
@@ -150,7 +174,7 @@ $$\begin{array}{lc}
 10&	last_0 =``0"
 \end{array}$$
 
-Here $value_0$ and $last_0$ are string variables and others are integer variables. Line 1 describes the initial condition: \textsf{value} should be a sequence of digits and \textsf{sum} is initially zero. Lines 2-4 and lines 5-7 describe one execution of the first and second loop, respectively. Line 8 describes the condition of $i_2$ before leaving the loop. Finally, Lines 9-10 describe the condition that the last digit of sum is zero. Observe that to describe such a program path, we need a solver that supports the following types of constraints:
+Here $value_0$ and $last_0$ are string variables and the others are integer variables. The method $\chatAt{x}{i}$ returns the character at the index $i$ in the string $x$ while $n=\ite{b}{e}{e'}$ assigns to $n$ the value of the expression $e$ if $b$ is true and the value of the expression $e'$ otherwise. Line 1 describes the initial condition: \textsf{value} should be a sequence of digits and \textsf{sum} is initially zero. Lines 2-4 and lines 5-7 describe one execution of the first and second loop, respectively. Line 8 describes the condition of $i_2$ before leaving the loop. Finally, Lines 9-10 describe the condition that the last digit of sum is zero. Observe that to describe such a program path, we need a solver that supports the following types of constraints:
 \begin{itemize}
 	\item \emph{regular} constraints (e.g., $value_0 \in [1,9]^+$, which says $value_0$ is in the regular language $[0,9]^+$),
 	\item \emph{integer} constraints (e.g., $i_0 = |value_0| -1$, which says $i_0$ equals the length of $value_0$ minus one),
