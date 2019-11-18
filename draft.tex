@@ -30,7 +30,7 @@
 \newcommand{\petr}[1]{{\color{pink}Petr: #1}}
 \newcommand{\chatAt}[2]{\mbox{\textsf{charAt}($#1$, $#2$)}}
 \newcommand{\ite}[3]{\mbox{\textsf{ite}($#1$, $#2$, $#3$)}}
-\newcommand{\sti}[1]{\mbox{\textsf{toInt}($#1$)}}
+\newcommand{\sti}[1]{\mbox{\textsf{toNum}($#1$)}}
 \newcommand{\its}[1]{\mbox{\textsf{toStr}($#1$)}}
 \newcommand{\varn}{\mbox{$\mathbb{V}_{\mathbb{Z}}$}}
 \newcommand{\vars}{\mbox{$\mathbb{V}_{\Sigma^*}$}}
@@ -109,11 +109,11 @@
 \section{Introduction} \label{section:introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The path feasibility problem is a critical module in the analysis of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}. Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
+The path feasibility problem is a critical module in the symbolic execution of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}. Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
 
 The string-number conversion operations are widely used in string manipulating programs and algorithms. For example, the program fragment below is an implementation of the Luhn test algorithm that is often used in credit card or personal ID validation.
 
-\begin{verbatim}
+\begin{Verbatim}[fontsize=\small]
 function checkLuhn(value) {
   var sum = 0;
   for (var i = value.length - 1; i >= 0; i-=2) {
@@ -128,7 +128,7 @@ function checkLuhn(value) {
   var last= sum.toString().charAt(sum.length-1);
   return last == '0';
 }
-\end{verbatim}
+\end{Verbatim}
 
 
 The input \verb|value| is a sequence of digits. The algorithm process the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) substracts its value by $9$ if the doubled-value is bigger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends in $0$.
@@ -136,7 +136,7 @@ The input \verb|value| is a sequence of digits. The algorithm process the digits
 To check whether the program path that traverses both loop exactly once and finally passes this test has a valid input, we create the following string constraint:
 
 $$\begin{array}{lc}
-1&	value_0 \in [0,9]^+ \wedge 	sum_0 = 0 \wedge \\
+1&	value_0 \in [1,9]^+ \wedge 	sum_0 = 0 \wedge \\
 2&	i_0 = |value_0| -1 \wedge \\
 %	value_0 = prefix_0\cdot charAt_0 \cdot suffix_0 \wedge\\
 %	|prefix_0| = i_0 \wedge |charAt_0| = 1 \wedge \\
@@ -145,15 +145,25 @@ $$\begin{array}{lc}
 5&	i_1 = |value_0| -2 \wedge \\
 6&	d_1 = \sti{\chatAt{value_0}{i_1}} \wedge \\
 7&	sum_2 = sum_1 + \ite{d_1*2>9}{d_1*2 -9}{d_1*2} \wedge\\
-8&	last_0 = \chatAt{\its{sum_2}}{|\its{sum_2}|-1} \wedge\\
-9&	last_0 ==``0"
+8&  i_2 = 0\\
+9&	last_0 = \chatAt{\its{sum_2}}{|\its{sum_2}|-1} \wedge\\
+10&	last_0 =``0"
 \end{array}$$
 
-\yfc{explain the constraints and say all membership, concatenation, length, string-number conversion are required.}
+Here $value_0$ and $last_0$ are string variables and others are integer variables. Line 1 describes the initial condition: \textsf{value} should be a sequence of digits and \textsf{sum} is initially zero. Lines 2-4 and lines 5-7 describe one execution of the first and second loop, respectively. Line 8 describes the condition of $i_2$ before leaving the loop. Finally, Lines 9-10 describe the condition that the last digit of sum is zero. Observe that to describe such a program path, we need a solver that supports the following types of constraints:
+\begin{itemize}
+	\item \emph{regular} constraints (e.g., $value_0 \in [0,9]^+$, which says $value_0$ is in the regular language $[0,9]^+$),
+	\item \emph{integer} constraints (e.g., $i_0 = |value_0| -1$, which says $i_0$ equals the length of $value_0$ minus one),
+	\item \emph{equality} constraints (often $y=\chatAt{x}{i}$ is encoded as $x=x_1.x_2.x_3 \wedge |x_1| = i \wedge |x_2| =1 \wedge y= x_2$, which uses equality of string terms $x$ and $x_1.x_2.x_3$), and
+	\item \emph{string-number conversion} (e.g., $\its{sum_2}$, which is the string value of the number $sum_2$).
+\end{itemize}
+
+Most of the state-of-the-art string constraint solvers provide only very limited support to the combination of above constraints. Even for a simple constraint like the above one, most solvers already fail to provide a correct answer.
+
 
 \hide{String constraint solving has received considerable attention in the constraint solving community, with solvers such as CVC4 and Z3 implementing solvers of ever-increasing sophistication.  Operations such as substring and string length are widely supported, and recent solvers such as Z3-str3 have shown impressive results.  However, these solvers have limited for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often limited to ground terms, i.e. at least one side of the conversion must be a constant.  Thus, $n = \sti{"15"}$ or $x = \its{5}$ are handled but $n = \sti{x}$ will fail.}
 
-As solvers such Z3 are applied to symbolic execution of programming languages, this is increasingly becoming a severe limitation.  For many languages such as Java, conversion between integers and strings is a niche operation, and much symbolic execution can be done without supporting it; however, this is not true of some scripting languages, of which JavaScript is the most notable.  JavaScript is a key language---it powers most interactive content on the Web, and increasingly server-side code with nodejs---and it has conversions between strings and integers embedded in the core of its semantics.
+As solvers are applied to symbolic execution of programming languages, this is increasingly becoming a severe limitation.  For many languages such as Java, conversion between integers and strings is a niche operation, and much symbolic execution can be done without supporting it; however, this is not true of some scripting languages, of which JavaScript is the most notable.  JavaScript is a key language---it powers most interactive content on the Web, and increasingly server-side code with Node.js---and it has conversions between strings and integers embedded in the core of its semantics.
 
 \begin{verbatim}
 function resetArray(arr) {
@@ -163,9 +173,7 @@ function resetArray(arr) {
 }
 \end{verbatim}
 
-
-
-A casual glance at the above code reveal no use of strings at all, but the semantics of field access is somewhat unusual in JavaScript: all array indices act like strings, and numeric indices are converted to strings.  Any faithful symbolic execution of JavaScript must handle such conversions for even basic array operations to work correctly; consider the following code snippet that uses {\tt{resetArray}}, with the value of {\tt{x}} shown on the right:
+A casual glance at the above code reveal no use of strings at all, but the semantics of field access is somewhat unusual in JavaScript: the arrays are indexed by strings, and numeric indexes are converted to strings. Moreover, the \textit{length} of an array is defined as the ``largest integer index plus one''. Any faithful symbolic execution of JavaScript must handle such conversions for even basic array operations to work correctly; consider the following code snippet that uses {\tt{resetArray}}, with the value of {\tt{x}} shown on the right:
 
 \begin{tabular}{l|c}
 	{\tt{x = [0, 1, 2, 3, 4, 5]}} & [0, 1, 2, 3, 4, 5] \\
@@ -175,13 +183,13 @@ A casual glance at the above code reveal no use of strings at all, but the seman
 	{\tt{resetArray(x)}} & [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] \\
 \end{tabular}
 
-In this code, string and integer values access the same array elements interchangeably, necessitating conversions between string and integers to faithfully model JavaScript semantics.  This conversion is mandated explicitly by JavaScript semantics: the 2019 edition of ECMAScript requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}). On the other hand, the size of an array ({\tt{arr.length}} in the example) is defined as the ``largest integer index plus one'', so the integer value of element expression can affect the array size.
+In this code, string and integer values access the same array elements interchangeably, necessitating conversions between string and integers to faithfully model JavaScript semantics.  This conversion is mandated explicitly by JavaScript semantics: the 2019 edition of ECMAScript requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}). 
 
 Now observe that {\tt{resetArray}} assigns to the array in a loop of which the size cannot, in general, be known a priori; as such, falls into the case where neither the string nor the integer in a conversion is constant and hence most SMT solvers will not be able to handle it. More specifically, in some program the assignment {\tt{x[k] = 5}} can happen before calling {\tt{resetArray(x)}}, where {\tt{k}} is an user input string. One would need to know the value of $\sti{k}$ and hence whether it will affect the size of the array {\tt{x}}. This is a rather straightforward array operation, and so this limit will cripple any model of non-trivial JavaScript code. 
 
-For the purpose of program analysis, string solver also needs to support \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$). Most of the standard string operations can be encoded using the above three types of constraints. For instance, $y=x.charAt(i)$ can be encoded as $x=x_1.x_2.x_3 \wedge |x_1| = i \wedge |x_2| =1 \wedge y= x_2$. Those are also the type of constraints supported by most state-of-the-art string constraint solvers such as Z3, CVC4, Z3Str3, and Trau+.
+\hide{
+For the purpose of program analysis, string solver also needs to support \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$). Most of the standard string operations can be encoded using the above three types of constraints. For instance, $y=x.charAt(i)$ can be encoded as $x=x_1.x_2.x_3 \wedge |x_1| = i \wedge |x_2| =1 \wedge y= x_2$. Those are also the type of constraints supported by most state-of-the-art string constraint solvers such as Z3, CVC4, Z3Str3, and Trau+.}
 
-\yfc{I am not sure how to add other examples here in a nice way, one reason is we are very specifically focused on Javascript, but other examples, e.g., the credit card one, is very general.}
 
 \hide{
 Indeed, the analysis of string manipulating program is becoming more and more important nowadays. Various infamous security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string input values. In the past, a significant amount of research efforts have been investigated to symbolic execution and test case generation of string manipulating programs~\cite{saxena2010symbolic,artzi2011framework,huang2004securing,sen2013jalangi} and string constraint solving~\cite{kiezun2009hampi,abdulla2014string,zheng2013z3,abdulla2015norn,abdulla2017flatten,wang2016string,abdulla2018trau,chen2019decision,zheng2017z3str2} is the core enabling technology. }
