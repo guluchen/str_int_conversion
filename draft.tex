@@ -109,13 +109,13 @@
 \section{Introduction} \label{section:introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Symbolic execution is a very popular technique that allows the programmers to check the feasibility of a path in a given program (i.e., determining the value of the inputs under which the given path can be executed) \cite{????}).
-The path feasibility problem is usually solved by a reduction to the satisfiability problem of a formula. More precisely, program statements in the path are usually translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{satisfiability module theory (SMT)}  solvers. The types of constraints that needed to be solved by the SMT solvers depend on the type of program variables. Therefore, there is a need for SMT solvers that support different combinations of theories (i.e., depending on the types of the manipulated variables). 
+Symbolic execution is a very popular technique that allows programmers to check the feasibility of a path in a given program, i.e., determining the value of the inputs under which the given path can be executed. \cite{????}).
+The path feasibility problem is usually solved by a reduction to the satisfiability of a formula. More precisely, program statements in the path are usually translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{satisfiability module theory (SMT)}  solvers. The types of constraints needed depend on the types of program expressions to be analyzed; therefore, SMT solvers must support different combinations of theories to handle a wide range of types.
 
-Among all types of program variables, \emph{string data type}  is omnipresent in modern programming languages.  Various infamous security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values.  Therefore, string constraint solving has received considerable attention in the constraint solving community.
+In particular, \emph{string data}  is omnipresent in modern programming languages, especially in Web code that gets input as strings.  Various infamous security vulnerabilities, such as injection and cross-site scripting attack, can be caused by malicious string values.  Therefore, solving string constraint has received considerable attention in the constraint solving community.
 Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$), are widely supported by most state-of-the-art string constraint solvers such as Z3  \cite{?}, CVC4  \cite{?}, Z3Str3  \cite{?}, and Trau+ \cite{?}. 
  However,   solvers have limited support for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often very limited. Thus, $n = \sti{\\texttt{"2"}}$  or $x = \its{5}$  are handled but $n = \sti{x}$ (i.e., converting the string $x$ to the integer $n$) and  $x = \its{n}$ (i.e.,  converting the integer $n$ to the string $x$)
-are ones of the core operations that require stronger solver support.
+are core operations that require stronger solver support to handle real code.
 
 
 
@@ -133,7 +133,7 @@ are ones of the core operations that require stronger solver support.
 
 %The path feasibility problem is a critical module in the symbolic execution of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}. Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
 
-In fact, for many languages such as Java, the string-number conversion operations are is a niche operation, and much symbolic execution can not  be done without supporting it. For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
+In fact, for many languages such as Java, string-number conversions are a niche operation, and much symbolic execution has been done without supporting it.  However, code that receives input tends to need to convert at least some of that input into numbers, which makes string-integer conversions critical to checking it.  For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
 
 \begin{Verbatim}[fontsize=\small]
 function checkLuhn(value) {
@@ -172,7 +172,7 @@ $$\begin{array}{lc}
 10&	last_0 =``0"
 \end{array}$$
 
-Here $value_0$ and $last_0$ are string variables and the others are integer variables. The method $\chatAt{x}{i}$ returns the character at the index $i$ in the string $x$ while $n=\ite{b}{e}{e'}$ assigns to $n$ the value of the expression $e$ if $b$ is true and the value of the expression $e'$ otherwise. Line 1 describes the initial condition: \textsf{value} should be a sequence of digits and \textsf{sum} is initially zero. Lines 2-4 and lines 5-7 describe one execution of the first and second loop, respectively. Line 8 describes the condition of $i_2$ before leaving the loop. Finally, Lines 9-10 describe the condition that the last digit of sum is zero. Observe that to describe such a program path, we need a solver that supports the following types of constraints:
+Here $value_0$ and $last_0$ are string variables and the others are integer variables. The method $\chatAt{x}{i}$ returns the character at index $i$ in the string $x$ while $n=\ite{b}{e}{e'}$ assigns to $n$ the value of the expression $e$ if $b$ is true and the value of the expression $e'$ otherwise. Line 1 describes the initial condition: \textsf{value} should be a sequence of digits and \textsf{sum} is initially zero. Lines 2-4 and lines 5-7 describe one execution of the first and second loop, respectively. Line 8 describes the condition of $i_2$ before leaving the loop. Finally, Lines 9-10 describe the condition that the last digit of $sum$ is zero. Observe that to describe such a program path, we need a solver that supports the following types of constraints:
 \begin{itemize}
 	\item \emph{regular} constraints (e.g., $value_0 \in [1,9]^+$, which says $value_0$ is in the regular language $[0,9]^+$),
 	\item \emph{integer} constraints (e.g., $i_0 = |value_0| -1$, which says $i_0$ equals the length of $value_0$ minus one),
@@ -180,7 +180,7 @@ Here $value_0$ and $last_0$ are string variables and the others are integer vari
 	\item \emph{string-number conversion} (e.g., $\its{sum_2}$, which is the string value of the number $sum_2$).
 \end{itemize}
 
-Currently, even for a simple constraint like the above one, most solvers already fail to provide a correct answer. Therefore, there is an urgent need for developing efficient techniques for solving the combination of above constraints. To make matters worse, many scripting languages, of which JavaScript is the most notable ---it powers most interactive content on the Web, and increasingly server-side code with Node.js---, has conversions between strings and integers embedded in the core of its semantics. To see how, consider the following program:
+Currently, even for the above constraint, which is from a simple program, most solvers already fail to provide a correct answer. Therefore, there is an urgent need for developing efficient techniques for solving such combinations of constraints. To make matters worse, many scripting languages, of which JavaScript is the most notable ---it powers most interactive content on the Web, and increasingly server-side code with Node.js---, has conversions between strings and integers embedded in the core of its semantics. To see how, consider the following program:
 
 
 %Most of the state-of-the-art string constraint solvers provide only very limited support to the combination of above constraints. Even for a simple constraint like the above one, most solvers already fail to provide a correct answer.
