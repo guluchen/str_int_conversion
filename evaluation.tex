@@ -3,6 +3,101 @@
 
 \todo{Add comparison/discussion; References of benchmarks; Update data; Sepatate categories of str\_int benchmark for discussion}
 
+
+\begin{table*}[t]
+\centering
+\caption{Results of z3-Trau, cvc4, and z3 on string benchmarks (numbers with * will be updated later)}
+\begin{tabular}{l r | r r r r r r r}
+\hline
+\multicolumn{2}{c}{}                   & Z3-Trau & CVC4  &    Z3 & Z3-str3 & Trau+ & ABC & Ostrich \\ \hline
+\multirow{3}{*}{PyEx}		& sat      & 19586*   & 19763* & 18359 &   3024*  & 19149 & 0 & 111 \\ 
+							& unsat    &  3858*   &  3834* &  3851 &   3839*  & 3828 & 0 & 871 \\
+							& $\times$ &  1977*   &  1824* &  3211 &  18558*  & 2444 & 25421 & 24439 \\ \hline
+\multirow{3}{*}{APLAS}		& sat      &   128*   &   205* &    19 &     38*  & 132 & 289 & 0 \\
+							& unsat    &   287*   &   211* &   100 &    111*  & 82 & 2 & 1 \\
+							& $\times$ &   185*   &   174* &   481 &    451*  & 386 & 309 & 599 \\ \hline
+\multirow{3}{*}{LeetCode}	& sat      &   856*   &   860* &   881 &    670*  & 778 & 0 & 158 \\
+							& unsat    &  1784*   &  1785* &  1785 &   1780*  & 1827 & 0 & 1618 \\
+							& $\times$ &    26*   &    21* &     0 &    216*  & 61 & 2666 & 890 \\ \hline
+\multirow{3}{*}{StringFuzz}	& sat      &   502*   &   677* &   311 &    493*  & 688 & 439 & 0 \\
+							& unsat    &   294*   &   240* &   205 &    190*  & 339 & 158 & 0 \\
+							& $\times$ &   269*   &   148* &   549 &    382*  & 38 & 468 & 1065 \\
+\multirow{3}{*}{cvc4\textsubscript{pred}} & sat & 16* & 11* &   12 &      8*  & 247 & 316 & 21 \\
+							& unsat    &   814*   &   818* &   808 &    772*  & 500 & 443 & 17 \\
+							& $\times$ &     5*   &     6* &    15 &     55*  & 88 & 76 & 797 \\ \hline
+\multirow{3}{*}{cvc4\textsubscript{term}} & sat & 13* & 8* &     6 &     16*  & 311 & 576 & 45 \\
+							& unsat    &  1030*   &   936* &  1022 &    958*  & 596 & 349 & 22 \\
+							& $\times$ &     2*   &   101* &    17 &     71*  & 137 & 120 & 978 \\ \hline
+\multirow{3}{*}{SLOG}  		& sat      & 0* & 1309* & 0 & 0* & 1228 & 1036 & 1299 \\
+							& unsat    & 3391* & 2082* & 0 & 2205* & 2079 & 1972 & 2079 \\
+							& $\times$ & 0* & 0* & 3391 & 1186* & 84 & 383 & 13 \\ \hline
+\end{tabular}
+\label{table:base_benchmark}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{Results of z3-Trau, cvc4, and z3 on str\_int benchmark (numbers with * will be updated later)}
+\begin{tabular}{l r | r r r r}
+\hline
+\multicolumn{2}{c}{}                   & Z3-Trau & CVC4   &    Z3  & Z3-str3 \\ \hline
+\multirow{3}{*}{StrInt}		& sat      &   3294*  &  2185* &  2731* &    422* \\ 
+							& unsat    &  17088*  & 16377* & 16832* &  16034* \\
+							& $\times$ &   1191*  &  3011* &  2010* &   5117* \\ \hline \hline
+\multirow{3}{*}{leetcode-addStrings}	& sat & 622*  &  330* &  100* &  85* \\ 
+							& unsat    &  1054*  & 780* & 1043* &  634* \\
+							& $\times$ &  2*  &  568* &  535* & 959* \\ \hline
+\multirow{3}{*}{leetcode-add\_Binary}	& sat & 520*  &  530* &  531* &  11* \\ 
+							& unsat    &  1351*  & 1091* & 1091* &  1094* \\
+							& $\times$ &  11*  &  261* &  260* & 777* \\ \hline
+\multirow{3}{*}{leetcode-numDecodings}	& sat & 166*  &  107* &  151* &  50* \\ 
+							& unsat    &  273*  & 269* & 283* &  269* \\
+							& $\times$ &  92*  &  155* &  97* & 212* \\ \hline
+\multirow{3}{*}{leetcode-restoreIpAddresses}	& sat & 811*  &  462* &  864* &  55* \\ 
+							& unsat    &  13648*  & 13540* & 13648* &  13342* \\
+							& $\times$ &  54*  &  511* &  1* & 1116* \\ \hline
+\multirow{3}{*}{leetcode-validIPAddress}	& sat & 54*  &  57* &  58* &  8* \\ 
+							& unsat    &  19*  & 19* & 19* &  19* \\
+							& $\times$ &  4*  &  1* &  0* & 50* \\ \hline
+\multirow{3}{*}{leetcode-validWordAbbreviation}	& sat & 183*  &  193* &  188* &  8* \\ 
+							& unsat    &  24*  & 11* & 21* &  16* \\
+							& $\times$ &  39*  &  42* &  37* & 222* \\ \hline
+\multirow{3}{*}{lib-datetime\_parse\_hh\_mm\_ss\_ff}	& sat &  133*  & 133* &  133* &  88* \\ 
+							& unsat    &  41*  & 41* & 41* &  43* \\
+							& $\times$ &  0*  &  0* &  0* & 43* \\ \hline
+\multirow{3}{*}{lib-datetime\_parse\_isoformat\_date}	& sat & 32*  &  32* &  32* &  23* \\ 
+							& unsat    &  0*  & 0* & 0* &  0* \\
+							& $\times$ &  0*  &  0* &  0* & 9* \\ \hline
+\multirow{3}{*}{lib-distutils\_get\_build\_version}	& sat & 19*  &  19* &  19* &  4* \\ 
+							& unsat    &  24*  & 24* & 24* &  24* \\
+							& $\times$ &  0*  &  0* &  0* & 15* \\ \hline
+\multirow{3}{*}{lib-email\_parsedate\_tz}	& sat & 68*  &  72* &  72* &  30* \\ 
+							& unsat    &  138*  & 138* & 138* &  138* \\
+							& $\times$ &  4*  &  0* &  0* & 42* \\ \hline
+\multirow{3}{*}{lib-http\_parse\_request}	& sat & 24*  &  24* &  24* &  8* \\ 
+							& unsat    &  9*  & 9* & 9* &  7* \\
+							& $\times$ &  0*  &  0* &  0* & 18* \\ \hline
+\multirow{3}{*}{lib-ipaddress\_ip\_int\_from\_string}	& sat & 595*  &  204* &  480* &  18* \\ 
+							& unsat    &  427*  & 373* & 431* &  357* \\
+							& $\times$ &  1006*  &  1451* &  1117* & 1653* \\ \hline
+\multirow{3}{*}{lib-nntplib\_parse\_datetime}	& sat & 4*  &  8* &  0* &  0* \\ 
+							& unsat    &  0*  & 0* & 0* &  0* \\
+							& $\times$ &  4*  &  0* &  8* & 8* \\ \hline
+\multirow{3}{*}{lib-smtpd\_parseargs}	& sat & 27*  &  27* &  27* &  24* \\ 
+							& unsat    &  72*  & 72* & 72* &  66* \\
+							& $\times$ &  0*  &  0* &  0* & 9* \\ \hline
+\multirow{3}{*}{lib-wsgiref\_check\_status}	& sat & 10*  &  10* &  10* &  6* \\ 
+							& unsat    &  9*  & 9* & 9* &  9* \\
+							& $\times$ &  0*  &  0* &  0* & 4* \\ \hline
+% \multirow{4}{*}{filtered\_str\_int}	& sat      &   3281*  &  2210* &  2729* &    424* \\
+% 									& unsat    &   2912*  &  2211* &  2655* &   1944* \\
+% 									& $\times$ &   1203*  &  2975* &  2012* &   5028* \\ \hline
+\end{tabular}
+\label{table:str_int_benchmark}
+\end{table*}
+
+
+\hide{  % 2nd version of tables
 \begin{table*}[t]
 \centering
 \caption{Results of z3-Trau, cvc4, and z3 on string benchmarks (numbers with * will be updated later)}
@@ -41,8 +136,6 @@
 \label{table:base_benchmark}
 \end{table*}
 
-
-
 \begin{table*}[t]
 \centering
 \caption{Results of z3-Trau, cvc4, and z3 on str\_int benchmark (numbers with * will be updated later)}
@@ -60,13 +153,13 @@
 \end{tabular}
 \label{table:str_int_benchmark}
 \end{table*}
+}
 
 
 
 
 
-
-\hide{
+\hide{  % 1st version of tables
 \begin{table*}[t]
 \centering
 \caption{Results of z3-Trau, cvc4, and z3 on string benchmarks}
