@@ -107,20 +107,18 @@
 
 
 
-
+\yfc{We need an abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction} \label{section:introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Symbolic execution is a very popular technique that allows programmers to check the feasibility of a path in a given program, i.e., determining the value of the inputs under which the given path can be executed. \cite{????}).
-The path feasibility problem is usually solved by a reduction to the satisfiability of a formula. More precisely, program statements in the path are usually translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{satisfiability module theory (SMT)}  solvers. The types of constraints needed depend on the types of program expressions to be analyzed; therefore, SMT solvers must support different combinations of theories to handle a wide range of types.
+Symbolic execution is a very popular technique that allows programmers to check the feasibility of a path in a given program, i.e., determining the value of the inputs under which the given path can be executed. \cite{????}.
+The path feasibility problem is usually solved by a reduction to the satisfiability of a formula. More precisely, program statements in the path are usually translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{satisfiability module theory (SMT)} solvers. The types of constraints needed depend on the types of program expressions to be analyzed; therefore, SMT solvers must support different combinations of theories to handle a wide range of types.
 
-In particular, \emph{string data}  is omnipresent in modern programming languages, especially in Web code that gets input as strings.  Various infamous security vulnerabilities, such as injection and cross-site scripting attack, can be caused by malicious string values.  Therefore, solving string constraint has received considerable attention in the constraint solving community.
-Among all types of program variables, \emph{string data type}  is omnipresent in modern programming languages.  Various  security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values.  Therefore, string constraint solving has received considerable attention in the constraint solving community. 
-Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$), are widely supported by most state-of-the-art string constraint solvers such as, CVC4  \cite{?}, OSTRICH \cite{}, Sloth \cite{},   Trau+ \cite{?},  Z3  \cite{?} and Z3Str3  \cite{?}. 
-  However,   solvers have limited support for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often very limited. Thus, $n = \sti{\texttt{"2"}}$  or $x = \its{5}$  are handled but $n = \sti{x}$ (i.e., converting the string $x$ to the integer $n$) and  $x = \its{n}$ (i.e.,  converting the integer $n$ to the string $x$)
-are core operations that require stronger solver support to handle real code.
+Among all types of program variables, \emph{string data type} is omnipresent in modern programming languages. Various security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values. Therefore, string constraint solving has received considerable attention in the constraint solving community. 
+Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$), are widely supported by most state-of-the-art string constraint solvers such as, CVC4 \cite{?}, OSTRICH \cite{}, Sloth \cite{},  Trau+ \cite{?}, Z3 \cite{?} and Z3Str3 \cite{?}. 
+However,  solvers have limited support for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form. When there is support, it is often very limited. Thus, $n = \sti{\texttt{"2"}}$ or $x = \its{5}$ are handled but $n = \sti{x}$ (i.e., converting the string $x$ to the integer $n$) and $x = \its{n}$ (i.e., converting the integer $n$ to the string $x$) are core operations that require stronger solver support to handle real code.
 
 
 
@@ -129,36 +127,36 @@ are core operations that require stronger solver support to handle real code.
 
 
 
-
-
-
-%The path feasibility problem is a critical module in the symbolic execution of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}.  Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
 
 
 
 %The path feasibility problem is a critical module in the symbolic execution of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}. Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
 
-In fact, for many languages such as Java, string-number conversions are a niche operation, and much symbolic execution has been done without supporting it.  However, code that receives input tends to need to convert at least some of that input into numbers, which makes string-integer conversions critical to checking it.  For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
+
+
+%The path feasibility problem is a critical module in the symbolic execution of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}. Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
+
+In fact, for many languages such as Java, string-number conversions are a niche operation, and much symbolic execution has been done without supporting it. However, code that receives input tends to need to convert at least some of that input into numbers, which makes string-integer conversions critical to checking it. For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
 
 \begin{Verbatim}[fontsize=\small]
 function checkLuhn(value) {
-  var sum = 0;
-  for (var i = value.length - 1; i >= 0; i-=2) {
-    var d = parseInt(value.charAt(i));
-    sum += d;
-  }	
-  for (var i = value.length - 2; i >= 0; i-=2) {
-    var d = parseInt(value.charAt(i));
-    if ((d *= 2) > 9) d -= 9;
-    sum += d;
-  }
-  var last= sum.toString().charAt(sum.length-1);
-  return last == '0';
+ var sum = 0;
+ for (var i = value.length - 1; i >= 0; i-=2) {
+  var d = parseInt(value.charAt(i));
+  sum += d;
+ }	
+ for (var i = value.length - 2; i >= 0; i-=2) {
+  var d = parseInt(value.charAt(i));
+  if ((d *= 2) > 9) d -= 9;
+  sum += d;
+ }
+ var last= sum.toString().charAt(sum.length-1);
+ return last == '0';
 }
 \end{Verbatim}
 
 
-The input \verb|value|  of the Luhn test algorithm is a sequence of digits. The algorithm process the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) subtracts its value by $9$ if the doubled-value is bigger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends by an $0$ (i.e., \verb| sum mod 10=0|).
+The input \verb|value| of the Luhn test algorithm is a sequence of digits. The algorithm process the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) subtracts its value by $9$ if the doubled-value is bigger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends by an $0$ (i.e., \verb| sum mod 10=0|).
 
 To check whether the program path that traverses both loop exactly once and finally passes this test has a valid input, we create the following (string) constraint:
 
@@ -172,7 +170,7 @@ $$\begin{array}{lc}
 5&	i_1 = |value_0| -2 \wedge \\
 6&	d_1 = \sti{\chatAt{value_0}{i_1}} \wedge \\
 7&	sum_2 = sum_1 + \ite{d_1*2>9}{d_1*2 -9}{d_1*2} \wedge\\
-8&  i_2 = 0\\
+8& i_2 = 0\\
 9&	last_0 = \chatAt{\its{sum_2}}{|\its{sum_2}|-1} \wedge\\
 10&	last_0 =``0"
 \end{array}$$
@@ -185,21 +183,21 @@ Here $value_0$ and $last_0$ are string variables and the others are integer vari
 	\item \emph{string-number conversion} (e.g., $\its{sum_2}$, which is the string value of the number $sum_2$).
 \end{itemize}
 
-Currently, even for the above constraint, which is from a simple program, most solvers fail to provide a correct answer. Therefore, there is an urgent need for developing efficient techniques for solving such combinations of constraints. To make matters worse, JavaScript, which powers most interactive content on the Web and increasingly server-side code with Node.js, has conversions between strings and integers embedded in the core of its semantics.  Other scripting languages do too, but we focus on JavaScript due to its prominence.  To see how string-integer conversion pervades semantics, consider the following program:
+Currently, even for the above constraint, which is from a simple program, most solvers fail to provide a correct answer. Therefore, there is an urgent need for developing efficient techniques for solving such combinations of constraints. To make matters worse, JavaScript, which powers most interactive content on the Web and increasingly server-side code with Node.js, has conversions between strings and integers embedded in the core of its semantics. Other scripting languages do too, but we focus on JavaScript due to its prominence. To see how string-integer conversion pervades semantics, consider the following program:
 
 
 %Most of the state-of-the-art string constraint solvers provide only very limited support to the combination of above constraints. Even for a simple constraint like the above one, most solvers already fail to provide a correct answer.
 
 
-\hide{String constraint solving has received considerable attention in the constraint solving community, with solvers such as CVC4 and Z3 implementing solvers of ever-increasing sophistication.  Operations such as substring and string length are widely supported, and recent solvers such as Z3-str3 have shown impressive results.  However, these solvers have limited for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form.  When there is support, it is often limited to ground terms, i.e. at least one side of the conversion must be a constant.  Thus, $n = \sti{"15"}$ or $x = \its{5}$ are handled but $n = \sti{x}$ will fail.}
+\hide{String constraint solving has received considerable attention in the constraint solving community, with solvers such as CVC4 and Z3 implementing solvers of ever-increasing sophistication. Operations such as substring and string length are widely supported, and recent solvers such as Z3-str3 have shown impressive results. However, these solvers have limited for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form. When there is support, it is often limited to ground terms, i.e. at least one side of the conversion must be a constant. Thus, $n = \sti{"15"}$ or $x = \its{5}$ are handled but $n = \sti{x}$ will fail.}
 
 
 
-%As solvers are applied to symbolic execution of programming languages, this is increasingly becoming a severe limitation.  For many languages such as Java, conversion between integers and strings is a niche operation, and much symbolic execution can be done without supporting it; however, this is not true of some scripting languages, of which JavaScript is the most notable.  JavaScript is a key language---it powers most interactive content on the Web, and increasingly server-side code with Node.js---and it has conversions between strings and integers embedded in the core of its semantics. 
+%As solvers are applied to symbolic execution of programming languages, this is increasingly becoming a severe limitation. For many languages such as Java, conversion between integers and strings is a niche operation, and much symbolic execution can be done without supporting it; however, this is not true of some scripting languages, of which JavaScript is the most notable. JavaScript is a key language---it powers most interactive content on the Web, and increasingly server-side code with Node.js---and it has conversions between strings and integers embedded in the core of its semantics. 
 
 \begin{verbatim}
 for(var i = 0; i < 10; i++) {
-  arr[i] = 0
+ arr[i] = 0
 }
 \end{verbatim}
 
@@ -214,9 +212,9 @@ A casual glance at the above code reveals no use of strings at all, but the sema
 6&	{\tt{x["03"-1] = 2}} & [0, 0, 2, 5, 0] and x["03"] = 7\\
 \end{tabular}
 
-Here \texttt{x[3]} in line 2,  \texttt{x[03]} in line 3, and \texttt{x["3"]} in line 4 all denote the same array element of \texttt{x["3"]}, but \texttt{x["03"]} denotes a completely different element (which is stored at the index \texttt{"03"} of the array). So na\"ive modeling array index with integers will not work -- it cannot distinguish the indexes \texttt{"3"} and \texttt{"03"}. 
+Here \texttt{x[3]} in line 2, \texttt{x[03]} in line 3, and \texttt{x["3"]} in line 4 all denote the same array element of \texttt{x["3"]}, but \texttt{x["03"]} denotes a completely different element (which is stored at the index \texttt{"03"} of the array). So na\"ive modeling array index with integers will not work -- it cannot distinguish the indexes \texttt{"3"} and \texttt{"03"}. 
 
-But if array indices are modelled as strings, we must handle arithmetic somehow. Let us look at the case of line 6, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather basic array operation in Javascript, and so having only limited capability for handling string-number conversion operations  will cripple any analysis of non-trivial JavaScript code.
+But if array indices are modelled as strings, we must handle arithmetic somehow. Let us look at the case of line 6, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather basic array operation in Javascript, and so having only limited capability for handling string-number conversion operations will cripple any analysis of non-trivial JavaScript code.
 
 
 
@@ -224,13 +222,13 @@ But if array indices are modelled as strings, we must handle arithmetic somehow.
 
 The Line 4 of the code updates the length of \texttt{x} to $13$ and hence the \texttt{resetArray(x)} will update \texttt{x} to an array with $13$ zeros.
 Now suppose that the Line 4 of the code above becomes {\tt{x[k] = 5}}, where $\mathtt{k}$ is an user input string and we want to find an input such that $\mathtt{x[15]=0}$. In this case, one would need to know the value of $\sti{k}$ and hence whether it will affect the size of the array {\tt{x}}. More precisely, in the corresponding string constraint encoding, we use a shadow variable $xLen$ to remember the length of $x$ and update its value after all array assignment. For an assignment $\mathtt{x[k] = v}$, we update the array value and length using the following string constraint (combined the $select$ function from SMT array theory): $x_{i+1} = store(x_i,k, v)$ and $xLen_{i+1} = ite( xLen_{i}> \sti{k}, xLen_{i}, \sti{k})$.
-This is a rather straightforward array operation, and so  having only limited capability for handling str/num conversion. will cripple any model of non-trivial JavaScript code. 
+This is a rather straightforward array operation, and so having only limited capability for handling str/num conversion. will cripple any model of non-trivial JavaScript code. 
 
 }
 
 
 
-\hide{In this code, string and integer values access the same array elements interchangeably, necessitating conversions between string and integers to faithfully model JavaScript semantics.   
+\hide{In this code, string and integer values access the same array elements interchangeably, necessitating conversions between string and integers to faithfully model JavaScript semantics.  
 
 Now observe that {\tt{resetArray}} assigns to the array in a loop of which the size cannot, in general, be known a priori; as such, it falls into the case where neither the string nor the integer in a conversion is constant and hence most SMT solvers will not be able to handle it. More specifically, in some program the assignment {\tt{x[k] = 5}} can happen before calling {\tt{resetArray(x)}}, where {\tt{k}} is an user input string. One would need to know the value of $\sti{k}$ and hence whether it will affect the size of the array {\tt{x}}. This is a rather straightforward array operation, and so this limit will cripple any model of non-trivial JavaScript code. }
 
@@ -285,22 +283,22 @@ Such constraint contains \textit{string-number conversion} functions (e.g., $\st
 
 Solving string constraint with string-number conversion has been proven undecidable~\cite{day2018satisfiability}, and, in practice, in our experiments (Section \ref{section:evaluation}), the state-of-the-art string constraint solvers provide only limited support to string-number conversion. 
 
-In this paper, we propose a framework that efficiently handles string constraints with string-number conversion. Due to the diffifulty of solving the problem exactly, our framework combines over and under-approximation of string constraints. The over-approximation is for proving UNSAT when possible, while the under-approximation is for proving SAT when possible. Both over and under-approximation  fall in a decidable fragment of string constraints that can we can efficiently solve.
+In this paper, we propose a framework that efficiently handles string constraints with string-number conversion. Due to the diffifulty of solving the problem exactly, our framework combines over and under-approximation of string constraints. The over-approximation is for proving UNSAT when possible, while the under-approximation is for proving SAT when possible. Both over and under-approximation fall in a decidable fragment of string constraints that can we can efficiently solve.
 
 
-For ease of presentation, we will use  the following  toy example $$\Phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^+\}$$
+For ease of presentation, we will use the following toy example $$\Phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^+\}$$
 
 to explain the main ideas behind our decision procedure. Notice that $\Phi$ is satisfiable. E.g., it has a model $x=``12''$ and $y=``1212''$.
 
 
-Our decision procedure has two steps: the first step is over-approximating the set of input constraints into a one that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Observe that we can also over-approximate the input constraint to one that falls in the decidable fragment the acyclic fragment~\cite{abdulla2014string} or the straight-line fragment~\cite{chen2019decision}. Our choice of the   chain-free fragment~\cite{abdulla2019chain} is motivated by the fact that  the chain-free fragment is the {\em largest} known decidable fragment for that class of string constraints.  In our settings, we over-approximate the formula $\Phi$ by converting $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and replace the constraint $n=\sti{x}$ with $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$).  The over-approximation module uses also  some heuristics  to derive the constant value of any side of the constraint $n=\sti{x}$ to refine the over-approximation. For instance, assume in some other cases, we can derive the value of $n=12$ from some integer constraints. In such case, we can further derive the value of $x$ is in the regular language $(0^*12)$. 
-Observe that if the over-approximated module returns UNSAT then  our decision procedure   declares that the original formula is also UNSAT and terminates. Since $\Phi$ is satisfiable, the over-approximation module will not return UNSAT. 
+Our decision procedure has two steps: the first step is over-approximating the set of input constraints into a one that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Observe that we can also over-approximate the input constraint to one that falls in the decidable fragment the acyclic fragment~\cite{abdulla2014string} or the straight-line fragment~\cite{chen2019decision}. Our choice of the  chain-free fragment~\cite{abdulla2019chain} is motivated by the fact that the chain-free fragment is the {\em largest} known decidable fragment for that class of string constraints. In our settings, we over-approximate the formula $\Phi$ by converting $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and replace the constraint $n=\sti{x}$ with $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$). The over-approximation module uses also some heuristics to derive the constant value of any side of the constraint $n=\sti{x}$ to refine the over-approximation. For instance, assume in some other cases, we can derive the value of $n=12$ from some integer constraints. In such case, we can further derive the value of $x$ is in the regular language $(0^*12)$. 
+Observe that if the over-approximated module returns UNSAT then our decision procedure  declares that the original formula is also UNSAT and terminates. Since $\Phi$ is satisfiable, the over-approximation module will not return UNSAT. 
 
 \begin{figure*}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 	\begin{tikzpicture} 
-		\node[state,initial] (q0)  {$\st{0}{0}$};
+		\node[state,initial] (q0) {$\st{0}{0}$};
 		\node[state] (q1) [right = 3cm of q0] {$\st{1}{0}$};
 		\node (q2) [right = 1.8cm of q1]{};
 		\node (q3) [right = 1cm of q2]{};
@@ -317,22 +315,22 @@ Observe that if the over-approximated module returns UNSAT then  our decision pr
 		\node[state] (qm2) [above = 1cm of qm] {$\st{m}{2}$};
 		\node[state] (qm3) [above right = 0.6cm of qm] {$\st{m}{3}$};
 
-  		\draw[->] (q0) edge [bend left] node [left]{$\sym{0}{0}$} (q01) ;
-  		\draw[->] (q01) edge [bend left] node [left]{$\sym{0}{1}$} (q02) ;
-  		\draw[->] (q02) edge [bend left] node [right]{$\sym{0}{2}$} (q03) ;
-  		\draw[->] (q03) edge [bend left] node [right]{$\sym{0}{3}$} (q0) ;
-  		
-  		\draw[->] (q0) edge node [below]{$v_0$} (q1) ;
-  		\draw[->] (q1) edge node [below]{$v_1$} (q2) ;
-  		\draw[dotted] (q2) edge (q3) ;
-  		\draw[->] (q3) edge node [below]{$v_{m-1}$} (qm) ;
+ 		\draw[->] (q0) edge [bend left] node [left]{$\sym{0}{0}$} (q01) ;
+ 		\draw[->] (q01) edge [bend left] node [left]{$\sym{0}{1}$} (q02) ;
+ 		\draw[->] (q02) edge [bend left] node [right]{$\sym{0}{2}$} (q03) ;
+ 		\draw[->] (q03) edge [bend left] node [right]{$\sym{0}{3}$} (q0) ;
+ 		
+ 		\draw[->] (q0) edge node [below]{$v_0$} (q1) ;
+ 		\draw[->] (q1) edge node [below]{$v_1$} (q2) ;
+ 		\draw[dotted] (q2) edge (q3) ;
+ 		\draw[->] (q3) edge node [below]{$v_{m-1}$} (qm) ;
 
-  		\draw[->] (qm) edge [bend left] node [left]{$\sym{m}{0}$} (qm1) ;
+ 		\draw[->] (qm) edge [bend left] node [left]{$\sym{m}{0}$} (qm1) ;
 		\draw[->] (qm1) edge [bend left] node [left]{$\sym{m}{1}$} (qm2) ;
 		\draw[->] (qm2) edge [bend left] node [right]{$\sym{m}{2}$} (qm3) ;
 		\draw[->] (qm3) edge [bend left] node [right]{$\sym{m}{3}$} (qm) ;
 
-  		\draw[->] (q1) edge [bend left] node [left]{$\sym{1}{0}$} (q11) ;
+ 		\draw[->] (q1) edge [bend left] node [left]{$\sym{1}{0}$} (q11) ;
 		\draw[->] (q11) edge [bend left] node [above]{$\sym{1}{1}$} (q12) ;
 		\draw[->] (q12) edge [bend left] node [right]{$\sym{1}{2}$} (q1) ;
 	\end{tikzpicture} 
@@ -342,8 +340,8 @@ Observe that if the over-approximated module returns UNSAT then  our decision pr
 \end{figure*}
 
 
-The second step of our decision procedure is only enabled  if the first step returns SAT. In this case,  our decision procedure  restricts the domain of each string variables  to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In this paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA). A PFA is a {\em flat} finite state automaton consisting of a predefined sequence of loops each of fixed length (see Figure \ref{fig:sfa_def}).  The approach based on PFA is very flexible yet allows very efficient manipulation. One can pick PFA of \emph{arbitrary structure} for search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time.  Furthermore, we associate a unique natural number  with each character. This allows us to assume that the input alphabet is a subset of natural numbers. To avoids the \textit{alphabet explosion problem} from which the approach in~\cite{abdulla2017flatten} suffers,  we  label each transition between two states of a  PFA with a unique  \emph{character} variable (whose domain is the set of natural numbers) instead of having a transition between each two states for each symbol in the alphabet.    
-Such reduction based on PFA is the key to handle string-number conversion efficiently. When we restrict the solution space to those defined by PFAs, the original undecidable problem (i.e., string constraint with string-number conversion) is reduced to the satisfiability problem of linear formulas that can  be solved efficiently. 
+The second step of our decision procedure is only enabled if the first step returns SAT. In this case, our decision procedure restricts the domain of each string variables to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In this paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA). A PFA is a {\em flat} finite state automaton consisting of a predefined sequence of loops each of fixed length (see Figure \ref{fig:sfa_def}). The approach based on PFA is very flexible yet allows very efficient manipulation. One can pick PFA of \emph{arbitrary structure} for search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time. Furthermore, we associate a unique natural number with each character. This allows us to assume that the input alphabet is a subset of natural numbers. To avoids the \textit{alphabet explosion problem} from which the approach in~\cite{abdulla2017flatten} suffers, we label each transition between two states of a PFA with a unique \emph{character} variable (whose domain is the set of natural numbers) instead of having a transition between each two states for each symbol in the alphabet.  
+Such reduction based on PFA is the key to handle string-number conversion efficiently. When we restrict the solution space to those defined by PFAs, the original undecidable problem (i.e., string constraint with string-number conversion) is reduced to the satisfiability problem of linear formulas that can be solved efficiently. 
 
 %The battle field is in fact those SAT instances, for which we develop solutions using under-approximation. For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA) (will be defined formally in Section~\ref{section:sfa}). The approach based on PFA is very flexible yet allows very efficiently manipulation. One can pick PFA of \emph{arbitrary structure} for the search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time. Moreover, it avoids the \textit{alphabet explosion problem} that the approach in~\cite{abdulla2017flatten} suffers. 
 %%In contrast to under-approximation based on bit-blasting~\cite{kiezun2009hampi} (i.e., limit the length of the strings and encode the string constraint to a Boolean formula), our linear formula for under-approximation still encodes possibility an infinite number of models. 
@@ -356,7 +354,7 @@ Such reduction based on PFA is the key to handle string-number conversion effici
 	
 	\begin{minipage}[t]{0.15\textwidth} 
 		\begin{tikzpicture}
-		\node[state,initial,accepting] (q0)  {$q_0$};
+		\node[state,initial,accepting] (q0) {$q_0$};
 		
 		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
 		
@@ -369,7 +367,7 @@ Such reduction based on PFA is the key to handle string-number conversion effici
 	\end{minipage}
 	\begin{minipage}[t]{0.15\textwidth} 
 		\begin{tikzpicture} 
-		\node[state,initial,accepting] (q0)  {$p_0$};
+		\node[state,initial,accepting] (q0) {$p_0$};
 		
 		\node[state] (q01) [above = 0.5cm of q0] {$p_1$};
 		
@@ -382,7 +380,7 @@ Such reduction based on PFA is the key to handle string-number conversion effici
 	\end{minipage}
 	\begin{minipage}[t]{0.28\textwidth}
 		\begin{tikzpicture} 
-		\node[state,initial] (q0)  {$q_0$};
+		\node[state,initial] (q0) {$q_0$};
 		\node[state,accepting] (q1) [right = 1.3cm of q0] {$p_0$};
 		
 		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
@@ -394,7 +392,7 @@ Such reduction based on PFA is the key to handle string-number conversion effici
 		
 		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(0)}$} (q11) ;
 		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(0)}$} (q1) ;
-		\draw[->] (q0) edge  node [below]{$v_{\epsilon_0}$} (q1) ;
+		\draw[->] (q0) edge node [below]{$v_{\epsilon_0}$} (q1) ;
 		\end{tikzpicture}
 		
 		\centering
@@ -403,7 +401,7 @@ Such reduction based on PFA is the key to handle string-number conversion effici
 	\ \ \ 
 	\begin{minipage}[t]{0.28\textwidth}
 		\begin{tikzpicture} 
-		\node[state,accepting] (q0)  {$q_0$};
+		\node[state,accepting] (q0) {$q_0$};
 		\node[state,initial] (q1) [left = 1.3cm of q0] {$p_0$};
 		
 		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
@@ -415,7 +413,7 @@ Such reduction based on PFA is the key to handle string-number conversion effici
 		
 		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(1)}$} (q11) ;
 		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(1)}$} (q1) ;
-		\draw[->] (q1) edge  node [below]{$v_{\epsilon_1}$ }(q0) ;
+		\draw[->] (q1) edge node [below]{$v_{\epsilon_1}$ }(q0) ;
 		\end{tikzpicture}
 		
 		\centering
@@ -427,11 +425,11 @@ Such reduction based on PFA is the key to handle string-number conversion effici
 \end{figure*}
 
 
-In the following,  we explain the construction of the linear formula using the formula $\Phi$ as an example. Assume that we project the domains of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. Thus,  $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from the formula $ y \in (12)^+$, we may derive $v_3=1$ and $v_4=2$. 
+In the following, we explain the construction of the linear formula using the formula $\Phi$ as an example. Assume that we project the domains of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. Thus, $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from the formula $ y \in (12)^+$, we may derive $v_3=1$ and $v_4=2$. 
 
-The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$,  as well as the number of occurrences of each character variables $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$.  Each model of the linear formula encodes a model of the string constraint. For example, $x=``12''$ and $y=``1212''$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4)= (1,2,1,2,1,1,2,2)$. The assignment says, for example, that $x$ is the parametric word obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12''$.
+The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$, as well as the number of occurrences of each character variables $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12''$ and $y=``1212''$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4)= (1,2,1,2,1,1,2,2)$. The assignment says, for example, that $x$ is the parametric word obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12''$.
 
-If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables.  If not, our procedure step-wisely change the PFA to more expressive ones (by adding more states and transitions) to systematically search for the solution. Depending on the implementation, one may choose to report unknown after some certain steps.
+If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables. If not, our procedure step-wisely change the PFA to more expressive ones (by adding more states and transitions) to systematically search for the solution. Depending on the implementation, one may choose to report unknown after some certain steps.
 
 
 
@@ -453,16 +451,16 @@ If a model of the produced linear formula is found, then the procedure concludes
 				(define-fun-rec split ((x String)(y String)(xIdx Int)(aIdx Int)) 
 				(Array Int String)
 				(ite (= xIdx (str.len x))
-				  (store ((as const (Array Int String)) "") aIdx x)
-				  (ite (= y (str.at x xIdx)) 
-				    (store 
-				      (split (str.substr x (+ xIdx 1) (- (str.len x) 1) ) 
-				      0 (+ aIdx 1) y) 
-				      aIdx
-				      (str.substr str 0 xIdx)
-				    )
-				    (split x (+ xIdx 1) aIdx y)
+				 (store ((as const (Array Int String)) "") aIdx x)
+				 (ite (= y (str.at x xIdx)) 
+				  (store 
+				   (split (str.substr x (+ xIdx 1) (- (str.len x) 1) ) 
+				   0 (+ aIdx 1) y) 
+				   aIdx
+				   (str.substr str 0 xIdx)
 				  )
+				  (split x (+ xIdx 1) aIdx y)
+				 )
 				)
 			\end{Verbatim}
 	 	 				
@@ -473,7 +471,7 @@ If a model of the produced linear formula is found, then the procedure concludes
 }
 
 
-To demonstrate  the usefulness of our approach, we have implemented our decision procedure in an open source solver, called {\sc } ....
+To demonstrate the usefulness of our approach, we have implemented our decision procedure in an open source solver, called {\sc } ....
 \todo{Talk about experiments}
 
 \smallskip
@@ -483,19 +481,19 @@ To demonstrate  the usefulness of our approach, we have implemented our decision
 
 \begin{itemize}
 
-\item An {\em efficient} procedure  for checking satisfiability
+\item An {\em efficient} procedure for checking satisfiability
 of string constraints with string-number conversion constraints.
 
 
 
-\item The introduction of  the class of \emph{parametric flat automata} which uses character variables as transition labels instead of characters. This allows us to avoid  the {alphabet explosion problem} that the approach in~\cite{abdulla2017flatten} when it comes to handle string-number conversion constraints.
+\item The introduction of the class of \emph{parametric flat automata} which uses character variables as transition labels instead of characters. This allows us to avoid the {alphabet explosion problem} that the approach in~\cite{abdulla2017flatten} when it comes to handle string-number conversion constraints.
 
 
-\item An algorithm that translates the satisfiability string constraints to the  satisfiability of a linear formula   in polynomial-time when   the search space restricted by PFAs.
+\item An algorithm that translates the satisfiability string constraints to the satisfiability of a linear formula  in polynomial-time when  the search space restricted by PFAs.
 
 
-\item An open source tool  with experimental
-results that demonstrate the efficiency  of
+\item An open source tool with experimental
+results that demonstrate the efficiency of
 our approach on both existing and real-life benchmarks
 \end{itemize}
 
@@ -505,7 +503,7 @@ To ease presentation, in the paper, we only consider string constraints consisti
 	
 suggest restricting the string domain to $0^*[0-9]^k$, where $k$ is the maximum 
 digit allowed in the corresponding number value. In programming languages 
-such  as JavaScript or Python, a number with $k$ digits can be converted from a 
+such as JavaScript or Python, a number with $k$ digits can be converted from a 
 string of length arbitrarily longer than $k$. For example, $12 = 
 str2int(``0000012")$. That is why we use $0^*$ at the beginning of the pattern.
 Under this domain, we can convert the string-number conversion constraints to 
@@ -534,9 +532,9 @@ The approach combines techniques from both automata theory and SMT solving to ex
 %
 %Then our procedure will restrict the domain of each string variables to the language defined by some parametric flat automata (PFA) and convert them to equisatisfiable linear formula. The details of the under-approximation component will be described in Section~\ref{section:under_approximate}. Here we try to explain what the linear formula looks like by an example. Assume that we project the domain of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. One special treatment we do in this paper is that we encoding characters as natural numbers. So $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from the formula $ y \in (12)^+$, we may derive $v_3=1$ and $v_4=2$. 
 %
-%The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$,  as well as, the number of occurrences of each character variables $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12''$ and $y=``1212''$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4)= (1,2,1,2,1,1,2,2)$. The assignment says, for example, that $x$ is the parametric word obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12''$.
+%The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$, as well as, the number of occurrences of each character variables $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12''$ and $y=``1212''$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4)= (1,2,1,2,1,1,2,2)$. The assignment says, for example, that $x$ is the parametric word obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12''$.
 %
-%If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables.  If not, our procedure step-wisely change the PFA to more expressive ones (by adding more states and transitions) to systematically search for the solution. Depending on the implementation, one may choose to report unknown after some certain steps.
+%If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables. If not, our procedure step-wisely change the PFA to more expressive ones (by adding more states and transitions) to systematically search for the solution. Depending on the implementation, one may choose to report unknown after some certain steps.
 %
 
 
@@ -550,7 +548,7 @@ The approach combines techniques from both automata theory and SMT solving to ex
 %
 %A \emph{finite automaton} is a tuple $(Q,T,\Sigma,q_0,q_m)$, where $Q$ is the set of states, $T\subseteq Q\times (\Sigma\cup \{\epsilon\} )\times Q $ is the set of transition relation, $\Sigma$ is the alphabet, $q_0$ is the initial state, and $q_m$ is the final state. The semantics of finite automaton is defined in the standard manner. We use $L(A)$ to denote the regular language, i.e., set of accepted strings, of the automaton $A$.
 
-%Given a finite automaton $A$ over $\{a_1,a_2,\ldots,a_n\}$, the Parikh image of $L$ is the set $\{(|w|_{a_1},\ldots, |w|_{a_n}) \mid w \in  L(A) \}$, i.e., the number of occurrences of each symbol $\{a_1,a_2,\ldots,a_n\}$ of words in $L(A)$. Moreover, one can construct from $A$ in linear time a Presburger formula $\phi_A(v_1, \ldots,v_n)$ such that $\phi(c_1, \ldots,c_n) \iff (c_1, \ldots,c_n)$ in the Parikh image of $L$~\cite{SeidlSMH04}.
+%Given a finite automaton $A$ over $\{a_1,a_2,\ldots,a_n\}$, the Parikh image of $L$ is the set $\{(|w|_{a_1},\ldots, |w|_{a_n}) \mid w \in L(A) \}$, i.e., the number of occurrences of each symbol $\{a_1,a_2,\ldots,a_n\}$ of words in $L(A)$. Moreover, one can construct from $A$ in linear time a Presburger formula $\phi_A(v_1, \ldots,v_n)$ such that $\phi(c_1, \ldots,c_n) \iff (c_1, \ldots,c_n)$ in the Parikh image of $L$~\cite{SeidlSMH04}.
 
 We use $\mathbb{N}$ and $\mathbb{Z}$ to denote the sets of natural numbers (including 0) and 
 integers. For a set $A$, we use $|A|$ to denote its size. 
@@ -562,24 +560,24 @@ and a set of functions $F$ restricted to $D$ is $\restrict F D = \{\restrict f D
 An \emph{alphabet} is a finite set $\Sigma$ of \emph{characters} and a \emph{word} over $\Sigma$ is a sequence $w = a_1\ldots a_n$ of characters from $\Sigma$, with $\epsilon$ denoting the \emph{empty word}. 
 We use $w_1\cdot w_2$ to denote the \emph{concatenation} of words $w_1$ and $w_2$.
 $\Sigma^*$ is the set of all words over $\Sigma$, $\Sigma^+ = \Sigma^*\setminus \{\epsilon\}$, $\Sigma_\epsilon = \Sigma\cup\{\epsilon\}$, and 
-A \emph{language} over $\Sigma$ is a subset $L$ of $\Sigma^*$.  
+A \emph{language} over $\Sigma$ is a subset $L$ of $\Sigma^*$. 
 %
-We use $|w|$ to denote the length of $w$ and $|w|_a$ to denote the number of occurrences of the character $a\in \Sigma$ in $w$.  
+We use $|w|$ to denote the length of $w$ and $|w|_a$ to denote the number of occurrences of the character $a\in \Sigma$ in $w$. 
 
 A \emph{finite automaton} (FA) is a tuple $(Q,T,\Sigma,q_i,q_f)$, where $Q$ is the set of \emph{states}, $T\subseteq Q\times \Sigma \times Q $ is the set of \emph{transitions}, $\Sigma$ is the alphabet, $q_i$ is the \emph{initial state}, and $q_f$ is the \emph{final state}. 
 %The semantics of finite automaton is defined in the standard manner. 
-A \emph{run} of $A$ over a word $w = a_1\cdots a_n$ is a sequence of transition $(q_0,a_1,q_1),(q_1,a_1,q_2),\ldots,(q_{n-1},a_n,q_n)$. The run  is \emph{accepting} if $q_0 = q_i$ and $q_i = q_f$ and $w$ then is \emph{accepted}.
+A \emph{run} of $A$ over a word $w = a_1\cdots a_n$ is a sequence of transition $(q_0,a_1,q_1),(q_1,a_1,q_2),\ldots,(q_{n-1},a_n,q_n)$. The run is \emph{accepting} if $q_0 = q_i$ and $q_i = q_f$ and $w$ then is \emph{accepted}.
 The \emph{language} of $A$ is the set $L(A)$ of all accepted words.
 
-%Through the paper, we will use quantifier-free linear integer arithmetic formulas, and call them \emph{linear formulas} for short.   
+%Through the paper, we will use quantifier-free linear integer arithmetic formulas, and call them \emph{linear formulas} for short.  
 %Given a linear formula $\phi$, a set of variables $V$, and an \emph{interpretation} of $V$, i.e., a function $I:V\rightarrow \nat$, 
 %we denote by $I\models_V \phi$ that $I$ satisfies $\phi$ (which is defined in the standard manner), and call $I$ a \emph{model} of $\phi$ over $V$. 
 %
 %\lh{Our use of indexing by $V$ in the text later is not very nice. Add this for clarity?: If $V$ contain additional variables not present in $\phi$, the these might be assigned arbitrary values by $I$. If $V$ is missing some of the variables of $\phi$, then it must be possible to complete $I$ with assignment of the missing variables into a satisfying assignment of $\phi$ (as in existential quantification).}
 %We use $\modelsof \phi$ to denote the set all models of $\phi$ over $V$. 
-%We drop the reference to $V$ and write just ``model of $\phi$'',  $\modelsof \phi$, and $\models$ when no confusion may arise. For a set of interpretations $S$, we use $S_\Sigma$ to denote the set of interpretations obtained from $S$ by projecting the domain to $\Sigma$.
+%We drop the reference to $V$ and write just ``model of $\phi$'', $\modelsof \phi$, and $\models$ when no confusion may arise. For a set of interpretations $S$, we use $S_\Sigma$ to denote the set of interpretations obtained from $S$ by projecting the domain to $\Sigma$.
 
-Through the paper, we will use quantifier-free linear integer arithmetic formulas, and call them \emph{linear formulas} for short.   
+Through the paper, we will use quantifier-free linear integer arithmetic formulas, and call them \emph{linear formulas} for short.  
 Given a linear formula $\phi$ over variables $V$ and an \emph{integer interpretation} of $V$, a function $I:V\rightarrow \integers$, 
 we denote by $I\models \phi$ that $I$ satisfies $\phi$ (which is defined in the standard manner), and call $I$ a \emph{model} of $\phi$. 
 We use $\modelsof \phi$ to denote the set all models of $\phi$. 
@@ -593,14 +591,14 @@ The \emph{Parikh image} of a word $w\in \Sigma^*$ is the assignment
 $\parikhof w$ that for every character $a\in\Sigma$ maps the \emph{Parikh variable} $\#a$ to the number of occurrences of $a$ in $w$.
 Formally, let $\pvarsof S$ denote the set of Parikh variables $\{\#s \mid s\in S\}$ obtained from a set $S$. 
 The Parikh image of $w$ is a function $\parikhof w:\pvarsof \Sigma \rightarrow \nat$ such that $\parikhof w (\#a) = |w|_a$. 
-The Parikh image of a language $L$ is the set of Parikh images $\parikhof L = \{\parikhof w \mid w \in  L\}$. %and the Parikh image of an FA $A$ is Parikh image of its language, $\parikhof{A} = \parikhof{L(A)}$. 
+The Parikh image of a language $L$ is the set of Parikh images $\parikhof L = \{\parikhof w \mid w \in L\}$. %and the Parikh image of an FA $A$ is Parikh image of its language, $\parikhof{A} = \parikhof{L(A)}$. 
 %
 It is well known that $\parikhof {L(A)}$ can be efficiently computed in the form of linear formula:
 
 
 
 \begin{lemma}[\cite{SeidlSMH04}]
-$\parikhof{L(A)}$ of an FA $A$ can be computed in the form of a linear formula  $\parikhfof{A}$ such that 
+$\parikhof{L(A)}$ of an FA $A$ can be computed in the form of a linear formula $\parikhfof{A}$ such that 
 %$\modelsof{\parikhfof A}_{\#\Sigma} = \parikhof{L(A)}$, 
 $\modelsof{\parikhfof A} = \parikhof{L(A)}$, 
 in time linear to the size of $A$.
@@ -634,12 +632,12 @@ t_2$ and is interpreted analogously.
 
 An \emph{integer constraint} $\phi_i$ is a linear constraint over the variables in $\varn$ and length of a word $|x|$ for all $x \in \vars$.
 %Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelsof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
-We define  $\modelsof{\phi_i}= \{I \mid I(\phi_i)= \true \}$.
+We define $\modelsof{\phi_i}= \{I \mid I(\phi_i)= \true \}$.
 
 A \emph{regular constraint} $\phi_r$ is of the form $x \in L(A)$ where $x$ is a string variable and $A$ is a finite automaton. The \emph{model} of $\phi_m$ is the set of interpretations $\modelsof{\phi_m}=\{I\mid 
 I(x) \in L(A) \}$. 
 
-A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define  $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$.
+A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$.
 
 A \emph{string constraint} is then a conjunction of atomic string constraints, with the semantics defined in the standard manner. It is \emph{satisfiable} if its semantics is nonempty.
 
@@ -655,7 +653,7 @@ In this section, we describe formally how to restrict the domain of string varia
 
 We pick a PFA for each variable in $\vars$ at the beginning of the decision procedure and then construct the set of linear integer constraints in a stepwise manner. In each step, we take a string constraint from $\insc$ and depending on the type of the string constraint, we execute the corresponding procedure to produce the linear integer constraints and add them to the output linear formulas $\outlf$. We also add constraints to $\outlf$ to ensure all character variables of the PFAs only pick values from $\Sigma_\epsilon$.
 
-More concretely, at the beginning, we move all integer constraints in $\insc$ to the output linear formulas $\outlf$. After this step, $\insc$ is the union of the three sets of constraints: the equality constraints, the regular constraints, and the string-number conversion constraints. For all string variables $x$ that occurs in a string-number conversion constraint $n= \sti{x}$, we follow the rule that will be described in Section~\ref{section:s2i} to pick the corresponding PFA. We do not set any restriction to the selection of PFA for other string variables. The selection is an implementation decision. We will describe the PFA selection strategy of \tool in Section~\ref{section:implementation}. 
+More concretely, at the beginning, we move all integer constraints in $\insc$ to the output linear formulas $\outlf$. After this step, $\insc$ is the union of the three sets of constraints: the equality constraints, the regular constraints, and the string-number conversion constraints. For all string variables $x$ that occurs in a string-number conversion constraint $n= \sti{x}$, we follow the rule that will be described in Section~\ref{section:s2i} to pick the corresponding PFA. We do not set any restriction to the selection of PFA for other string variables. The selection is an implementation decision. We will describe the PFA selection strategy of {\tool} in Section~\ref{section:implementation}. 
 
 After the PFA for each variable is selected, we step-wisely pick and remove a string constraint from $\insc$, executing the corresponding procedure to create equisatisfiable linear constraints, and add all the results to $\outlf$. The procedures for regular, equality and string-number conversion constraints are in Sections~\ref{section:mem},~\ref{section:eq}, and~\ref{section:s2i}, respectively. In the rest of the section, we assume each string variable $x$ is restricted to a PFA $A_x$ with the set of character variables~$V_x$.
 
@@ -695,7 +693,7 @@ After the PFA for each variable is selected, we step-wisely pick and remove a st
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \todo{additional presburget constraints to encode $\epsilon$ added at translation to a formula}
-%We use $\cvar$ to denote a finite set of \emph{character variables}  ranging over $\Sigma_\epsilon$. 
+%We use $\cvar$ to denote a finite set of \emph{character variables} ranging over $\Sigma_\epsilon$. 
 %Sometimes we use index to denote different set of variables over the same range, e.g., $\cvarone$ and $\cvartwo$. 
 %We use $v$ and its variants for character variables. We call a string over $\cvar$ (character variables) a \emph{symbolic string}.
 %An \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$. For a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
@@ -709,8 +707,8 @@ used by the under-approximation module to restrict the domain of string variable
 First, we say that an automaton FA 
 $A = (Q,T,\Sigma,\st{0}{0},\st{m}{0})$ is \emph{flat} if it satisfies the following structural constraints:
 \begin{enumerate}
-	\item The final state $\st{m}{0}$ is reached from  the initial state $\st{0}{0}$ through a straight path of $m-1$ transitions $(\st{i}{0},a_i,\st{i+1}{0}) \in T$, $\st{i}{0} \in Q$ for $i\in[0,m-1]$. 
-	\item  
+	\item The final state $\st{m}{0}$ is reached from the initial state $\st{0}{0}$ through a straight path of $m-1$ transitions $(\st{i}{0},a_i,\st{i+1}{0}) \in T$, $\st{i}{0} \in Q$ for $i\in[0,m-1]$. 
+	\item 
 Each state $\st{i}{0}$ is the origin of a unique simple cycle of the length $l_i\in\mathbb{N}$, consisting of states $\st{i}{j-1} \in Q$ and transitions $(\st{i}{j-1}, a_{i}^{j-1}, \st{i}{j \bmod l_i})$ for $j\in [1,l_i]$. 
 Notice that the case when $l_i = 0$ is also admissible and means that there is no cycle on $q_i$.
 	\item Each character in $\Sigma$ appears on at most one transition. 
@@ -720,7 +718,7 @@ The crucial feature of flat automata is that their semantics can be faithfully r
 \lh{, allowing to circumvent more costly automata algorithms and decision procedures. Concretize and justify this better?}
 %
 This is facilitated by flatness, which guarantees that 
-every parametric word $w\in L(A)$ is uniquely determined by its Parikh image $\parikhof{w}$, i.e., $\decode A (\parikhof w)) = w$, and analogously for the entire language of $A$, as formalized by the following lemma.  
+every parametric word $w\in L(A)$ is uniquely determined by its Parikh image $\parikhof{w}$, i.e., $\decode A (\parikhof w)) = w$, and analogously for the entire language of $A$, as formalized by the following lemma. 
 
 \begin{lemma}\label{lemma:parikh}
 For an flat FA $A$ and $w,w'\in L(A)$, if $\parikhof w = \parikhof {w'}$ then $w = w'$. 
@@ -757,14 +755,14 @@ $w_i = (a_i^0 \cdots a_i^{l_{i-1}})^{\pvarsof {a_i^0}}$ if $l_i >0$ and $w_i = \
 \end{proof}
 
 \paragraph{Parametric (flat) automata}
-Next we define \emph{parametric automaton} (PA) as a tuple $A = (Q,T,\cvar,\st{0}{0},\st{m}{0},\pfaf)$ where $\pfaf$ is an \emph{interpretation constraint}, a linear formula over $\cvar$, and $(Q,T,\cvar,\st{0}{0},\st{m}{0})$ is an automaton operating over an alphabet $\cvar$ of \emph{character variables}.  \emph{Parametric flat automaton (PFA)} then is a parametric automaton with its finite automaton flat.
+Next we define \emph{parametric automaton} (PA) as a tuple $A = (Q,T,\cvar,\st{0}{0},\st{m}{0},\pfaf)$ where $\pfaf$ is an \emph{interpretation constraint}, a linear formula over $\cvar$, and $(Q,T,\cvar,\st{0}{0},\st{m}{0})$ is an automaton operating over an alphabet $\cvar$ of \emph{character variables}. \emph{Parametric flat automaton (PFA)} then is a parametric automaton with its finite automaton flat.
 
 %
 %\begin{figure*}
 %	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 %			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 %	\begin{tikzpicture} 
-%		\node[state,initial] (q0)  {$\st{0}{0}$};
+%		\node[state,initial] (q0) {$\st{0}{0}$};
 %		\node[state] (q1) [right = 3cm of q0] {$\st{1}{0}$};
 %		\node (q2) [right = 1.8cm of q1]{};
 %		\node (q3) [right = 1cm of q2]{};
@@ -781,22 +779,22 @@ Next we define \emph{parametric automaton} (PA) as a tuple $A = (Q,T,\cvar,\st{0
 %		\node[state] (qm2) [above = 1cm of qm] {$\st{m}{2}$};
 %		\node[state] (qm3) [above right = 0.6cm of qm] {$\st{m}{3}$};
 %
-%  		\draw[->] (q0) edge [bend left] node [left]{$\sym{0}{0}$} (q01) ;
-%  		\draw[->] (q01) edge [bend left] node [left]{$\sym{0}{1}$} (q02) ;
-%  		\draw[->] (q02) edge [bend left] node [right]{$\sym{0}{2}$} (q03) ;
-%  		\draw[->] (q03) edge [bend left] node [right]{$\sym{0}{3}$} (q0) ;
-%  		
-%  		\draw[->] (q0) edge node [below]{$v_0$} (q1) ;
-%  		\draw[->] (q1) edge node [below]{$v_1$} (q2) ;
-%  		\draw[dotted] (q2) edge (q3) ;
-%  		\draw[->] (q3) edge node [below]{$v_{m-1}$} (qm) ;
+% 		\draw[->] (q0) edge [bend left] node [left]{$\sym{0}{0}$} (q01) ;
+% 		\draw[->] (q01) edge [bend left] node [left]{$\sym{0}{1}$} (q02) ;
+% 		\draw[->] (q02) edge [bend left] node [right]{$\sym{0}{2}$} (q03) ;
+% 		\draw[->] (q03) edge [bend left] node [right]{$\sym{0}{3}$} (q0) ;
+% 		
+% 		\draw[->] (q0) edge node [below]{$v_0$} (q1) ;
+% 		\draw[->] (q1) edge node [below]{$v_1$} (q2) ;
+% 		\draw[dotted] (q2) edge (q3) ;
+% 		\draw[->] (q3) edge node [below]{$v_{m-1}$} (qm) ;
 %
-%  		\draw[->] (qm) edge [bend left] node [left]{$\sym{m}{0}$} (qm1) ;
+% 		\draw[->] (qm) edge [bend left] node [left]{$\sym{m}{0}$} (qm1) ;
 %		\draw[->] (qm1) edge [bend left] node [left]{$\sym{m}{1}$} (qm2) ;
 %		\draw[->] (qm2) edge [bend left] node [right]{$\sym{m}{2}$} (qm3) ;
 %		\draw[->] (qm3) edge [bend left] node [right]{$\sym{m}{3}$} (qm) ;
 %
-%  		\draw[->] (q1) edge [bend left] node [left]{$\sym{1}{0}$} (q11) ;
+% 		\draw[->] (q1) edge [bend left] node [left]{$\sym{1}{0}$} (q11) ;
 %		\draw[->] (q11) edge [bend left] node [above]{$\sym{1}{1}$} (q12) ;
 %		\draw[->] (q12) edge [bend left] node [right]{$\sym{1}{2}$} (q1) ;
 %	\end{tikzpicture} 
@@ -816,7 +814,7 @@ Namely, words over $\cvar$ are interpreted as words over $\Sigma$ under an
 %
 a mapping from $I:\cvar\rightarrow$ to $\Sigma_\epsilon$. For a parametric word $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 %
-We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V^*$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics of an PFA is the semantics of its language restricted by the formula $\pfaf$, that is,  $\semof A = \semof{L(A)}\cap\semof\pfaf$. 
+We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V^*$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics of an PFA is the semantics of its language restricted by the formula $\pfaf$, that is, $\semof A = \semof{L(A)}\cap\semof\pfaf$. 
 
 
 Since every word $w \in \semof{A}$ is obtained from a parametric word $x\in L(A)$ and an interpretation of character variables $I:\cvar\rightarrow\Sigma_\epsilon$ such that $w = I(x)$, and since $x = \decode A(\parikhof x)$, 
@@ -849,7 +847,7 @@ hence $\encode A(L) = \encode A(L\cap\semof A)$, and so due to Corollary~\ref{co
 \section{Flat Domain Restriction}
 Let us now give a precise definition of how we restrict the domain of string constraints using flat automata. 
 A \emph{flat domain restriction} for a string contraint $\insc$ over variables $X$ is a mapping $R$ that assigns to every variable $x\in X$ a PFA $R(x)$. 
-For technical reasons that will be apparent further in this section, we require that if $x\neq  y$, then $R(x)$ and $R(y)$ operate over disjoint sets of character variables. We will use $V_R$ to denote the union of character variables of all $R(x),x\in X$.
+For technical reasons that will be apparent further in this section, we require that if $x\neq y$, then $R(x)$ and $R(y)$ operate over disjoint sets of character variables. We will use $V_R$ to denote the union of character variables of all $R(x),x\in X$.
 
 The semantics of a string constraint $\phi$ restricted by $R$ is then defined as 
 $\semof{\phi}^R = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{R(x)}\}$. 
@@ -872,7 +870,7 @@ To this end, we define an additional notation.
 For an interpretation $I:X\rightarrow \Sigma^*$, we define its $R$-encoding as the set $\encode R(I) = \bigcup_{x\in X} \encode A(I(x))$. We lift this notation to sets of interpretation in the standard manner, i.e., $\encode R (J) = \bigcup_{I \in J}\encode R (I)$ for a set of interpretations $J$.
 %
 The inductive argument needed in the proof of the correctness of the underapproximation then reads as
-$$\semof{\underf R \phi}_{V_R\cup V_{\#R}}  = \encode R{\semof{\phi}}$$ 
+$$\semof{\underf R \phi}_{V_R\cup V_{\#R}} = \encode R{\semof{\phi}}$$ 
 We note that the restriction of the semantics of $\underf R \phi$ here is needed here since it is constructed with some additional variables. 
 
 
@@ -899,14 +897,14 @@ More precisely, the models of $\syncfof A {A'}$ represent pairs of word
 encodings $(I\cup \parikhof{x})$ and $(I'\cup \parikhof{x'})$ such that $x\in L(A)$, $x'\in L(A')$, and 
 $I(x) = I'(x')$.
 % \in \semof{A}\cap\semof{A'}$.
-The synchronization formula will be used in, e.g., the decision procedure of equality constraints $t_1=t_2$ to find a common interpretation~of~$t_1$~and~$t_2$.  
+The synchronization formula will be used in, e.g., the decision procedure of equality constraints $t_1=t_2$ to find a common interpretation~of~$t_1$~and~$t_2$. 
 %More precisely, the models of the synchronization formula $\syncfof A {A'}$ correspond to the set of all pairs of word
 %encodings $(I\cup \parikhof{x})$ and $(I'\cup \parikhof{x'})$ such that $x\in L(A)$, $x'\in L(A')$, and 
 %$I(x) = I'(x') \in \semof{A}\cap\semof{A'}$.%, which constitute the intersection.
 % encodings $(I\cup \pim)\in \parikhof {A}$ and $(I'\cup \pim')\in\parikhof {A'}$ such that 
 %$I(\decode A(I\cup \pim) = \decode {A'}(I'\cup \pim')$, which constitute the intersection.
 
-Particularly, the synchronization formula is built for two PAs  
+Particularly, the synchronization formula is built for two PAs 
 $A = (Q,T,\cvarone,q_i,q_f,\pfaf)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f',\pfaf')$ such that $\cvarone \cap \cvartwo = \emptyset$. 
 %
 It is extracted from the \emph{asynchronous product} of $A$ and $A'$. 
@@ -947,7 +945,7 @@ $$ \Psi_{\#} \defeq
 $$
 Notice that $x,x'$ are either variables or $\epsilon$.
 %\begin{enumerate}
-%	\item for all $v \in \cvarone$, $\#(v) = \sum_{v' \in \cvartwo} \#{(v,v')}$   
+%	\item for all $v \in \cvarone$, $\#(v) = \sum_{v' \in \cvartwo} \#{(v,v')}$  
 %	\item for all $v \in \cvartwo$, $\#(v) = \sum_{v' \in \cvarone} \#{(v',v)}$ 
 %\end{enumerate}
 Finally, the third part forces the interpretations of the parametric words accepted by $A$ and $A'$ to be the same:
@@ -1009,22 +1007,22 @@ $
 
 
 Informally, the lemma states that the models of $\syncfof A {A'}$ encode precisely the pairs of equivalent encodings of words from $\semof{A}$ and $\semof{A'}$, that constitute the intersection $\semof{A} \cap \semof{A'}$. A minor technical difficulty is that the models of $\syncfof A {A'}$ include also an assignment to the auxiliary variables of $(\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$. Hence in the lemma, 
-we use restric the semantics of $\syncfof A {A'}$ to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. %This is  achieve by quantifying out the variables of $V_\times$.
+we use restric the semantics of $\syncfof A {A'}$ to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. %This is achieve by quantifying out the variables of $V_\times$.
 
 Notice that if $A$ is flat (or, symmetrically, if $A'$ is flat), then the semantic intersection $\semof A \cap \semof {A'}$ can be still decoded from the synchronisation formula $\semof {\syncfof A {A'}}$. 
 Namely, due to Corollary~\ref{corollary:pfa}, we have that 
-%$\semof A \cap \semof {A'} = \{\decode A(I\cup \pim) \mid (I\cup \pim) \in \semof{\syncfof A {A'}}_{\cvarone\cup \pvarone}\}$.  
-$$\semof A \cap \semof {A'} = \decode A (\semof{\syncfof A {A'}}_{\cvarone\cup \pvarone})$$  
+%$\semof A \cap \semof {A'} = \{\decode A(I\cup \pim) \mid (I\cup \pim) \in \semof{\syncfof A {A'}}_{\cvarone\cup \pvarone}\}$. 
+$$\semof A \cap \semof {A'} = \decode A (\semof{\syncfof A {A'}}_{\cvarone\cup \pvarone})$$ 
 
 \paragraph{Concatenation of PFAs}
 Concatenation is another operation over PFAs needed when constructing underapproximations. Its implementation is straightforward, connect the final state of the first PFA with the initial state of the second by an $\epsilon$-transition. Since our automata do not allow transition directly labeled by $\epsilon$, 
-the $\epsilon$-transition is labeled by a fresh variable $v_\epsilon$ contrained by the constraint $v_\epsilon = \epsilon$.  
+the $\epsilon$-transition is labeled by a fresh variable $v_\epsilon$ contrained by the constraint $v_\epsilon = \epsilon$. 
 
 Formally, given PFA $A = (Q,T,\cvarone,q_i,q_f,\pfaf)$ and ${A'} = (Q',T',\cvartwo,q_i',q_f',\pfaf')$ with $Q\cap Q'=\emptyset = \cvarone\cap\cvartwo$, 
 their concatenation is the PFA $A\cdot A' = (Q\cup Q',T\cup T'\cup \{(q_f,v_\epsilon,q_i')\},\cvarone\cup\cvartwo\cup\{v_\epsilon\},q_i,q_f',\pfaf\land\pfaf'\land v_\epsilon = \epsilon)$ where $v_\epsilon$ is fresh, not from $\cvarone\cup\cvartwo$. 
 
 \begin{lemma}
-For PFA $A$ and $A'$,  
+For PFA $A$ and $A'$, 
 %$\encode{A\cdot A'}{\semof{A\cdot A}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} =
 %\{(I\cup I_\#)\cup (I' \cup I'_\#)\mid$ $\\(I\cup I_\#) \in \encode A (w), (I' \cup I'_\#)\in\encode {A'} (w'),w\in\semof A,w'\in \semof {A'}\}$
 $\semof{A\cdot A'} = \semof{A}\cdot\semof{A'}$ and 
@@ -1059,11 +1057,11 @@ $$\underf R {\phi_r} = \syncfof{A_x} {A'} \land \Psi_{\mathit{char}}$$
 
 The following lemma states the correctness of this construction, and it follows from Corollary~\ref{corollary:pfa}, Lemma~\ref{lemma:synccorrect}. 
 %Intuitively, it says that the resulting constraint represents precisely the restriction of $L(A)$ to the domain $\semof{A_x}$, the $A_x$-encodings of the strings in $L(A)\cap\semof{A_x}$. 
-\begin{lemma}\label{lemma:memcorrect}  $\semof {\underf R {\phi_r}}_{V_R \cup V_{\#R}} = \encode {R} (\semof{\phi_r})$ . 
+\begin{lemma}\label{lemma:memcorrect} $\semof {\underf R {\phi_r}}_{V_R \cup V_{\#R}} = \encode {R} (\semof{\phi_r})$ . 
 \end{lemma}
 
 %
-%\begin{lemma}\label{lemma:memcorrect}  ${\semof {\syncfof {A_x }{A'} \land \Psi_{char}} } _{V_x \cup \pvarsof{V_x}} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
+%\begin{lemma}\label{lemma:memcorrect} ${\semof {\syncfof {A_x }{A'} \land \Psi_{char}} } _{V_x \cup \pvarsof{V_x}} = \{(I\cup\pim) \mid \decode {A_x}(I\cup\pim) \in L(A)\}$. 
 %\end{lemma}
 %
 %(An alternative description)
@@ -1106,7 +1104,7 @@ $$
 $$
 The correctness of the construction is stated by the lemma:
 \begin{lemma}\label{lemma:eqcorrect}
-$\semof {\underf R {\phi_e}}_{V_R  \cup \#V_R} = \encode R (\semof{\phi_e})$.
+$\semof {\underf R {\phi_e}}_{V_R \cup \#V_R} = \encode R (\semof{\phi_e})$.
 \end{lemma}
 
 \subsection{Handling the lengths of variables}
@@ -1117,7 +1115,7 @@ $$\Phi_{V_x} \defeq \bigwedge_{v\in V_x} ( (s_v = 0 \wedge v = -1) \vee (s_v = \
 
 More concretely, for each string variable $x$, we add linear formula $\Psi_{|x|}$ to $\outlf$. 
 
-$$\Phi_{|x|} \defeq \Phi_{V_x}  \wedge |x| =  \sum_{v\in V_x}  s_v $$
+$$\Phi_{|x|} \defeq \Phi_{V_x} \wedge |x| = \sum_{v\in V_x} s_v $$
 
 
 \hide{The length of $x$ can be specified by the following formula.
@@ -1168,7 +1166,7 @@ $\begin{array}{ccc}
 %$$
 %
 %\begin{lemma}\label{lemma:eqcorrect}
-%$\semof {\underf R {\phi_e}}_{V_R  \cup \#V_R} = \encode R (\semof{\phi_e})$.
+%$\semof {\underf R {\phi_e}}_{V_R \cup \#V_R} = \encode R (\semof{\phi_e})$.
 %\end{lemma}
 %
 %
@@ -1176,16 +1174,16 @@ $\begin{array}{ccc}
 %%The correctness of this procedure is stated in Lemma~\ref{lemma:eqcorrect} below. In the lemma, each tuple of words $(w_1,\ldots, w_m) \in \semof{A_{x_1}}\times\ldots\times\semof{A_{x_m}}$ represents a model of the equality constraint. Each tuple $(w_1,\ldots, w_m)$ satisfies the condition that if $x_i$ and $x_j$ are the same variable, then $w_i$ and $w_j$ should be the same word.
 %%
 %%\begin{lemma}\label{lemma:eqcorrect}
-%%	$\semof {\syncfof A {A'}  \wedge \Psi_{rename}}_{V_{x_1} \cup\ldots\cup V_{x_m}  \cup \#V_{x_1} \cup\ldots\cup \#V_{x_m} } = \\
-%%	    \left\{\begin{array}{c|cl}
+%%	$\semof {\syncfof A {A'} \wedge \Psi_{rename}}_{V_{x_1} \cup\ldots\cup V_{x_m} \cup \#V_{x_1} \cup\ldots\cup \#V_{x_m} } = \\
+%%	  \left\{\begin{array}{c|cl}
 %%			(I^1\cup\pim^1)\ \cup&w_1=\decode A_{x_1}(I^1\cup\pim^1) & \wedge \\
 %%			(I^2\cup\pim^2)\ \cup&w_2=\decode A_{x_2}(I^2\cup\pim^2) & \wedge \\
 %%			\ldots&\ldots\\
 %%%			(I^{m-1}\cup\pim^{m-1}) &\cup&w_{m-1}=\decode A_{x_{m-1}}(I^{m-1}\cup\pim^{m-1}) & \wedge \\
-%%			(I^m\cup\pim^m)      &w_m=\decode A_{x_m}(I^m\cup\pim^m) & \wedge \\
+%%			(I^m\cup\pim^m)   &w_m=\decode A_{x_m}(I^m\cup\pim^m) & \wedge \\
 %%			&w_1\cdot w_2 \cdots w_n = w_{n+1}\cdot w_{n+2} \cdots w_m & \wedge \\
-%%			&\forall i,j \in [1,m]: x_i=x_j \Longrightarrow w_i=w_j &  \\
-%%        \end{array}\right\}
+%%			&\forall i,j \in [1,m]: x_i=x_j \Longrightarrow w_i=w_j & \\
+%%    \end{array}\right\}
 %%	$
 %%\end{lemma}
 %%
@@ -1194,7 +1192,7 @@ $\begin{array}{ccc}
 %%\begin{lemma}\label{lemma:eqcorrect} For all $w_1 \in \semof{A_{x_1}} \ldots w_m \in \semof{A_{x_m}}$ satisfying $\forall i,j \in [1,m]: x_i=x_j \Longrightarrow w_i=w_j$, we have 
 %%	
 %%	\begin{center}
-%%		$\exists (I^1\cup\pim^1)\cup\ldots\cup (I^m\cup\pim^m)$ in $\semof {\syncfof A {A'}  \wedge \Psi_{rename}}_{V_{x_1} \cup\ldots\cup V_{x_m}  \cup \#V_{x_1} \cup\ldots\cup \#V_{x_m} }$ s.t. $w_1=\decode A_{x_1}(I^1\cup\pim^1),\ldots,w_m=\decode A_{x_m}(I^m\cup\pim^m)$\\
+%%		$\exists (I^1\cup\pim^1)\cup\ldots\cup (I^m\cup\pim^m)$ in $\semof {\syncfof A {A'} \wedge \Psi_{rename}}_{V_{x_1} \cup\ldots\cup V_{x_m} \cup \#V_{x_1} \cup\ldots\cup \#V_{x_m} }$ s.t. $w_1=\decode A_{x_1}(I^1\cup\pim^1),\ldots,w_m=\decode A_{x_m}(I^m\cup\pim^m)$\\
 %%		iff\\
 %%		$w_1\cdot w_2 \cdots w_n = w_{n+1}\cdot w_{n+2} \cdots w_m$.
 %%	\end{center}
@@ -1202,11 +1200,11 @@ $\begin{array}{ccc}
 %%
 %%\lh{Assume that we were working with a domain restriction $R:[x_i]_1^m\rightarrow \text{PFAs}$.
 %%\begin{lemma}
-%%$\semof {\syncfof A {A'}  \wedge \Psi_{rename}}_{V_{x_1} \cup\ldots\cup V_{x_m}  \cup \#V_{x_1} \cup\ldots\cup \#V_{x_m} } = \encode R (\semof{\phi_e})$.
+%%$\semof {\syncfof A {A'} \wedge \Psi_{rename}}_{V_{x_1} \cup\ldots\cup V_{x_m} \cup \#V_{x_1} \cup\ldots\cup \#V_{x_m} } = \encode R (\semof{\phi_e})$.
 %%\end{lemma}
 %%Also, we could denote by $V_R$ the varsiables $V_{x_1} \cup\ldots\cup V_{x_m}$ (these are the variables used by the domain restriction), 
 %%and use $\# V_R$, so the lemma becomes \\ 
-%%$\semof {\syncfof A {A'}  \wedge \Psi_{rename}}_{V_R \cup \# V_R} = \encode R (\semof{\phi_e})$.
+%%$\semof {\syncfof A {A'} \wedge \Psi_{rename}}_{V_R \cup \# V_R} = \encode R (\semof{\phi_e})$.
 %%
 %%}
 %
@@ -1249,11 +1247,11 @@ $\begin{array}{ccc}
 %
 %Recall that for flat automata, the number of occurrences of each symbol uniquely characterizes an accepting string (Section~\ref{section:sfa}) and for any finite automaton we can construct a Presburger formula characterizing its Parikh image (Section~\ref{section:preliminary}). For a product automaton $A$ computed from the previous step, we compute a Presburger formula $\phi(A)$ over the set of variables $\{\#{(v_i^{(j)},v_{i'}^{(j')})}\mid (v_i^{(j)},v_{i'}^{(j')}) \in \cvarone \times \cvartwo\}$ characterizing the Parikh image of $A$. We use $\#(v_i)$ and $\#(v_i^{(j)})$ to denote the number of occurrences of $v_i$ and $v_i^{(j)}$, respectively. The following formulas establish the relation of the number of occurrences of symbols between the PFAs and the product automaton.
 %\begin{enumerate}
-%	\item for all $v_i^{(j)} \in \cvarone$, $\#(v_i^{(j)}) = \sum_{v \in {\cvartwo \cup \{\epsilon\}}} \#{(v_i^{j},v)}$   
+%	\item for all $v_i^{(j)} \in \cvarone$, $\#(v_i^{(j)}) = \sum_{v \in {\cvartwo \cup \{\epsilon\}}} \#{(v_i^{j},v)}$  
 %	\item for all $v_i^{(j)} \in \cvartwo$, $\#(v_i^{(j)}) = \sum_{v \in {\cvarone \cup \{\epsilon\}}} \#{(v,v_i^{j})}$ 
 %\end{enumerate}
 %
-%Then we add the following linear constraints to enforce  condition 1. and 2. required for the pair of symbolic string $(w_n, w_m)$ and $I$, i.e., $I(w_n) = I(w_m)$ and $I$ assign the same value to all versions of the same variable (we use $-1$ as the value of $\epsilon$). 
+%Then we add the following linear constraints to enforce condition 1. and 2. required for the pair of symbolic string $(w_n, w_m)$ and $I$, i.e., $I(w_n) = I(w_m)$ and $I$ assign the same value to all versions of the same variable (we use $-1$ as the value of $\epsilon$). 
 %\begin{enumerate}
 %	\item for all $v_i^{(j)}\in \cvarone$ and $v_{i'}^{(j')}\in \cvartwo$, $\#{(v_i^{(j)},v_{i'}^{(j')})}>0 \rightarrow (v_i=v_{i'})$,\lh{typo?} 
 %	\item for all $v_i^{(j)}\in \cvarone$, $\#{(v_i^{(j)},\epsilon)}>0 \rightarrow (v_i=\epsilon)$, and
@@ -1284,11 +1282,11 @@ Last, we decribe the construction of $\underf R {\phi_s}$ for a string-number co
 
 We begin the discussion with a simple example, assume that we use the PFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee (n=-1 \wedge (v_0 >9 \vee v_1 >9))$.
 
-For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)}-1}{100-1}$. 
+For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})= (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)}-1}{100-1}$. 
 The constraint uses $\#(v_0)$ to capture the total number of loop traversal.
 Notice that the constraint above contains an exponential component $\frac{100^{\#(v_0)}}{100-1}$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
 
-Let us have a look at another example. If we restrict the domain of $x$ to the PFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0^{(0)}\times 10+ v_1^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0^{(0)})-1})\times 100^{\#(v_2^{(0)})}+(v_2^{(0)}\times 10+ v_3^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_2^{(0)})-1}) =  (v_0^{(0)}\times 10+ v_1^{(0)}) \times \frac{100^{\#(v_0^{(0)})}-1}{100-1}\times 100^{\#(v_2^{(0)})} + (v_2^{(0)}\times 10+ v_3^{(0)}) \times \frac{100^{\#(v_2^{(0)})}-1}{100-1}$. Observe that the formula has two exponential components $\frac{100^{\#(v_0^{(0)})}\times 100^{\#(v_2^{(0)})} }{100-1}$ and $\frac{100^{\#(v_2^{(0)})} }{100-1}$.
+Let us have a look at another example. If we restrict the domain of $x$ to the PFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0^{(0)}\times 10+ v_1^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0^{(0)})-1})\times 100^{\#(v_2^{(0)})}+(v_2^{(0)}\times 10+ v_3^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_2^{(0)})-1}) = (v_0^{(0)}\times 10+ v_1^{(0)}) \times \frac{100^{\#(v_0^{(0)})}-1}{100-1}\times 100^{\#(v_2^{(0)})} + (v_2^{(0)}\times 10+ v_3^{(0)}) \times \frac{100^{\#(v_2^{(0)})}-1}{100-1}$. Observe that the formula has two exponential components $\frac{100^{\#(v_0^{(0)})}\times 100^{\#(v_2^{(0)})} }{100-1}$ and $\frac{100^{\#(v_2^{(0)})} }{100-1}$.
 
 It is not difficult to observe that, for the case of an arbitrary PFA of $m$ loops, the formula to define $n$ contains $m$ exponential components, one for each loop.
 To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. As said in the introduction, the problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure, which is double-exponential to the length of the input formula and hence cannot handle large instances. So we do not expect that this constraint can be solved efficiently.
@@ -1299,7 +1297,7 @@ Our first attempt is a PFA without loop, i.e., a straight line structure
 \scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 	\begin{tikzpicture} 
-		\node[state,initial] (q0)  {$q_0$};
+		\node[state,initial] (q0) {$q_0$};
 		\node[state] (q1) [right = 1cm of q0] {$q_1$};
 		\node (q2) [right = 0.8cm of q1]{};
 		\node (q3) [right = 1cm of q2]{};
@@ -1311,17 +1309,17 @@ Our first attempt is a PFA without loop, i.e., a straight line structure
 		\draw[->] (q3) edge node [below]{$v_m$} (qm) ;
 	\end{tikzpicture}}
 . The corresponding integer constraint does not have exponential components. However, it does cover all numbers with at most $m$-digits. Consider the example $\sti{x}=10 \wedge |x|=5$. The number $10$ has only $2$-digits, at the first glance, a straight-line PFA with two transitions, i.e., the PFA
-    \scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
+  \scalebox{0.5}{\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 	\begin{tikzpicture} 
-	\node[state,initial] (q0)  {$q_0$};
+	\node[state,initial] (q0) {$q_0$};
 	\node[state] (q1) [right = 1cm of q0] {$q_1$};
 	\node[state,accepting] (q2) [right = 1cm of q1] {$q_2$};
 	
 	\draw[->] (q0) edge node [below]{$v_1$} (q1) ;
 	\draw[->] (q1) edge node [below]{$v_2$} (q2) ;
 	\end{tikzpicture}
-	} should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable, because the length of $x$ cannot be $5$  under this domain restriction.
+	} should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable, because the length of $x$ cannot be $5$ under this domain restriction.
 
 However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$. The key is that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many `$0$' characters at the front. In order to handle all numbers with up to $m$-digits, we propose to restrict the domain of $x$ to so called \emph{number PFA}, illustrated in Figure~\ref{fig:sfa_its}. The number PFA has a self-loop transition labeled $v_0$ at $q_0$ and we add a constraint $\Psi_{v_0}\defeq v_0=0$ to $\outlf$ for such PFA. With this transition, we can ensure that the under-approximation handles all numbers with at most $m$ digits. Although this PFA still has a loop, it will not create any exponential component because the loop only represents a sequence of ``0'' at the front of $x$. It will not affect the integer value of $n=\sti{x}$.
 
@@ -1329,7 +1327,7 @@ However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``0001
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 	\begin{tikzpicture} 
-	\node[state,initial] (q0)  {$q_0$};
+	\node[state,initial] (q0) {$q_0$};
 	\node[state] (q1) [right = 1cm of q0] {$q_1$};
 	\node (q2) [right = 0.8cm of q1]{};
 	\node (q3) [right = 1cm of q2]{};
@@ -1347,16 +1345,16 @@ However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``0001
 \end{figure}
 
 Such PFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
-Remember that the character variables can be assigned $\epsilon$. In order to simplify the construction, we use an encoding to shift all the $\epsilon$-transitions to the least significant digits, i.e., if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j+1,m]$.  
+Remember that the character variables can be assigned $\epsilon$. In order to simplify the construction, we use an encoding to shift all the $\epsilon$-transitions to the least significant digits, i.e., if $v_j = \epsilon = -1$ then $v_k = -1$ for all $k\in [j+1,m]$. 
 
 Consequently, for string variables that appear within string-to-int constraints, such as $x$ within $\phi_s$, we approximate $x$ by a special PFA, 
 called \emph{$m$-digit PFA}. They are of the form $R(x) = (Q,T,\cvarone,q_i,q_f,\pfaf)$ where the automaton is as on Figure~\ref{fig:sfa_its} and the interpretation restriction is the formula
 $$
-\pfaf \defeq  \Psi_{\mathsf{NaN}} \lor \Psi_{\mathsf{Number}}
+\pfaf \defeq \Psi_{\mathsf{NaN}} \lor \Psi_{\mathsf{Number}}
 $$
 where $\Psi_{\mathsf{NaN}}$ captures the case when $x$ is ``not a number'': 
 $$
-\Psi_{\mathsf{NaN}} \defeq  \bigvee_{i\in [1,m]} v_i>9
+\Psi_{\mathsf{NaN}} \defeq \bigvee_{i\in [1,m]} v_i>9
 $$ 
 and $\Psi_{\mathsf{Number}}$ caputures the case when $x$ is a valied encoding of a number. $\Psi_{\mathsf{Number}}$ aslo forces $R(x)$ to encode the number in a particular way, namely, the intial self-loop may only generate trailing zeros and %variables that are assigned $\epsilon$ can only be used at the end of the number: 
 the first $k$ variables are some numbers and those after $k$ are assigned $\epsilon$. 
@@ -1390,7 +1388,7 @@ Let $I$ be an interpretation of string variables and $I'$ an interpetation of in
 The bloody bastard correctness lemma now says that 
 \begin{lemma}
 $
-\semof {\underf R {\psi_s} }_{V_R \cup \#V_R \cup \{n\}} = \encode  R(\semof{\phi_s})
+\semof {\underf R {\psi_s} }_{V_R \cup \#V_R \cup \{n\}} = \encode R(\semof{\phi_s})
 $
 \end{lemma}
 
@@ -1404,7 +1402,7 @@ $
 %
 %
 %
-%$$\Psi_{\mathsf{NaN}} \defeq  \bigvee_{i\in [1,m]} v_i>9$$
+%$$\Psi_{\mathsf{NaN}} \defeq \bigvee_{i\in [1,m]} v_i>9$$
 %where $ $
 %To explain this encoding, we first define two macro function:
 %
@@ -1420,16 +1418,16 @@ $
 %The condition that when $x$ is ``not a number'' is specified by the following formula.
 %
 %$$
-%\Psi_{\mathit{NaN}} \defeq  \bigvee_{i\in [1,m]} v_i>9$$
+%\Psi_{\mathit{NaN}} \defeq \bigvee_{i\in [1,m]} v_i>9$$
 %
 %Then we can specify the relation between $n$ and the character variables as follows:
-%$$\Psi_n\defeq  (n=-1 \wedge \Psi_{\mathit{NaN}})\vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(k)} )$$
+%$$\Psi_n\defeq (n=-1 \wedge \Psi_{\mathit{NaN}})\vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(k)} )$$
 %It says either $x$ is not a number and so $n=-1$ or the first $k$ variables represent the value of $n$, for some $k\in [0,m]$. 
 %$$
 %\underf R {\psi_s} \defeq \Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {R(x)} 
 %$$
 %To formulate the correctness lemma similar to Lemmas~\ref{lemma:memcorrect} and \ref{lemma:eqcorrect}, we need to consider a modified semantics of $R(x)$.
-%Namely, we assume that $\semof{R(x)}$ is returns $\decode A(\parikhof{R(x)} \land )$  
+%Namely, we assume that $\semof{R(x)}$ is returns $\decode A(\parikhof{R(x)} \land )$ 
 
 
 
@@ -1445,11 +1443,11 @@ $
 
 %\begin{lemma}\label{lemma:sticorrect}
 %	
-%	The interpretation $(I\cup\pim \cup I_n)  \in \semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} $ if and only if 
+%	The interpretation $(I\cup\pim \cup I_n) \in \semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} $ if and only if 
 %	\begin{center}
 %	 $\left(\begin{array}{c} 
 %	 I_n(n)= \sti{\decode {A_x}(I\cup\pim)} \ \wedge \\
-%	 I(v_i)=-1 \wedge i<j \Longrightarrow  I(v_j)=-1
+%	 I(v_i)=-1 \wedge i<j \Longrightarrow I(v_j)=-1
 %	 \end{array}\right)$\\ or\\
 %	 $\left(\begin{array}{c} 
 %	 I_n(n)= -1\ \wedge \decode {A_x}(I\cup\pim) \not\in [0,9]^+
@@ -1462,7 +1460,7 @@ $
 %\begin{lemma}\label{lemma:sticorrect}
 %	For all $w \in \semof{A_{x}}$ and $c \in \mathbb{Z}$, we have 
 %	\begin{center}
-%		$\exists (I\cup\pim \cup I_n)  \in \semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}}$ s.t. $w=\decode {A_x}(I\cup\pim)$ and $I_n(n)=c$\\
+%		$\exists (I\cup\pim \cup I_n) \in \semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}}$ s.t. $w=\decode {A_x}(I\cup\pim)$ and $I_n(n)=c$\\
 %		iff\\
 %		$c= \sti{w}$.
 %	\end{center}
@@ -1470,31 +1468,31 @@ $
 %\end{lemma}
 %\hide{
 %\begin{lemma}\label{lemma:sticorrect_pos}
-%	$\semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} = \{(I\cup\pim \cup I_n) \mid  I_n(n)= \sti{\decode {A_x}(I\cup\pim)}\} $. 
+%	$\semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} = \{(I\cup\pim \cup I_n) \mid I_n(n)= \sti{\decode {A_x}(I\cup\pim)}\} $. 
 %\end{lemma}
 %In this case, $x$ encodes a number. The lemma says when the models we add to $\Phi_O$ represents a word in $\semof{A_x}$ whose integer value is exactly the model for $n$.
 %
 %\begin{lemma}\label{lemma:sticorrect_neg}
 %	$\semof {\Psi_n \wedge \parikhfof {A_x} \wedge (v_0 = 0)\wedge (n = -1) }_{V_x \cup \#V_x \cup \{n\}} = 
-%	\{(I\cup\pim \cup I_n) \mid  I_n(n)= -1 \wedge \decode {A_x}(I\cup\pim) \not\in [0,9]^+  \}$
+%	\{(I\cup\pim \cup I_n) \mid I_n(n)= -1 \wedge \decode {A_x}(I\cup\pim) \not\in [0,9]^+ \}$
 %\end{lemma}
 %
-%In this case, $x$ does not encode a number. The lemma says  the models we add to $\Phi_O$ represents words in both $\semof{A_x}$ and $[0,9]^+$, which means not a number, and $n$ is $-1$.}
+%In this case, $x$ does not encode a number. The lemma says the models we add to $\Phi_O$ represents words in both $\semof{A_x}$ and $[0,9]^+$, which means not a number, and $n$ is $-1$.}
 %
 %\lh{
 %\begin{lemma}
 %$
-%\semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} = \encode  R(\semof{\phi_s})
+%\semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} = \encode R(\semof{\phi_s})
 %$
 %\end{lemma}
-%The $n$ must somehow be handled properly by $\encode  R(\phi_s)$, I did not have time to think about it yet.
+%The $n$ must somehow be handled properly by $\encode R(\phi_s)$, I did not have time to think about it yet.
 %}
 
 
 
 
 % \section{Evaluation}
-%  \label{section:evaluation}
+% \label{section:evaluation}
 % \todo{copy a few tables from our test site to here}
 
 
@@ -1504,7 +1502,7 @@ $
 
 
 \paragraph{Related works:} 
-Already in  1946, Quine \cite{Quine46} showed that the first order theory
+Already in 1946, Quine \cite{Quine46} showed that the first order theory
 of string equations is undecidable.
 %
 An important line of work has been to identify subclasses
@@ -1579,12 +1577,12 @@ A further direction is {\it automata-based} solvers for analyzing
 string-manipulated programs. Stranger~\cite{fangyu:stranger} soundly
 over-approximates string constraints using regular languages, and
 outperforms DPLL(T)-based solvers when checking single execution
-traces, according to some evaluations~\cite{KauslerS14}.  It has
+traces, according to some evaluations~\cite{KauslerS14}. It has
 recently also been observed~\cite{DBLP:conf/cav/WangTLYJ16,sloth} that
 automata-based algorithms can be combined with model checking
 algorithms, in particular IC3/PDR, for more efficient checking of the emptiness for automata. However, many kinds of constraints, including length
 constraints and word equations, cannot be
-handled by automata-based solvers in a complete manner.  
+handled by automata-based solvers in a complete manner. 
 
 
 
