@@ -117,14 +117,21 @@
 \section{Introduction} \label{section:introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+
 Symbolic execution is a very popular technique that allows programmers to check the feasibility of a path in a given program, i.e., determining the value of the inputs under which the given path can be executed.
 The path feasibility problem is usually solved by a reduction to the satisfiability of a formula. More precisely, program statements in the path are  translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{Satisfiability Modulo Theory (SMT)} solvers. The types of constraints needed depend on the types of program expressions to be analyzed. Therefore, SMT solvers need to support different combinations of theories so that they can handle a wide range of  types.
 
 Among all data types, the \emph{string data type} is omnipresent in modern programming languages. Various security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values. Therefore, string constraint solving has received considerable attention in the constraint solving community. 
-Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$), are widely supported by most state-of-the-art string constraint solvers such as, CVC4 \cite{?}, OSTRICH \cite{}, Sloth \cite{},  Trau+ \cite{?}, Z3 \cite{?} and Z3Str3 \cite{?}. 
-However,  solvers have limited support for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form. When there is support, it is often very limited. Thus, $n = \sti{\texttt{"2"}}$ or $x = \its{5}$ are handled but $n = \sti{x}$ (i.e., converting the string $x$ to the integer $n$) and $x = \its{n}$ (i.e., converting the integer $n$ to the string $x$) are core operations that require stronger solver support to handle real code.
+Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$), are widely supported by most state-of-the-art string constraint solvers such as, CVC4 \cite{?}, OSTRICH \cite{}, Sloth \cite{},  Trau+ \cite{abdulla2018trau,parosh2019chain,abdulla2017flatten}, Z3 \cite{?} and Z3Str3 \cite{}. 
+
+An important class of string operations is  the string-number conversions.  While string length operations are sometimes well supported, converting a string $x$ to an integer $n$ (e.g., using the operation $n = \sti{x}$) or turning an integer value $n$ into its string form $x$ (e.g., using the operation $x = \its{n}$)  suffer from extremely limited support by the state-of-the-art string constraint solvers. In fact, for many languages such as Java, string-number conversions are core operations, and much symbolic execution can not been done without supporting it. In many security vulnerable codes,  that receive input, tend to need to convert at least some of that input into numbers, which makes string-integer conversions critical to checking it. For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
 
 
+
+%
+%However,  solvers have limited support for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form. When there is support, it is often very limited. Thus, $n = \sti{\texttt{"2"}}$ or $x = \its{5}$ are handled but $n = \sti{x}$ (i.e., converting the string $x$ to the integer $n$) and $x = \its{n}$ (i.e., converting the integer $n$ to the string $x$) are core operations %
+%
 
 
 
@@ -140,7 +147,9 @@ However,  solvers have limited support for operations that convert between strin
 
 %The path feasibility problem is a critical module in the symbolic execution of string-manipulating programs. The problem is usually solved by a reduction to a string constraint satisfiability problem. Program statements in the path are translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{string constraint solvers}. Among all types of program statements, \emph{string-number conversion} is one of the core operations that requires stronger solver support.
 
-In fact, for many languages such as Java, string-number conversions are a niche operation, and much symbolic execution has been done without supporting it. However, code that receives input tends to need to convert at least some of that input into numbers, which makes string-integer conversions critical to checking it. For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
+
+%
+%In fact, for many languages such as Java, string-number conversions are a niche operation, and much symbolic execution has been done without supporting it. However, code that receives input tends to need to convert at least some of that input into numbers, which makes string-integer conversions critical to checking it. For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
 
 \begin{Verbatim}[fontsize=\small]
 function checkLuhn(value) {
@@ -165,21 +174,21 @@ The input \verb|value| of the Luhn test algorithm is a sequence of digits. The a
 To check whether the program path that traverses both loop exactly once and finally passes this test has a valid input, we create the following (string) constraint:
 
 $$\begin{array}{lc}
-1&	value_0 \in [1,9]^+ \wedge 	sum_0 = 0 \wedge \\
-2&	i_0 = |value_0| -1 \wedge \\
+1&	{\it value_0} \in [1,9]^+ \wedge 	{\it sum_0} = 0 \wedge \\
+2&	i_0 = |{\it value_0}| -1 \wedge \\
 %	value_0 = prefix_0\cdot charAt_0 \cdot suffix_0 \wedge\\
 %	|prefix_0| = i_0 \wedge |charAt_0| = 1 \wedge \\
 3&	d_0 = \sti{\chatAt{value_0}{i_0}} \wedge \\
-4&	sum_1 = sum_0 + d_0 \wedge\\
-5&	i_1 = |value_0| -2 \wedge \\
-6&	d_1 = \sti{\chatAt{value_0}{i_1}} \wedge \\
-7&	sum_2 = sum_1 + \ite{d_1*2>9}{d_1*2 -9}{d_1*2} \wedge\\
+4&	{\it sum_1} = {\it sum_0} + d_0 \wedge\\
+5&	i_1 = |{\it value_0}| -2 \wedge \\
+6&	d_1 = \sti{\chatAt{{\it value_0}}{i_1}} \wedge \\
+7&	{\it sum_2} = {\it sum_1} + \ite{d_1*2>9}{d_1*2 -9}{d_1*2} \wedge\\
 8& i_2 = 0\\
-9&	last_0 = \chatAt{\its{sum_2}}{|\its{sum_2}|-1} \wedge\\
-10&	last_0 =``0"
+9&	{\it last_0} = \chatAt{\its{{\it sum_2}}}{|\its{{\it sum_2}}|-1} \wedge\\
+10&	{\it last_0} =``0"
 \end{array}$$
 
-Here $value_0$ and $last_0$ are string variables and the others are integer variables. The method $\chatAt{x}{i}$ returns the character at index $i$ in the string $x$ while $n=\ite{b}{e}{e'}$ assigns to $n$ the value of the expression $e$ if $b$ is true and the value of the expression $e'$ otherwise. Line 1 describes the initial condition: \textsf{value} should be a sequence of digits and \textsf{sum} is initially zero. Lines 2-4 and lines 5-7 describe one execution of the first and second loop, respectively. Line 8 describes the condition of $i_2$ before leaving the loop. Finally, Lines 9-10 describe the condition that the last digit of $sum$ is zero. Observe that to describe such a program path, we need a solver that supports the following types of constraints:
+Here ${\it value_0}$ and ${\it last_0}$ are string variables and the others are integer variables. The method $\chatAt{x}{i}$ returns the character at index $i$ in the string $x$ while $n=\ite{b}{e}{e'}$ assigns to $n$ the value of the expression $e$ if $b$ is true and the value of the expression $e'$ otherwise. Line 1 describes the initial condition: \textsf{value} should be a sequence of digits and \textsf{sum} is initially zero. Lines 2-4 and lines 5-7 describe one execution of the first and second loop, respectively. Line 8 describes the condition of $i_2$ before leaving the loop. Finally, Lines 9-10 describe the condition that the last digit of $sum$ is zero. Observe that to describe such a program path, we need a solver that supports the following types of constraints:
 \begin{itemize}
 	\item \emph{regular} constraints (e.g., $value_0 \in [1,9]^+$, which says $value_0$ is in the regular language $[0,9]^+$),
 	\item \emph{integer} constraints (e.g., $i_0 = |value_0| -1$, which says $i_0$ equals the length of $value_0$ minus one),
@@ -187,7 +196,15 @@ Here $value_0$ and $last_0$ are string variables and the others are integer vari
 	\item \emph{string-number conversion} (e.g., $\its{sum_2}$, which is the string value of the number $sum_2$).
 \end{itemize}
 
-Currently, even for the above constraint, which is from a simple program, most solvers fail to provide a correct answer. Therefore, there is an urgent need for developing efficient techniques for solving such combinations of constraints. To make matters worse, JavaScript, which powers most interactive content on the Web and increasingly server-side code with Node.js, has conversions between strings and integers embedded in the core of its semantics. Other scripting languages do too, but we focus on JavaScript due to its prominence. To see how string-integer conversion pervades semantics, consider the following program:
+
+Most of the state-of-the-art string constraint solvers provide only very limited support to the combination of above constraints. Even for a simple constraint like the above one, most solvers already fail to provide a correct answer. Therefore, there is an urgent  need for  the  developing efficient techniques for solving such combinations of constraints. 
+
+
+%Currently, even for the above constraint, which is from a simple program, most of the-state-of-the art solvers fail to provide a correct answer. 
+
+
+Even, more crucially, in many programming languages, the conversion between strings and integers is a part of the definition of the the core  semantics of the language. 
+ JavaScript, which powers most interactive content on the Web and increasingly server-side code with Node.js, is one of such languages. Other scripting languages do too, but we focus on JavaScript due to its prominence. To see how string-integer conversion pervades semantics, consider the following program:
 
 
 %Most of the state-of-the-art string constraint solvers provide only very limited support to the combination of above constraints. Even for a simple constraint like the above one, most solvers already fail to provide a correct answer.
@@ -211,7 +228,7 @@ Currently, even for the above constraint, which is from a simple program, most s
 \smallskip
 
 
-A casual glance at the above code reveals no use of strings at all, but the semantics of field access is somewhat unusual in JavaScript: the arrays are indexed by strings, and numeric indexes are converted to strings. This conversion is mandated explicitly by JavaScript semantics: the 2019 edition of ECMAScript \cite{?} requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}). Any faithful symbolic execution of JavaScript must handle such conversions for even basic array operations to work correctly; consider the following code snippet that manipulates an array \texttt{x}, with its value shown on the right:
+A casual glance at the above code reveals no use of strings at all, but the semantics of field access is somewhat unusual in JavaScript: the arrays are indexed by strings, and numeric indices are converted to strings. This conversion is mandated explicitly by the JavaScript semantics: the 2019 edition of ECMAScript \cite{?} requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}). Any faithful symbolic execution of JavaScript must handle such conversions for even basic array operations to work correctly. Consider the following code snippet that manipulates an array \texttt{x}, with its value shown on the right:
 
 \medskip
 \hspace{-4mm}\begin{tabular}{l|l|c}
@@ -224,9 +241,9 @@ A casual glance at the above code reveals no use of strings at all, but the sema
 \end{tabular}
 \medskip
 
-Here \texttt{x[3]} in line 2, \texttt{x[03]} in line 3, and \texttt{x["3"]} in line 4 all denote the same array element of \texttt{x["3"]}, but \texttt{x["03"]} denotes a completely different element (which is stored at the index \texttt{"03"} of the array). So na\"ive modeling of array indices with integers will not work -- it cannot distinguish the indices \texttt{"3"} and \texttt{"03"}. 
+Here \texttt{x[3]} in line 2, \texttt{x[03]} in line 3, and \texttt{x["3"]} in line 4 all denote the same array element of \texttt{x["3"]} (due to the implicit conversion of numeric indices to strings in JavaScript), but \texttt{x["03"]} denotes a completely different element (which is stored at the index \texttt{"03"} of the array). So na\"ive modeling of array indices with integers will not work -- it cannot distinguish the indices \texttt{"3"} and \texttt{"03"}. 
 
-But if array indices are modeled as strings, we must handle arithmetic somehow. Let us look at the case of line 6, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather basic array operation in JavaScript, and so having only limited capability for handling string-number conversion operations will cripple any analysis of non-trivial JavaScript code.
+But if array indices are modeled as strings, we must handle arithmetic somehow. Let us look at the case of line 6, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather basic and frequently used  array operation in JavaScript, and not  handling string-number conversion operations will cripple any analysis of non-trivial JavaScript code. Thus, we need stronger solvers that are  able to handle string-number conversion operations in order to be able to analyse  real code. 
 
 
 
@@ -293,9 +310,16 @@ $$
 
 Such constraint contains \textit{string-number conversion} functions (e.g., $\sti{input}$ and $\sti{index}$), \textit{equality constraints} (e.g., $index = input\cdot \its{1}$), and \textit{integer constraints} (e.g., $0 \leq \sti{input}<M$). }
 
-Solving string constraint with string-number conversion has been proven undecidable~\cite{day2018satisfiability}, and our experiments (Section \ref{section:evaluation}) show that state-of-the-art string constraint solvers provide only limited support to string-number conversion. 
+%Solving string constraints with string-number conversion has been proven undecidable~\cite{day2018satisfiability}, and our experiments (Section \ref{section:evaluation}) show that state-of-the-art string constraint solvers provide only limited support to string-number conversion. 
 
-In this paper, we propose a framework that efficiently handles string constraints with string-number conversion. Due to the difficulty of solving the problem exactly, our framework combines over and under-approximation of string constraints. The over-approximation is for proving UNSAT when possible, while the under-approximation is for proving SAT when possible. Both over- and under-approximation fall in a decidable fragment of string constraints that can we can efficiently solve.
+
+Solving string constraint with string-number conversion is a very challenging problem. From the theoretical point of view, this problem is already proven to be undecidable~\cite{day2018satisfiability}. From practical point of view, 
+ our experimental results  (in Section \ref{section:evaluation}) show that the current  the state-of-the-art string constraint solvers provide only limited support to string-number conversion. 
+
+
+In this paper, we propose a framework that efficiently handles string constraints with string-number conversion. Since the problem is provably unsolvable, our framework combines over and under-approximation techniques. The over-approximation is for proving UNSAT when possible, while the under-approximation is for proving SAT when possible. Both over- and under-approximation fall in a decidable fragment of string constraints that  we can efficiently solve. 
+
+%Observe that our main contribution lies in the 
 
 
 For ease of presentation, we will use the following toy example $$\Phi = \{xy=yx, n = \sti{x}, n >3 ,|y|>|x|, y \in (12)^+\}$$
@@ -303,8 +327,8 @@ For ease of presentation, we will use the following toy example $$\Phi = \{xy=yx
 to explain the main ideas behind our decision procedure.  To make our terminology explicit: $\Phi$ states that $x$ concatenated with $y$ is the same as $y$ with $x$, $n$ is the numeric value of the string $x$, $n > 3$, $y$ is longer than $x$, and $y$ is a string in the form of a finite repetitions of $``12''$.  Notice that $\Phi$ is satisfiable. E.g., it has a model $x=``12''$ and $y=``1212''$.
 
 
-Our decision procedure has two steps: the first step is over-approximating the set of input constraints into a set that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Observe that we could  over-approximate the input constraint into any decidable fragment, e.g. the acyclic fragment~\cite{abdulla2014string} or the straight-line fragment~\cite{chen2019decision}. Our choice of the  chain-free fragment~\cite{abdulla2019chain} is motivated by the fact that the chain-free fragment is the {\em largest} known decidable fragment for that class of string constraints. In our example, we over-approximate the formula $\Phi$ by converting $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and replace the constraint $n=\sti{x}$ with $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$). The over-approximation module uses also some heuristics to derive the constant value of any side of the constraint $n=\sti{x}$ to refine the over-approximation. For instance, assume in some case, we could derive the value of $n=12$ from some integer constraints.  Then we could further derive the value of $x$ is in the regular language $(0^*12)$. 
-Observe that if the over-approximation is UNSAT then our decision procedure  declares that the original formula is also UNSAT and terminates. Since $\Phi$ is satisfiable, the over-approximation module will not return UNSAT. 
+Our decision procedure has two steps: the first step consists in over-approximating the set of input constraints into a set that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Observe that we could  over-approximate the input constraint into any decidable fragment, e.g. the acyclic fragment~\cite{abdulla2014string} or the straight-line fragment~\cite{chen2019decision}. Our choice of the  chain-free fragment~\cite{abdulla2019chain} is only motivated by the fact that the chain-free fragment is the {\em largest} known decidable fragment for that class of string constraints. In our example, we over-approximate the formula $\Phi$ by converting $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$  and replacing the constraint $n=\sti{x}$ with $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$). The over-approximation module uses also some heuristics to derive the constant value of any side of the constraint $n=\sti{x}$ to refine the over-approximation. For instance, assume in some case, we could derive that the value of $n=12$ from some integer constraints.  Then, we could further derive the value of $x$ is in the regular language $(0^*12)$. 
+Observe that if the over-approximation is UNSAT then our decision procedure  declares that the original formula is also UNSAT and terminates. Surprisingly, despite its simplicity, our over-approximation procedure works very well in practice. Coming back to the formula $\Phi$, the over-approximation module will  return SAT  in this case. 
 
 \begin{figure}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
@@ -354,8 +378,18 @@ Observe that if the over-approximation is UNSAT then our decision procedure  dec
 \end{figure}
 
 
-The second step of our decision procedure is only enabled if the over-approximation is SAT. In this case, our decision procedure restricts the domain of each string variable to strings that obey some predefined and parameterized pattern.  Adjusting the parameters enlarges or prunes the potential solution space. In this paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA). A PFA is a {\em flat} finite state automaton consisting of a predefined sequence of loops, each of fixed length (see Figure \ref{fig:sfa_def}). The approach based on PFA is very flexible yet allows very efficient manipulation. One can pick PFA of \emph{arbitrary structure} for search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time. Furthermore, we associate a unique natural number with each character. This allows us to assume that the input alphabet is a subset of natural numbers to avoid the \textit{alphabet explosion problem} from which the approach in~\cite{abdulla2017flatten} suffers.  We label each transition between two states of a PFA with a unique \emph{character} variable (whose domain is the set of natural numbers) instead of having a transition between each two states for each symbol in the alphabet.  
-Such reduction based on PFA is the key to handling string-number conversion efficiently. When we restrict the solution space to those defined by PFAs, the original undecidable problem (i.e., string constraint with string-number conversion) is reduced to the satisfiability problem of linear formulas and can be solved efficiently. 
+
+The second step of our decision procedure is only enabled if the over-approximation step returns SAT. In this case, our decision procedure restricts the search domain of each string variable to strings that obey some predefined and parameterized pattern.  To achieve our under-approximation technique (which is  our main contribution),  we propose to use patterns defined by \emph{parametric flat automata} (PFA). A PFA is a {\em flat} finite state automaton consisting of a predefined sequence of loops, each of fixed length (see Figure \ref{fig:sfa_def}). The size of the PFA is paramaterized by the length of the sequence of loops and the size of each loop. Adjusting these parameters enlarges or prunes the potential solution space. This approach based on PFA is very flexible yet allows very efficient manipulation. In fact, the PFA restricts the  search space for each  variable to the set of words accepted by the given PFA. 
+
+
+Then, we show that given such restriction, one can  reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time. To gain in efficiency, we label each transition  of a PFA with a unique \emph{character} variable (whose domain is the set of natural numbers) instead of having a transition between each two states for each symbol in the alphabet.  This done by associating to each character in our alphabet a unique natural number. This allows us to  to avoid the \textit{alphabet explosion problem} from which the approach in~\cite{abdulla2017flatten} suffers and it is  the key for handling string-number conversion efficiently. 
+
+
+
+
+
+%The second step of our decision procedure is only enabled if the over-approximation step returns SAT. In this case, our decision procedure restricts the domain of each string variable to strings that obey some predefined and parameterized pattern.  Adjusting the parameters enlarges or prunes the potential solution space. In this paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA). A PFA is a {\em flat} finite state automaton consisting of a predefined sequence of loops, each of fixed length (see Figure \ref{fig:sfa_def}). The approach based on PFA is very flexible yet allows very efficient manipulation. One can pick PFA of \emph{arbitrary structure} for search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time. Furthermore, we associate a unique natural number with each character. This allows us to assume that the input alphabet is a subset of natural numbers to avoid the \textit{alphabet explosion problem} from which the approach in~\cite{abdulla2017flatten} suffers.  We label each transition between two states of a PFA with a unique \emph{character} variable (whose domain is the set of natural numbers) instead of having a transition between each two states for each symbol in the alphabet.  
+%Such reduction based on PFA is the key to handling string-number conversion efficiently. When we restrict the solution space to those defined by PFAs, the original undecidable problem (i.e., string constraint with string-number conversion) is reduced to the satisfiability problem of linear formulas and can be solved efficiently. 
 
 %The battle field is in fact those SAT instances, for which we develop solutions using under-approximation. For under-approximation, we restrict the search space of each string variable to strings that obey some predefined and parameterized pattern. By adjusting the parameters, one can easily enlarge or prune out the potential solution space. In paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA) (will be defined formally in Section~\ref{section:sfa}). The approach based on PFA is very flexible yet allows very efficiently manipulation. One can pick PFA of \emph{arbitrary structure} for the search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time. Moreover, it avoids the \textit{alphabet explosion problem} that the approach in~\cite{abdulla2017flatten} suffers. 
 %%In contrast to under-approximation based on bit-blasting~\cite{kiezun2009hampi} (i.e., limit the length of the strings and encode the string constraint to a Boolean formula), our linear formula for under-approximation still encodes possibility an infinite number of models. 
@@ -482,8 +516,7 @@ of string constraints with string-number conversion constraints.
 
 
 
-\item The introduction of the class of \emph{parametric flat automata} which uses character variables as transition labels instead of characters. This allows us to avoid the {alphabet explosion problem} that the approach in~\cite{abdulla2017flatten} when it comes to handle string-number conversion constraints.
-
+\item The class of \emph{parametric flat automata} which is the key for efficient handling of string-number conversion constraints.
 
 \item An algorithm that translates the satisfiability string constraints to the satisfiability of a linear formula  in polynomial-time when  the search space restricted by PFAs.
 
