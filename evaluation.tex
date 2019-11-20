@@ -6,35 +6,34 @@
 \begin{table}[h]
 \centering
 \caption{Results of Z3-Trau, CVC4, and Z3 on Basic String Constraint benchmarks (numbers with * will be updated later)}
-\scalebox{0.7}{
-\begin{tabular}{|l r | r r r r r r r|}
+\scalebox{0.85}{
+\begin{tabular}{|l r | r r r r r|}
 \hline
-\multicolumn{2}{|c}{}                   & {\tool} & CVC4  &Z3 & Z3-str3 & Trau+ & ABC & Ostrich \\ \hline
-\multirow{3}{*}{PyEx}		& sat      & 19586*   & 19763* & 18359 &   3024*  & 19149 & 0 & 111 \\ 
-							& unsat    &  3858*   &  3834* &  3851 &   3839*  & 3828 & 0 & 871 \\
-							& $\times$ &  1977*   &  1824* &  3211 &  18558*  & 2444 & 25421 & 24439 \\ \hline
-\multirow{3}{*}{APLAS}		& sat      &   128*   &   205* &    19 &     38*  & 132 & 289 & 0 \\
-							& unsat    &   287*   &   211* &   100 &    111*  & 82 & 2 & 1 \\
-							& $\times$ &   185*   &   174* &   481 &    451*  & 386 & 309 & 599 \\ \hline
-\multirow{3}{*}{LeetCode}	& sat      &   856*   &   860* &   881 &    670*  & 778 & 0 & 158 \\
-							& unsat    &  1784*   &  1785* &  1785 &   1780*  & 1827 & 0 & 1618 \\
-							& $\times$ &    26*   &    21* &     0 &    216*  & 61 & 2666 & 890 \\ \hline
-\multirow{3}{*}{StringFuzz}	& sat      &   502*   &   677* &   311 &    493*  & 688 & 439 & 0 \\
-							& unsat    &   294*   &   240* &   205 &    190*  & 339 & 158 & 0 \\
-							& $\times$ &   269*   &   148* &   549 &    382*  & 38 & 468 & 1065 \\\hline
-\multirow{3}{*}{cvc4\textsubscript{pred}} & sat & 16* & 11* &   12 &      8*  & 247 & 316 & 21 \\
-							& unsat    &   814*   &   818* &   808 &    772*  & 500 & 443 & 17 \\
-							& $\times$ &     5*   &     6* &    15 &     55*  & 88 & 76 & 797 \\ \hline
-\multirow{3}{*}{cvc4\textsubscript{term}} & sat & 13* & 8* &     6 &     16*  & 311 & 576 & 45 \\
-							& unsat    &  1030*   &   936* &  1022 &    958*  & 596 & 349 & 22 \\
-							& $\times$ &     2*   &   101* &    17 &     71*  & 137 & 120 & 978 \\ \hline
-\multirow{3}{*}{SLOG}  		& sat      & 0* & 1309* & 0 & 0* & 1228 & 1036 & 1299 \\
-							& unsat    & 3391* & 2082* & 0 & 2205* & 2079 & 1972 & 2079 \\
-							& $\times$ & 0* & 0* & 3391 & 1186* & 84 & 383 & 13 \\ \hline
-							\hline
-\multirow{3}{*}{Total}  		& sat      & 0* & 1309* & 0 & 0* & 1228 & 1036 & 1299 \\
-& unsat    & 3391* & 2082* & 0 & 2205* & 2079 & 1972 & 2079 \\
-& $\times$ & 0* & 0* & 3391 & 1186* & 84 & 383 & 13 \\\hline
+\multicolumn{2}{|c}{}                   & {\tool} & CVC4  &Z3 & Z3-str3 & Trau+  \\ \hline
+\multirow{3}{*}{PyEx}		& sat      & 19586*   & 20123 & 18490 &   3024*  & 19149 \\ 
+							& unsat    &  3858*   &  3950 &  3855 &   3839*  & 3828 \\
+							& $\times$ &  1977*   &  1457 &  3076 &  18558*  & 2444 \\ \hline
+\multirow{3}{*}{APLAS}		& sat      &   128*   &    51 &    19 &     38*  & 132 \\
+							& unsat    &   287*   &   214 &   100 &    111*  & 82 \\
+							& $\times$ &   185*   &   335 &   481 &    451*  & 386 \\ \hline
+\multirow{3}{*}{LeetCode}	& sat      &   856*   &   871 &   881 &    670*  & 778 \\
+							& unsat    &  1784*   &  1785 &  1785 &   1780*  & 1827 \\
+							& $\times$ &    26*   &    10 &     0 &    216*  & 61 \\ \hline
+\multirow{3}{*}{StringFuzz}	& sat      &   502*   &   610 &   316 &    493*  & 688 \\
+							& unsat    &   294*   &   255 &   206 &    190*  & 339 \\
+							& $\times$ &   269*   &   200 &   543 &    382*  & 38 \\\hline
+\multirow{3}{*}{cvc4\textsubscript{pred}} & sat & 16* & 11 &   12 &      8*  & 247 \\
+							& unsat    &   814*   &   818 &   807 &    772*  & 500 \\
+							& $\times$ &     5*   &     6 &    16 &     55*  & 88 \\ \hline
+\multirow{3}{*}{cvc4\textsubscript{term}} & sat & 13* & 9 &     6 &     16*  & 311 \\
+							& unsat    &  1030*   &   1025 &  1020 &    958*  & 596 \\
+							& $\times$ &     2*   &   11 &    19 &     71*  & 137 \\ \hline
+\multirow{3}{*}{SLOG}  		& sat      & 0* & 1309 & 0 & 0* & 1228 \\
+							& unsat    & 3391* & 2082 & 2824 & 2205* & 2079 \\
+							& $\times$ & 0* & 0 & 567 & 1186* & 84 \\ \hline \hline
+\multirow{3}{*}{Total} 		& sat      & 21101* & 22984 & 19724 & 4249* & 22533  \\
+							& unsat    & 11458* & 10129 & 10597 & 9855* & 9251  \\
+							& $\times$ &  2464* & 2019 &  4702 & 20919* & 3238  \\\hline
 \end{tabular}}
 \label{table:base_benchmark}
 \end{table}
@@ -45,25 +44,63 @@
 \scalebox{0.8}{
 \begin{tabular}{|l r | r r r r|}
 \hline
-\multicolumn{2}{|c}{}                   & {\tool} & CVC4   &    Z3  & Z3-str3 \\ \hline
-\multirow{3}{*}{String-Number-Leetcode}		& sat      &   3294*  &  2185* &  2731* &    422* \\ 
-							& unsat    &  17088*  & 16377* & 16832* &  16034* \\
-							& $\times$ &   1191*  &  3011* &  2010* &   5117* \\ \hline 
-\multirow{3}{*}{String-Number-PythonLib}		& sat      &   3294*  &  2185* &  2731* &    422* \\ 
-& unsat    &  17088*  & 16377* & 16832* &  16034* \\
-& $\times$ &   1191*  &  3011* &  2010* &   5117* \\ \hline
-\multirow{3}{*}{String-Number-JavaScript}		& sat      &   3294*  &  2185* &  2731* &    422* \\ 
-& unsat    &  17088*  & 16377* & 16832* &  16034* \\
-& $\times$ &   1191*  &  3011* &  2010* &   5117* \\ \hline 							
-							\hline
-\multirow{3}{*}{Total}	& sat & 622*  &  330* &  100* &  85* \\ 
-& unsat    &  1054*  & 780* & 1043* &  634* \\
-& $\times$ &  2*  &  568* &  535* & 959* \\ \hline
+\multicolumn{2}{|c}{}                   			& {\tool} & CVC4   &    Z3  & Z3-str3 \\ \hline
+\multirow{3}{*}{String-Number-Leetcode}	 & sat      &   2356*  &  1679* &  1892* &    217* \\ 
+										 & unsat    &  16369*  & 15710* & 16105* &  15374* \\
+										 & $\times$ &    202*  &  1538* &  930* &   3336* \\ \hline 
+\multirow{3}{*}{String-Number-PythonLib} & sat      &    912*  &   529* &   797* &    201* \\ 
+										 & unsat    &    720*  &   666* &   724* &    644* \\
+										 & $\times$ &   1014*  &  1451* &  1125* &   1801* \\ \hline
+\multirow{3}{*}{String-Number-JavaScript}& sat      &   *  &  * &  * &    * \\ 
+										 & unsat    &  *  & * & * &  * \\
+										 & $\times$ &   *  &  * &  * &   * \\ \hline \hline
+\multirow{3}{*}{Total}					 & sat      &   3268*  &  2208* &  2689* &   418* \\ 
+										 & unsat    &  17089*  & 16376* & 16829* & 16018* \\
+										 & $\times$ &   1216*  &  2989* &  2055* &  5137* \\ \hline
 \end{tabular}}
 \label{table:str_int_benchmark}
 \end{table}
 
-\hide{%3rd version
+
+\hide{ % keep data of abc and ostrich
+\begin{table}[h]
+\centering
+\caption{Results of Z3-Trau, CVC4, and Z3 on Basic String Constraint benchmarks (numbers with * will be updated later)}
+\scalebox{0.7}{
+\begin{tabular}{|l r | r r r r r r r|}
+\hline
+\multicolumn{2}{|c}{}                   & {\tool} & CVC4  &Z3 & Z3-str3 & Trau+ & ABC & Ostrich \\ \hline
+\multirow{3}{*}{PyEx}		& sat      & 19586*   & 19763* & 18490 &   3024*  & 19149 & 0 & 111 \\ 
+							& unsat    &  3858*   &  3834* &  3855 &   3839*  & 3828 & 0 & 871 \\
+							& $\times$ &  1977*   &  1824* &  3076 &  18558*  & 2444 & 25421 & 24439 \\ \hline
+\multirow{3}{*}{APLAS}		& sat      &   128*   &   205* &    19 &     38*  & 132 & 289 & 0 \\
+							& unsat    &   287*   &   211* &   100 &    111*  & 82 & 2 & 1 \\
+							& $\times$ &   185*   &   174* &   481 &    451*  & 386 & 309 & 599 \\ \hline
+\multirow{3}{*}{LeetCode}	& sat      &   856*   &   860* &   881 &    670*  & 778 & 0 & 158 \\
+							& unsat    &  1784*   &  1785* &  1785 &   1780*  & 1827 & 0 & 1618 \\
+							& $\times$ &    26*   &    21* &     0 &    216*  & 61 & 2666 & 890 \\ \hline
+\multirow{3}{*}{StringFuzz}	& sat      &   502*   &   677* &   316 &    493*  & 688 & 439 & 0 \\
+							& unsat    &   294*   &   240* &   206 &    190*  & 339 & 158 & 0 \\
+							& $\times$ &   269*   &   148* &   543 &    382*  & 38 & 468 & 1065 \\\hline
+\multirow{3}{*}{cvc4\textsubscript{pred}} & sat & 16* & 11* &   12 &      8*  & 247 & 316 & 21 \\
+							& unsat    &   814*   &   818* &   807 &    772*  & 500 & 443 & 17 \\
+							& $\times$ &     5*   &     6* &    16 &     55*  & 88 & 76 & 797 \\ \hline
+\multirow{3}{*}{cvc4\textsubscript{term}} & sat & 13* & 8* &     6 &     16*  & 311 & 576 & 45 \\
+							& unsat    &  1030*   &   936* &  1020 &    958*  & 596 & 349 & 22 \\
+							& $\times$ &     2*   &   101* &    19 &     71*  & 137 & 120 & 978 \\ \hline
+\multirow{3}{*}{SLOG}  		& sat      & 0* & 1309* & 0 & 0* & 1228 & 1036 & 1299 \\
+							& unsat    & 3391* & 2082* & 2824 & 2205* & 2079 & 1972 & 2079 \\
+							& $\times$ & 0* & 0* & 567 & 1186* & 84 & 383 & 13 \\ \hline \hline
+\multirow{3}{*}{Total} 		& sat      & * & * & 19724 & * &  &  &  \\
+							& unsat    & * & * & 10597 & * &  &  &  \\
+							& $\times$ & * & * &  4702 & * &  &  &  \\\hline
+\end{tabular}}
+\label{table:base_benchmark}
+\end{table}
+}
+
+
+\hide{ %3rd version of tables
 \begin{table}[t]
 	\centering
 	\caption{Results of {\tool}, cvc4, and z3 on str\_int benchmark (numbers with * will be updated later)}
@@ -208,10 +245,7 @@ cvc4\textsubscript{term}	& 13 & 1030 & 2/0 & 8 & 936 & 12/89 & 5 & 1021 & 19/0 &
 \end{tabular}
 \label{table:base_benchmark}
 \end{table*}
-}
 
-
-\hide{
 \begin{table*}[t]
 \centering
 \caption{Results of z3-Trau, cvc4, and z3 on str\_int benchmark}
