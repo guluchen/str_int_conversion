@@ -3,12 +3,13 @@
 
 
 
-\begin{table*}[t]
+\begin{table}[h]
 \centering
-\caption{Results of z3-Trau, cvc4, and z3 on string benchmarks (numbers with * will be updated later)}
-\begin{tabular}{l r | r r r r r r r}
+\caption{Results of Z3-Trau, CVC4, and Z3 on Basic String Constraint benchmarks (numbers with * will be updated later)}
+\scalebox{0.7}{
+\begin{tabular}{|l r | r r r r r r r|}
 \hline
-\multicolumn{2}{c}{}                   & {\tool} & CVC4  &    Z3 & Z3-str3 & Trau+ & ABC & Ostrich \\ \hline
+\multicolumn{2}{|c}{}                   & {\tool} & CVC4  &Z3 & Z3-str3 & Trau+ & ABC & Ostrich \\ \hline
 \multirow{3}{*}{PyEx}		& sat      & 19586*   & 19763* & 18359 &   3024*  & 19149 & 0 & 111 \\ 
 							& unsat    &  3858*   &  3834* &  3851 &   3839*  & 3828 & 0 & 871 \\
 							& $\times$ &  1977*   &  1824* &  3211 &  18558*  & 2444 & 25421 & 24439 \\ \hline
@@ -30,72 +31,103 @@
 \multirow{3}{*}{SLOG}  		& sat      & 0* & 1309* & 0 & 0* & 1228 & 1036 & 1299 \\
 							& unsat    & 3391* & 2082* & 0 & 2205* & 2079 & 1972 & 2079 \\
 							& $\times$ & 0* & 0* & 3391 & 1186* & 84 & 383 & 13 \\ \hline
-\end{tabular}
+							\hline
+\multirow{3}{*}{Total}  		& sat      & 0* & 1309* & 0 & 0* & 1228 & 1036 & 1299 \\
+& unsat    & 3391* & 2082* & 0 & 2205* & 2079 & 1972 & 2079 \\
+& $\times$ & 0* & 0* & 3391 & 1186* & 84 & 383 & 13 \\\hline
+\end{tabular}}
 \label{table:base_benchmark}
-\end{table*}
+\end{table}
 
-\begin{table}[t]
+\begin{table}[h]
 \centering
-\caption{Results of {\tool}, cvc4, and z3 on str\_int benchmark (numbers with * will be updated later)}
-\scalebox{0.7}{
-\begin{tabular}{l r | r r r r}
+\caption{Results of {\tool}, CVC4, and Z3 on Basic String Constraints + String-Number Conversion benchmark (numbers with * will be updated later)}
+\scalebox{0.8}{
+\begin{tabular}{|l r | r r r r|}
 \hline
-\multicolumn{2}{c}{}                   & {\tool} & CVC4   &    Z3  & Z3-str3 \\ \hline
-\multirow{3}{*}{StrInt}		& sat      &   3294*  &  2185* &  2731* &    422* \\ 
+\multicolumn{2}{|c}{}                   & {\tool} & CVC4   &    Z3  & Z3-str3 \\ \hline
+\multirow{3}{*}{String-Number-Leetcode}		& sat      &   3294*  &  2185* &  2731* &    422* \\ 
 							& unsat    &  17088*  & 16377* & 16832* &  16034* \\
-							& $\times$ &   1191*  &  3011* &  2010* &   5117* \\ \hline \hline
-\multirow{3}{*}{leetcode-addStrings}	& sat & 622*  &  330* &  100* &  85* \\ 
-							& unsat    &  1054*  & 780* & 1043* &  634* \\
-							& $\times$ &  2*  &  568* &  535* & 959* \\ \hline
-\multirow{3}{*}{leetcode-add\_Binary}	& sat & 520*  &  530* &  531* &  11* \\ 
-							& unsat    &  1351*  & 1091* & 1091* &  1094* \\
-							& $\times$ &  11*  &  261* &  260* & 777* \\ \hline
-\multirow{3}{*}{leetcode-numDecodings}	& sat & 166*  &  107* &  151* &  50* \\ 
-							& unsat    &  273*  & 269* & 283* &  269* \\
-							& $\times$ &  92*  &  155* &  97* & 212* \\ \hline
-\multirow{3}{*}{leetcode-restoreIpAddresses}	& sat & 811*  &  462* &  864* &  55* \\ 
-							& unsat    &  13648*  & 13540* & 13648* &  13342* \\
-							& $\times$ &  54*  &  511* &  1* & 1116* \\ \hline
-\multirow{3}{*}{leetcode-validIPAddress}	& sat & 54*  &  57* &  58* &  8* \\ 
-							& unsat    &  19*  & 19* & 19* &  19* \\
-							& $\times$ &  4*  &  1* &  0* & 50* \\ \hline
-\multirow{3}{*}{leetcode-validWordAbbreviation}	& sat & 183*  &  193* &  188* &  8* \\ 
-							& unsat    &  24*  & 11* & 21* &  16* \\
-							& $\times$ &  39*  &  42* &  37* & 222* \\ \hline
-\multirow{3}{*}{lib-datetime\_parse\_hh\_mm\_ss\_ff}	& sat &  133*  & 133* &  133* &  88* \\ 
-							& unsat    &  41*  & 41* & 41* &  43* \\
-							& $\times$ &  0*  &  0* &  0* & 43* \\ \hline
-\multirow{3}{*}{lib-datetime\_parse\_isoformat\_date}	& sat & 32*  &  32* &  32* &  23* \\ 
-							& unsat    &  0*  & 0* & 0* &  0* \\
-							& $\times$ &  0*  &  0* &  0* & 9* \\ \hline
-\multirow{3}{*}{lib-distutils\_get\_build\_version}	& sat & 19*  &  19* &  19* &  4* \\ 
-							& unsat    &  24*  & 24* & 24* &  24* \\
-							& $\times$ &  0*  &  0* &  0* & 15* \\ \hline
-\multirow{3}{*}{lib-email\_parsedate\_tz}	& sat & 68*  &  72* &  72* &  30* \\ 
-							& unsat    &  138*  & 138* & 138* &  138* \\
-							& $\times$ &  4*  &  0* &  0* & 42* \\ \hline
-\multirow{3}{*}{lib-http\_parse\_request}	& sat & 24*  &  24* &  24* &  8* \\ 
-							& unsat    &  9*  & 9* & 9* &  7* \\
-							& $\times$ &  0*  &  0* &  0* & 18* \\ \hline
-\multirow{3}{*}{lib-ipaddress\_ip\_int\_from\_string}	& sat & 595*  &  204* &  480* &  18* \\ 
-							& unsat    &  427*  & 373* & 431* &  357* \\
-							& $\times$ &  1006*  &  1451* &  1117* & 1653* \\ \hline
-\multirow{3}{*}{lib-nntplib\_parse\_datetime}	& sat & 4*  &  8* &  0* &  0* \\ 
-							& unsat    &  0*  & 0* & 0* &  0* \\
-							& $\times$ &  4*  &  0* &  8* & 8* \\ \hline
-\multirow{3}{*}{lib-smtpd\_parseargs}	& sat & 27*  &  27* &  27* &  24* \\ 
-							& unsat    &  72*  & 72* & 72* &  66* \\
-							& $\times$ &  0*  &  0* &  0* & 9* \\ \hline
-\multirow{3}{*}{lib-wsgiref\_check\_status}	& sat & 10*  &  10* &  10* &  6* \\ 
-							& unsat    &  9*  & 9* & 9* &  9* \\
-							& $\times$ &  0*  &  0* &  0* & 4* \\ \hline
-% \multirow{4}{*}{filtered\_str\_int}	& sat      &   3281*  &  2210* &  2729* &    424* \\
-% 									& unsat    &   2912*  &  2211* &  2655* &   1944* \\
-% 									& $\times$ &   1203*  &  2975* &  2012* &   5028* \\ \hline
+							& $\times$ &   1191*  &  3011* &  2010* &   5117* \\ \hline 
+\multirow{3}{*}{String-Number-PythonLib}		& sat      &   3294*  &  2185* &  2731* &    422* \\ 
+& unsat    &  17088*  & 16377* & 16832* &  16034* \\
+& $\times$ &   1191*  &  3011* &  2010* &   5117* \\ \hline
+\multirow{3}{*}{String-Number-JavaScript}		& sat      &   3294*  &  2185* &  2731* &    422* \\ 
+& unsat    &  17088*  & 16377* & 16832* &  16034* \\
+& $\times$ &   1191*  &  3011* &  2010* &   5117* \\ \hline 							
+							\hline
+\multirow{3}{*}{Total}	& sat & 622*  &  330* &  100* &  85* \\ 
+& unsat    &  1054*  & 780* & 1043* &  634* \\
+& $\times$ &  2*  &  568* &  535* & 959* \\ \hline
 \end{tabular}}
 \label{table:str_int_benchmark}
 \end{table}
 
+\hide{%3rd version
+\begin{table}[t]
+	\centering
+	\caption{Results of {\tool}, cvc4, and z3 on str\_int benchmark (numbers with * will be updated later)}
+	\scalebox{0.7}{
+		\begin{tabular}{l r | r r r r}
+			\hline
+			\multicolumn{2}{c}{}                   & {\tool} & CVC4   &    Z3  & Z3-str3 \\ \hline
+			\multirow{3}{*}{String-Number}		& sat      &   3294*  &  2185* &  2731* &    422* \\ 
+			& unsat    &  17088*  & 16377* & 16832* &  16034* \\
+			& $\times$ &   1191*  &  3011* &  2010* &   5117* \\ \hline \hline 
+				
+				\multirow{3}{*}{leetcode-addStrings}	& sat & 622*  &  330* &  100* &  85* \\ 
+				& unsat    &  1054*  & 780* & 1043* &  634* \\
+				& $\times$ &  2*  &  568* &  535* & 959* \\ \hline
+				\multirow{3}{*}{leetcode-add\_Binary}	& sat & 520*  &  530* &  531* &  11* \\ 
+				& unsat    &  1351*  & 1091* & 1091* &  1094* \\
+				& $\times$ &  11*  &  261* &  260* & 777* \\ \hline
+				\multirow{3}{*}{leetcode-numDecodings}	& sat & 166*  &  107* &  151* &  50* \\ 
+				& unsat    &  273*  & 269* & 283* &  269* \\
+				& $\times$ &  92*  &  155* &  97* & 212* \\ \hline
+				\multirow{3}{*}{leetcode-restoreIpAddresses}	& sat & 811*  &  462* &  864* &  55* \\ 
+				& unsat    &  13648*  & 13540* & 13648* &  13342* \\
+				& $\times$ &  54*  &  511* &  1* & 1116* \\ \hline
+				\multirow{3}{*}{leetcode-validIPAddress}	& sat & 54*  &  57* &  58* &  8* \\ 
+				& unsat    &  19*  & 19* & 19* &  19* \\
+				& $\times$ &  4*  &  1* &  0* & 50* \\ \hline
+				\multirow{3}{*}{leetcode-validWordAbbreviation}	& sat & 183*  &  193* &  188* &  8* \\ 
+				& unsat    &  24*  & 11* & 21* &  16* \\
+				& $\times$ &  39*  &  42* &  37* & 222* \\ \hline
+				\multirow{3}{*}{lib-datetime\_parse\_hh\_mm\_ss\_ff}	& sat &  133*  & 133* &  133* &  88* \\ 
+				& unsat    &  41*  & 41* & 41* &  43* \\
+				& $\times$ &  0*  &  0* &  0* & 43* \\ \hline
+				\multirow{3}{*}{lib-datetime\_parse\_isoformat\_date}	& sat & 32*  &  32* &  32* &  23* \\ 
+				& unsat    &  0*  & 0* & 0* &  0* \\
+				& $\times$ &  0*  &  0* &  0* & 9* \\ \hline
+				\multirow{3}{*}{lib-distutils\_get\_build\_version}	& sat & 19*  &  19* &  19* &  4* \\ 
+				& unsat    &  24*  & 24* & 24* &  24* \\
+				& $\times$ &  0*  &  0* &  0* & 15* \\ \hline
+				\multirow{3}{*}{lib-email\_parsedate\_tz}	& sat & 68*  &  72* &  72* &  30* \\ 
+				& unsat    &  138*  & 138* & 138* &  138* \\
+				& $\times$ &  4*  &  0* &  0* & 42* \\ \hline
+				\multirow{3}{*}{lib-http\_parse\_request}	& sat & 24*  &  24* &  24* &  8* \\ 
+				& unsat    &  9*  & 9* & 9* &  7* \\
+				& $\times$ &  0*  &  0* &  0* & 18* \\ \hline
+				\multirow{3}{*}{lib-ipaddress\_ip\_int\_from\_string}	& sat & 595*  &  204* &  480* &  18* \\ 
+				& unsat    &  427*  & 373* & 431* &  357* \\
+				& $\times$ &  1006*  &  1451* &  1117* & 1653* \\ \hline
+				\multirow{3}{*}{lib-nntplib\_parse\_datetime}	& sat & 4*  &  8* &  0* &  0* \\ 
+				& unsat    &  0*  & 0* & 0* &  0* \\
+				& $\times$ &  4*  &  0* &  8* & 8* \\ \hline
+				\multirow{3}{*}{lib-smtpd\_parseargs}	& sat & 27*  &  27* &  27* &  24* \\ 
+				& unsat    &  72*  & 72* & 72* &  66* \\
+				& $\times$ &  0*  &  0* &  0* & 9* \\ \hline
+				\multirow{3}{*}{lib-wsgiref\_check\_status}	& sat & 10*  &  10* &  10* &  6* \\ 
+				& unsat    &  9*  & 9* & 9* &  9* \\
+				& $\times$ &  0*  &  0* &  0* & 4* \\ \hline
+				% \multirow{4}{*}{filtered\_str\_int}	& sat      &   3281*  &  2210* &  2729* &    424* \\
+				% 									& unsat    &   2912*  &  2211* &  2655* &   1944* \\
+				% 									& $\times$ &   1203*  &  2975* &  2012* &   5028* \\ \hline
+			}
+		\end{tabular}
+		\label{table:str_int_benchmark}
+	\end{table}
+}
 
 \hide{  % 2nd version of tables
 \begin{table*}[t]
@@ -208,10 +240,10 @@ We perform two sets of experiments. In the first experiment, we compare with oth
 	\item APLAS~\cite{aplas} includes 600 hand-drafted tests consisting of only equality and integer length constraints.
 	\item LeetCode is from running PyEx over some sample code collected from the LeetCode~\cite{LeetCode} website.
 	\item StringFuzz~\cite{StringFuzz}  is generated from the fuzz testing tool of the same name.
-	\item $\text{cvc4}_{\text{pred}}$ and $\text{cvc4}_{\text{term}}$ are obtained from the CVC4 group~\cite{termEQ}. This benchmark also contains some string-number conversion constraints.
+	\item $\text{cvc4}_{\text{pred}}$ and $\text{cvc4}_{\text{term}}$ are obtained from the CVC4 group~\cite{termEQ}. These benchmarks contain a small amount of string-number conversion constraints (< $5\%$).
 \end{itemize}
 
-In the second experiment, we compare with tools supporting to string-number conversion on the  benchmarks collected from the symbolic executor \texttt{Py-Conbyte}\footnote{\url{https://github.com/spencerwuwu/py-conbyte}}, which has the supports of string-number conversion. We run it on several examples collected from the LeetCode platform and from Python core libraries.
+In the second experiment, we compare with tools supporting to string-number conversion on the  benchmarks collected from the symbolic executor \texttt{Py-Conbyte}\footnote{\url{https://github.com/spencerwuwu/py-conbyte}}, which has the supports of string-number conversion. We run it on several examples collected from the LeetCode platform and from Python core libraries. We also have examples that encode execution paths of some JavaScript programs (the Luhn algorithm and some array manipulation).
 
 All experiments were executed on a computer with 4-core CPU, 8 GiB RAM and Ubuntu 18.4-LVM OS. The timeout was set to 10s for each test.
 We use the results from {\tool}, CVC4, and Z3 as the reference answer for the validation of the correctness of the results. Occasionally, two of them report inconsistent (one SAT and one UNSAT) answers to the same test. To decide which solver reports the incorrect answer, we developed a validator, which takes the model $I$ returned from the solver who reported SAT, assigns $I(x)$ to all variables $x$ in the test to obtained a modified test, and re-evaluates the modified test by multiple solvers. If the results from all solvers are consistent, we mark the test SAT or UNSAT according to the results. Otherwise, we manually simplify and inspect the test until we get a conclusive result. 
@@ -219,7 +251,7 @@ We use the results from {\tool}, CVC4, and Z3 as the reference answer for the va
 The results of the experiments are summarized in Table~\ref{table:base_benchmark} and Table~\ref{table:str_int_benchmark}, respectively. Columns with heading \texttt{sat}/\texttt{unsat} show numbers of solved formulas. Columns with heading $\times$ indicate the number of instances the solver fails (including timeout, report unknown, report incorrect result, or crash). 
 From Table~\ref{table:base_benchmark}, we can see that the performance  of {\tool} is as good as the most competitive tools such as CVC4 and Z3 on basic string constraints. In all of the benchmarks, {\tool} ranked either the 1st or the 2nd on the number of solved (SAT+UNSAT) cases. If we look into scrutiny, for the APLAS and StringFuzz benchmarks, there is a significant distance between {\tool} and the top-ranked tool on the SAT cases. But we believe this is not very important because both these two cases are artificial, either hand-crafted or randomly produced from a fuzzer. The more critical ones are those come from program analysis, which {\tool} has comparable performance to the best tool.
 
-From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all other tools. The number of failed cases is only a half to Z3, which is ranked the 2nd. In fact, most of the failed tests comes from the analysis of {lib-ipaddress\_ip\_int\_from\_string}, which converts an IPv6 address to a number. This function has a very long execution path and hence the size of each SMT file from this analysis is roughly 1MB. If we exclude results on this benchmark, then {\tool} has only $185$ failed case. This is significantly better than the 2nd place tool Z3, which fails $893$ cases.
+From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all other tools. The total number of failed cases is only a half to Z3, which is ranked the 2nd. In fact, most of the failed tests comes from the analysis of one Python core library function that converts an IPv6 address to a number. We generated 2028 tests from this function, and among them around 1000 cases that are too difficult for all solvers.  If we exclude results on this function, then {\tool} has only $185$ failed case in total. This is significantly better than the 2nd place tool Z3, which fails $893$ cases in total. 
 
 
 

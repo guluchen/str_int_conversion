@@ -198,15 +198,22 @@ Currently, even for the above constraint, which is from a simple program, most s
 
 
 %As solvers are applied to symbolic execution of programming languages, this is increasingly becoming a severe limitation. For many languages such as Java, conversion between integers and strings is a niche operation, and much symbolic execution can be done without supporting it; however, this is not true of some scripting languages, of which JavaScript is the most notable. JavaScript is a key language---it powers most interactive content on the Web, and increasingly server-side code with Node.js---and it has conversions between strings and integers embedded in the core of its semantics. 
+\smallskip
+\begin{center}
+	\begin{minipage}{5cm}
+		\begin{verbatim}
+    for(var i = 0; i < 10; i++) {
+        arr[i] = 0
+    }
+		\end{verbatim}
+	\end{minipage}
+\end{center}
+\smallskip
 
-\begin{verbatim}
-for(var i = 0; i < 10; i++) {
- arr[i] = 0
-}
-\end{verbatim}
 
 A casual glance at the above code reveals no use of strings at all, but the semantics of field access is somewhat unusual in JavaScript: the arrays are indexed by strings, and numeric indexes are converted to strings. This conversion is mandated explicitly by JavaScript semantics: the 2019 edition of ECMAScript \cite{?} requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}). Any faithful symbolic execution of JavaScript must handle such conversions for even basic array operations to work correctly; consider the following code snippet that manipulates an array \texttt{x}, with its value shown on the right:
 
+\medskip
 \hspace{-4mm}\begin{tabular}{l|l|c}
 1&	{\tt{x = [0, 0, 0, 0, 0]}} & [0, 0, 0, 0, 0] \\
 2&	{\tt{x[3] = 4}} & [0, 0, 0, 4, 0] \\
@@ -215,6 +222,7 @@ A casual glance at the above code reveals no use of strings at all, but the sema
 5&	{\tt{x["03"] = 7}} & [0, 0, 0, 5, 0] and x["03"] = 7\\
 6&	{\tt{x["03"-1] = 2}} & [0, 0, 2, 5, 0] and x["03"] = 7\\
 \end{tabular}
+\medskip
 
 Here \texttt{x[3]} in line 2, \texttt{x[03]} in line 3, and \texttt{x["3"]} in line 4 all denote the same array element of \texttt{x["3"]}, but \texttt{x["03"]} denotes a completely different element (which is stored at the index \texttt{"03"} of the array). So na\"ive modeling of array indices with integers will not work -- it cannot distinguish the indices \texttt{"3"} and \texttt{"03"}. 
 
