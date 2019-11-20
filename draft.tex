@@ -688,14 +688,6 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parametric Flat Automata} \label{section:sfa}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\newcommand{\st}[2]{q_{#1}^{#2}}
-%\newcommand{\sym}[2]{v_{#1}^{#2}}
-%We use $\cvar$ to denote a finite set of \emph{character variables}  ranging over $\Sigma_\epsilon$. 
-%Sometimes we use index to denote different set of variables over the same range, e.g., $\cvarone$ and $\cvartwo$. 
-%We use $v$ and its variants for character variables. We call a string over $\cvar$ (character variables) a \emph{symbolic string}.
-%An \emph{interpretation $I$ over $\cvar$} is a mapping from $\cvar$ to $\Sigma_\epsilon$. For a symbolic string $x= v_1v_2\cdots v_k$ over $\cvar$, $I(x)$ is defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
-
-
 
 We introduce \emph{parametric flat automata} that will be used to define patterns 
 used by the under-approximation module to restrict the domain of string variables. 
@@ -716,10 +708,7 @@ The crucial feature of flat automata is that their semantics can be faithfully r
 %
 This is facilitated by flatness, which guarantees that 
 every parametric word $w\in L(A)$ is uniquely determined by its Parikh image $\parikhof{w}$. 
-In fact, the the parikh image of a word $w\in L(A)$ can be seen as an encoding of $w$ and can be uniquelly decoded:
-%i.e., $\decode A (\parikhof w)) = w$, 
-%and analogously for the entire language of $A$, as formalized by the following lemma.  
-
+In fact, the Parikh image of a word $w\in L(A)$ can be seen as an encoding of $w$ and can be uniquelly decoded:
 
 
 \begin{lemma}\label{lemma:decoding}
@@ -745,34 +734,30 @@ from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=
 Next we define \emph{parametric automaton} (PA) as a pair  $\pa = (A,\paf)$ where 
 $A$ is an automaton operating over an alphabet $\cvar$ of \emph{character variables}  
 and $\paf$ is an \emph{interpretation constraint}, a linear formula over $\cvar$. 
-\emph{Parametric flat automaton (PFA)} then is a parametric automaton with its finite automaton flat.
+\emph{Parametric flat automaton (PFA)} is then a parametric automaton with its finite automaton flat.
 
-%A finite automaton $D=(Q,T',\Sigma,q_0,q_m)$ is an \emph{instance} of a PFA $S=(Q,T,\cvar,q_0,q_m)$, if there exists an interpretation $I: \cvar \cup \{\epsilon\} \rightarrow \Sigma_\epsilon$ satisfying $I(\epsilon)=\epsilon$ and $T'=\{(q,I(c),q')\mid (q,c,q')\in T\}$. We write $I(S)$ to denote the instance of $S$ wrt. $I$. The language of $S$ is defined as $L(S)= \cup\{L(D) \mid D \mbox{ is an instance of } S\}$. Notice that $L(S)$ is regular because every PFA has only finitely many instance and the finite union of regular languages are also regular.
-
-
-%Such automata are recognizers of symbolic strings, i.e., strings over $\cvar$.
 Parametric automata accept words over $\cvar$, called \emph{parametric words}, but we still use them as representations of languages over $\Sigma$. 
 %
 Namely, words over $\cvar$ are interpreted as words over $\Sigma$ under an
 \emph{interpretation of $\cvar$},
 %
-a mapping $I:\cvar\rightarrow$ to $\Sigma_\epsilon$. 
-For a parametric word $x= v_1v_2\cdots v_k$ over $\cvar$, its interpretaion $I(x)$ is then defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
+a mapping $I:\cvar\rightarrow\Sigma_\epsilon$. 
+For a parametric word $x= v_1v_2\cdots v_k$ over $\cvar$, its interpretation $I(x)$ is then defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 %
 We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V^*$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics of a PA is the semantics of its language restricted by the formula $\paf$, that is,  
 $\semof {\pa} = \{I(w) \mid w\in L(A),I\in\semof \paf\}$. 
 
 
-Since every word $w \in \semof{\pa}$ is uniquelly determined by a parametric word $x\in L(A)$ and an interpretation $I\in\semof{\paf}:\cvar\rightarrow\Sigma_\epsilon$ such that $w = I(x)$, and since $x$ is uniquelly determined by its Parikh image, i.e.,  
-$\decode \pa(\parikhof x)$, 
-we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I:\cvar\rightarrow\nat$ and the Parikh image $\parikhof x:\#\cvar\rightarrow \nat$ \emph{$\pa$-encodes} $w$. Lemma~\ref{lemma:decoding} implies such $\pa$-encoding can be uniquelly decoded. 
+Since every word $w \in \semof{\pa}$ is uniquely determined by a parametric word $x\in L(A)$ and an interpretation $I\in\semof{\paf}$ such that $w = I(x)$, and since $x$ is uniquely determined by its Parikh image, i.e.,  
+$x = \decode \pa(\parikhof x)$, 
+we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I:\cvar\rightarrow\Sigma_\epsilon$ and the Parikh image $\parikhof x:\#\cvar\rightarrow \nat$ \emph{$\pa$-encodes} $w$. Lemma~\ref{lemma:decoding} implies that such $\pa$-encoding can be uniquely decoded. 
 We may hence extend the decoding function $\decode \pa$ to united assignments $e:\cvar\cup\#\cvar \rightarrow \nat$ 
 so that $\decode \pa(I \cup \parikhof x) = w$. 
-We again lift the decoding function into sets of united assighnments in the standard manner.
-The following corrolary of Lemma~\ref{lemma:decoding} states that encodings of words in $\semof{\pa}$ are encodings of parametric words of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$ that satisfy $\paf$:
+We again lift the decoding function to sets of united assignments in the standard manner.
+The following corollary of Lemma~\ref{lemma:decoding} states that encodings of words in $\semof{\pa}$ are encodings of parametric words of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$ that satisfy $\paf$:
 
 \begin{corollary}\label{corollary:pfa}
-For an PFA $\pa = (A,\paf)$,
+For a PFA $\pa = (A,\paf)$,
 \\
 \centerline{$\semof {\pa} = \decode \pa \{(I\cup \pim)\mid \pim\in\parikhof{L(A)} ,I\in\semof\paf\}$.}
 \end{corollary}
@@ -781,11 +766,8 @@ For an PFA $\pa = (A,\paf)$,
 Last, we define the encoding function as a counterpart of the decoding. Given a PFA $\pa$ and a language $L\subseteq \Sigma^*$, the set of \emph{$\pa$-encodings} of the words in $L$ is defined as
 $\encode \pa (L) = \{e \mid \decode \pa (e) \in L\}$. 
 %
-Notice that only the words from $L\cap \semof \pa$ have an $\pa$-encoding, 
+Notice that only the words from $L\cap \semof \pa$ have a $\pa$-encoding, 
 hence $\encode \pa(L) = \encode \pa(L\cap\semof \pa)$, and so due to Corollary~\ref{corollary:pfa}, $\decode \pa({\encode \pa}(L)) = L\cap\semof \pa$.
-%$\encode A (L) = \{(I\cup\pim) \mid \decode A (I\cup \pim) \in L \cap \semof{A}\}$. 
-%We have that $\decode A \circ \encode A$ equal the identity function.
-%
 
 %\section{Under-approximation} \label{section:under_approximate}
 %In this section, we describe formally how to restrict the domain of string variables to patterns defined by \emph{parametric flat automata} (PFA) (Section~\ref{section:sfa}) and hence convert string constraints $\insc$ to a set of equisatisfiable linear formulas $\outlf$ in polynomial-time. We assume all disequality constraint $t_1 \neq t2$ are already converted to equal-satisfiable equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}. 
@@ -823,18 +805,15 @@ hence $\encode \pa(L) = \encode \pa(L\cap\semof \pa)$, and so due to Corollary~\
 %
 %\yfc{say handling regular constraint can be exponential to the number of constraints, but in our under-approximation, it is polynomial.}
 
-
-
-
 \section{Flat Domain Restriction}
 \label{section:under_approximate}
 
 %
-In this section, we describe formally how to restrict the domain of string variables to patterns defined by PFA, 
-and start the description of the algorithm that converts a string constraint $\insc$ to a linear formula $\outlf$ representing the restricted set of solutions.  
+In this section, we describe formally how to restrict the domain of string variables to patterns defined by PFA. 
+We start the description of the algorithm that converts a string constraint $\insc$ to a linear formula $\outlf$, called the \emph{flattening} of $\insc$, representing the restricted set of solutions.  
 %
 
-The domain restriction is formally defined by restricting the domain of each string variable to a chosen flat language. 
+The domain restriction is formally defined by restricting the domain of each string variable by a chosen PFA. 
 %
 Namely, assuming that $X$ is the set of string variables of $\insc$,
 a \emph{flat domain restriction} for $\insc$ is a mapping $R$ that assigns to every variable $x\in X$ a PFA $R(x)$. 
@@ -842,19 +821,19 @@ a \emph{flat domain restriction} for $\insc$ is a mapping $R$ that assigns to ev
 We require that these PFA operate over pairwise disjoint sets of character variables. 
 %
 The particular choice of a PFA 
-for each variable  depends on the stratedy used in the implementation, and will be discussed in Section~\ref{section:implementation}.
+for each variable  depends on the strategy used in the implementation, and will be discussed in Section~\ref{section:implementation}.
 %
-The formula $\outlf$ will be  built intuctively to the structure of $\insc$.
-Namely, in the followin subsections we show how to build a formula $\underf R {\phi}$ for every atomic string constraint $\phi$, 
+The flattening $\outlf$ will be  built inductively to the structure of $\insc$.
+Namely, in the following subsections we show how to build a flattening $\underf R {\phi}$ for every atomic string constraint $\phi$, 
 and for a conjunction of string constraints, we let $\underf R {\phi \land \phi'} \defeq \underf R {\phi} \land \underf R {\phi'}$.
-% and $\underf R {\neg\phi} \defeq \neg\underf R{\phi}$. The underapproximation formula is then in the form $\outlf \defeq \underf R {\insc}$.
+We then let $\outlf \defeq \underf R \insc$
 
 The semantics of a string constraint $\phi$ restricted by $R$ is then defined as 
 $\semof{\phi}^R = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{R(x)}\}$. 
-The following sections will be devoded to describing the construction of the formula $\outlf$ representing the $R$-restriction of $\insc$, that is, such that the following theorem holds: 
-The correctness of this construction is expressed by  Theorem~\ref{theorem:correct}:
+The following sections will be devoted to describing the flattening of the atomic string constraints. 
+The correctness of the entire construction of $\outlf$ is expressed by  Theorem~\ref{theorem:correct}:
 \begin{theorem}\label{theorem:correct}
-$\decode R (\semof {\outlf}) = \semof{\insc}_R$. 
+$\decode R (\semof {\outlf}) = \semof{\insc}_R$ 
 \end{theorem}
 
 The theorem can be proved by induction to the structure of $\insc$,
@@ -867,9 +846,9 @@ To formalise this correctness argument, we define an additional notation.
 For an interpretation $I$ of string variables, 
 we define its $R$-encoding as the set $\encode R(I) = \bigcup_{x\in X} \encode \pa(I(x))$ of interpretations of $V_R\cup \#V_R$, containing combinations of interpretations of character variables of each $R(x)$ that encode the $I$.
 %
-Further, if $I \cup I'$ is an ainterpretation of a general string constraint, that is, an interpretation $I$ of string variables $X$ united with an interpretation $I'$ of integer variables $N$,
+Further, if $I \cup I'$ is an interpretation of a general string constraint, that is, an interpretation $I$ of string variables $X$ united with an interpretation $I'$ of integer variables $N$,
 %
-then its $R$-encoding is defined as the set $\encode R {(I\cup I')} \defeq \{e \cup I' \mid e\in \encode R(I)\}$ of interpretations of variavbles $V_R \cup \#V_R \cup N$. 
+then its $R$-encoding is defined as the set $\encode R {(I\cup I')} \defeq \{e \cup I' \mid e\in \encode R(I)\}$ of interpretations of variables $V_R \cup \#V_R \cup N$. 
 %
 We lift this notation to sets of interpretation in the standard manner, i.e., $\encode R (J) = \bigcup_{I \in J}\encode R (I)$ for a set of interpretations $J$.
 %
@@ -877,33 +856,32 @@ The inductive argument needed in the proof of the correctness of the under-appro
 $$\semof{\underf R \phi}_{V_R\cup V_{\#R}}  = \encode R{\semof{\phi}}$$ 
 %
 In the next sections, 
-we will formulate the corresponding lemma for linear formulas constructed from each type of atomic string constraints.
+we will formulate the corresponding correctness lemma for flattenings constructed from each type of atomic string constraints.
 %
-We note that the restriction of the semantics of $\underf R \phi$ here is needed since $\underf R \phi$ is constructed with some auxiliary variables. 
+We note that the restriction of the semantics of $\underf R \phi$ here is needed since $\underf R \phi$ will be constructed with some auxiliary variables. 
+
+\lh{do we want to discuss some sort of completeness? That is, every interpretation of every integer constraint is are covered by some flat restriction. ?}
 
 \paragraph{Encoding epsilon.}
-A minor technical difficulty is that we wish to build under-approximation in the form of pure arithmetic formulas, 
+A minor technical difficulty is that we wish to build flat under-approximation in the form of pure arithmetic formulas, 
 but we may also wish to specify when a character variable is assigned $\epsilon$, but $\epsilon$ is not a number. 
 Hence, to allow purely arithmetic formulas talk about $\epsilon$, 
 we encode $\epsilon$ as some fixed number $\noepsilon\in\nat\setminus\Sigma$.
 %In the further development, $\epsilon$ will mean $-1$ when working with arithmetic formulas constraining interpretations of character variables. 
 
-%\subsection{Handling Regular Constraints Symbolically} \label{section:mem}
 \section{Flattening of Basic String Constraints}
 We will first discuss flattening of the basic string constraints, that is,
 regular, equality, and integer constraints. We start by two needed operations over PA, synchronization and concatenation.
 
 \paragraph{Synchronization of PAs}
 We will now discuss a construction of the \emph{synchronization formula} for two PAs $\pa$ and $\pa'$. 
-%over character variables $V$ and $V'$. 
 It is a linear formula $\syncfof \pa {\pa'}$ 
-%over $\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo$ 
 that specifies how each word in the semantic intersection $\semof \pa \cap \semof {\pa'}$ is encoded by $\pa$ and by $\pa'$.
 %
 More precisely, the models of $\syncfof \pa {\pa'}$ represent pairs of word
 encodings 
 $e$ and $e'$ such that $e\in\encode \pa(w)$ and $e'\in\encode \pa(w')$ (hence $w\in\semof{\pa}\cap\semof{\pa'}$).
-%
+
 Particularly, the synchronization formula is built for two PAs  
 $\pa = ((Q,T,\cvarone,q_i,q_f),\paf)$ and ${\pa'} = ((Q',T',\cvartwo,q_i',q_f'),\paf')$ such that $\cvarone \cap \cvartwo = \emptyset$. 
 %
@@ -964,17 +942,17 @@ $
 \end{lemma}
 
 Informally, the lemma states that the models of $\syncfof \pa {\pa'}$ encode precisely the pairs of equivalent encodings of words from $\semof{\pa}$ and $\semof{\pa'}$, that constitute the intersection $\semof{\pa} \cap \semof{\pa'}$. 
-Since that the models of $\syncfof \pa {\pa'}$ include also an assignment to the auxiliary variables of $(\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$, the statement of the lemma, 
-restrics the semantics of $\syncfof \pa {\pa'}$ to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. %This is  achieve by quantifying out the variables of $V_\times$.
+Since that the models of $\syncfof \pa {\pa'}$ include also an assignment to the auxiliary variables of $(\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$, the lemma restricts $\semof {\syncfof \pa {\pa'}}$ to ${\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo}$. 
 
-Notice that if $\pa$ is flat (or, symmetrically, if $\pa'$ is flat), then the semantic intersection $\semof \pa \cap \semof {\pa'}$ can be still decoded from the synchronization formula $\semof {\syncfof \pa {\pa'}}$. 
+Notice that if $\pa$ is flat (or, symmetrically, if $\pa'$ is flat), then the semantic intersection $\semof \pa \cap \semof {\pa'}$ can be still decoded from the synchronization formula $\syncfof \pa {\pa'}$. 
 Namely, due to Corollary~\ref{corollary:pfa}, we have that if $\pa$ is a PFA, then
-%$\semof A \cap \semof {A'} = \{\decode A(I\cup \pim) \mid (I\cup \pim) \in \semof{\syncfof A {A'}}_{\cvarone\cup \pvarone}\}$.  
-$$\decode \pa (\semof{\syncfof \pa {\pa'}}_{\cvarone\cup \pvarone}) = \semof \pa \cap \semof {\pa'}$$  
+$$
+\decode \pa (\semof{\syncfof \pa {\pa'}}_{\cvarone\cup \pvarone}) = \semof \pa \cap \semof {\pa'}
+$$  
 
 \paragraph{Concatenation of PFAs}
 Concatenation of PFAs will be needed when flattening equality constraints. Its implementation is straightforward, connect the final state of the first PFA with the initial state of the second by an $\epsilon$-transition. Since our automata do not allow transition directly labeled by $\epsilon$, 
-the $\epsilon$-transition is labeled by a fresh variable $v_\epsilon$ restricted by the constraint $v_\epsilon = \epsilon$.  
+the $\epsilon$-transition is labeled by a fresh variable $v_\epsilon$ forced by the constraint $v_\epsilon = \epsilon$ to take the value $\epsilon$.  
 
 Formally, given PFA $\pa = ((Q,T,\cvarone,q_i,q_f),\paf)$ and ${\pa'} = ((Q',T',\cvartwo,q_i',q_f'),\paf')$ with $Q\cap Q'=\emptyset = \cvarone\cap\cvartwo$, 
 their concatenation is the PFA $\pa\cdot \pa' = (Q\cup Q',T\cup T'\cup \{(q_f,v_\epsilon,q_i')\},\cvarone\cup\cvartwo\cup\{v_\epsilon\},q_i,q_f',\paf\land\paf'\land v_\epsilon = \epsilon)$ where $v_\epsilon$ is fresh, not from $\cvarone\cup\cvartwo$. 
@@ -1005,18 +983,13 @@ It follows from Corollary~\ref{corollary:pfa} and Lemma~\ref{lemma:synccorrect}.
 \begin{lemma}\label{lemma:memcorrect}  $\semof {\underf R {\phi_r}}_{V_R \cup V_{\#R}} = \encode {R} (\semof{\phi_r})$ . 
 \end{lemma}
 
-
-
 \subsection{Flattening of Equality Constraints} \label{section:eq}
-%\subsection{Handling Equality Constraints Symbolically, Experimental version} \label{section:eq}
 
 We now describe the construction of $\underf R {\phi_e}$ for an equality constraint $\phi_e\defeq x_0\cdot x_1 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$. 
 %
 To simplify the presentation, we assume that the variables are pairwise different, i.e. that $i\neq j \implies x_i \neq x_j$. We may make this assumption without loss of generality, since multiple occurrences of variables in $\phi_e$ can be eliminated: whenever $x_i = x_j$ for $i \neq j$, we may replace $x_j$ by a fresh variable $x_j'$ and conjoin the modified $\phi_e$ with a new equality $x_j = x_j'$. 
 %
 We also assume that all disequality constraint $t \neq t'$ are already converted to equivalent equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}.
-%
-
 
 Having made these assumptions, we may proceed follows. First, we build two PFAs $\leftA$ and $\rightA$ that encode the left and the right-hand side term of the equality constraint $\phi_e$, respectively, by concatenating the restrictions of the individual variables. That is
 \begin{eqnarray*}
@@ -1032,9 +1005,9 @@ The correctness of the construction is stated by the lemma:
 $\semof {\underf R {\phi_e}}_{V_R  \cup \#V_R} = \encode R (\semof{\phi_e})$.
 \end{lemma}
 
-\subsection{Encoding Length Constraints}
-Length constraints are not under-approximated by flattening. 
-Given a length constraint $\phi_l$ with string length variables $X$,
+\subsection{Flattening of Integer Constraints}
+Length constraints are encoded precisely by flattening, not under-approximated. 
+Given a length constraint $\phi_l$ that talks about string length variables $|x|,x\in X$, 
 we keep $\phi_l$ as is and add a formula to express the lengths of strings $|x|$ in terms of character variables $V_x$ and Parikh variables $\# V_x$ of $R(x)$.
 
 For every length variable $|x|\in X$, 
@@ -1044,7 +1017,7 @@ otherwise it will equal the number $\#v$ of its occurrences in the word:
 $$
 \Psi_{\mathsf{|v|}} \defeq (v = \noepsilon \land |v|=0) \lor (v \neq \noepsilon \land |v| = \# v)
 $$
-The lenght of the encoded word $x$ is then the sum of the lengths contributed by the individual character variables in $V_x$, 
+The length of the encoded word $x$ is then the sum of the lengths contributed by the individual character variables in $V_x$, 
 hence we let 
 $$
 \Psi_{|x|} \defeq |x| = \sum_{v\in V_x} |v| \land  \bigwedge_{v\in V_x} \Psi_{\mathsf{|v|}}\ .
@@ -1233,11 +1206,11 @@ $\begin{array}{ccc}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%\subsection{Handling String-Integer Conversion} \label{section:s2i}
 \section{Flattening of String-Integer Conversion} \label{section:s2i}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Last, we present a central part of this paper, the construction of $\underf R {\phi_s}$ for a string-number conversion constraint $\phi_s \defeq n=\sti{x}$. 
+Last, we a major contribution of this paper, 
+the construction of a flattening $\underf R {\phi_s}$ of string-number conversion constraint $\phi_s \defeq n=\sti{x}$. 
 
 Let us begin with a simple example. Assume that we use the PFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee (n=-1 \wedge (v_0 >9 \vee v_1 >9))$.
 
@@ -1256,7 +1229,7 @@ To the best of our knowledge, the satisfiability problem of integer constraints 
 We will now discuss the special form of $R(x)$, called numeric PFA, which we choose for string variables appearing in string-integer constraints that leads to efficient underapproximation.
 %
 Besides simple induced linear formulae, we still want single $R(x)$ to cover as many numerals as possible.
-We want an ``easy'' completeness property, that is, that the space of all numerals can be covered completely by our special numeric PFAs, and that these numeric PFAs are generated easily, and each of them covers a large and practically significant portion of numerals (so that satifiable assignments can be often found within the domain restriction of just few of numeric PFAs).
+We want an ``easy'' completeness property, that is, that the space of all numerals can be covered completely by our special numeric PFAs, and that these numeric PFAs are generated easily, and each of them covers a large and practically significant portion of numerals (so that satisfiable assignments can be often found within the domain restriction of just few of numeric PFAs).
 %
 Particularly, we will proceed towards a definition of \emph{number PFA} $(A^m,\paf^m),m\in\nat$ which covers all numerals that encode integers with $m$ digits.
 
@@ -1333,15 +1306,15 @@ Recall that the character variables can be assigned $\epsilon$.
 %
 Therefore, a single chain of $k$ interesting digits, $k\leq m$, can be by $A^m$ represented in $k\choose m$ ways, each corresponding to one possible interleaving of $k$ digits with $m-k$ epsilons. 
 %
-\lh{I am not sure whether it is really impossible to make a smlall formula}
+\lh{I am not sure whether it is really impossible to make a small formula}
 %
-This would lead to an exponentail expolostion of the size of the linear formula definig the value of $n$.
+This would lead to an exponential explosion of the size of the linear formula defining the value of $n$.
 %
 In order to eliminate this blow-up in the size of the formula, we add to $\paf^m$ an additional constraint that forces all epsilons to be \emph{shifted} behind the least significant digit, effectively prohibiting all interleavings but one. This is the formula
 $$
 \Psi_{\mathsf{shift}}^m \defeq \bigwedge_{1\leq i \leq m} v_i \neq \noepsilon \implies v_{i-1}\neq \noepsilon \ .
 $$
-Last, since this restriction is meanigfull only when the string is indeed a numeral,  
+Last, since this restriction is meaningful only when the string is indeed a numeral,  
 we also define the constraint representing the strings which are not numerals, the formula
 $$
 \Psi_{\mathsf{NaN}}^m \defeq  \bigvee_{i\in [1,m]} v_i>9
