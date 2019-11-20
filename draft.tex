@@ -628,7 +628,8 @@ t_2$ and is interpreted analogously.
 
 An \emph{integer constraint} $\phi_i$ is a linear constraint over the variables in $\varn$ and length of a word $|x|$ for all $x \in \vars$.
 %Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelsof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
-We define $\modelsof{\phi_i}= \{I \mid I(\phi_i)= \true \}$.
+We define $\modelsof{\phi_i}= \{I \mid I(\phi_i)= \true \}$. 
+\lh{should we somehow define the sematntics of the lengt constraints more precisely? That is, how is the value of $|x|$ related to the value of $x$. ?}
 
 A \emph{regular constraint} $\phi_r$ is of the form $x \in L(A)$ where $x$ is a string variable and $A$ is a finite automaton. The \emph{model} of $\phi_m$ is the set of interpretations $\modelsof{\phi_m}=\{I\mid 
 I(x) \in L(A) \}$. 
@@ -777,7 +778,7 @@ For an PFA $\pa = (A,\paf)$,
 \end{corollary}
 %
 
-Last, we define the encoding function as a counterpart of the decoding. Given a PFA $\pa$, and a language $L\subseteq \Sigma^*$, we define the set of $\pa$-encodings of the words in $L$ as 
+Last, we define the encoding function as a counterpart of the decoding. Given a PFA $\pa$ and a language $L\subseteq \Sigma^*$, the set of \emph{$\pa$-encodings} of the words in $L$ is defined as
 $\encode \pa (L) = \{e \mid \decode \pa (e) \in L\}$. 
 %
 Notice that only the words from $L\cap \semof \pa$ have an $\pa$-encoding, 
@@ -862,8 +863,15 @@ Particularly, we will need to
  ensure that $\underf R \phi$ captures exactly all $R$-encodings of $\semof \phi^R$
 (indeed, notice that if it would be allowed to capture only some of the encodings, then for instance $\underf R {\phi} \land \underf R {\phi'}$ could only underapproximate $\semof{\phi\land\phi'}^R$).
 
-To this end, we define an additional notation.
-For an interpretation $I:X\rightarrow \Sigma^*$, we define its $R$-encoding as the set $\encode R(I) = \bigcup_{x\in X} \encode \pa(I(x))$. We lift this notation to sets of interpretation in the standard manner, i.e., $\encode R (J) = \bigcup_{I \in J}\encode R (I)$ for a set of interpretations $J$.
+To formalise this correctness argument, we define an additional notation.
+For an interpretation $I$ of string variables, 
+we define its $R$-encoding as the set $\encode R(I) = \bigcup_{x\in X} \encode \pa(I(x))$ of interpretations of $V_R\cup \#V_R$, containing combinations of interpretations of character variables of each $R(x)$ that encode the $I$.
+%
+Further, if $I \cup I'$ is an ainterpretation of a general string constraint, that is, an interpretation $I$ of string variables $X$ united with an interpretation $I'$ of integer variables $N$,
+%
+then its $R$-encoding is defined as the set $\encode R {(I\cup I')} \defeq \{e \cup I' \mid e\in \encode R(I)\}$ of interpretations of variavbles $V_R \cup \#V_R \cup N$. 
+%
+We lift this notation to sets of interpretation in the standard manner, i.e., $\encode R (J) = \bigcup_{I \in J}\encode R (I)$ for a set of interpretations $J$.
 %
 The inductive argument needed in the proof of the correctness of the under-approximation then reads as
 $$\semof{\underf R \phi}_{V_R\cup V_{\#R}}  = \encode R{\semof{\phi}}$$ 
@@ -872,7 +880,6 @@ In the next sections,
 we will formulate the corresponding lemma for linear formulas constructed from each type of atomic string constraints.
 %
 We note that the restriction of the semantics of $\underf R \phi$ here is needed since $\underf R \phi$ is constructed with some auxiliary variables. 
-
 
 \paragraph{Encoding epsilon.}
 A minor technical difficulty is that we wish to build under-approximation in the form of pure arithmetic formulas, 
@@ -1007,7 +1014,7 @@ We now describe the construction of $\underf R {\phi_e}$ for an equality constra
 %
 To simplify the presentation, we assume that the variables are pairwise different, i.e. that $i\neq j \implies x_i \neq x_j$. We may make this assumption without loss of generality, since multiple occurrences of variables in $\phi_e$ can be eliminated: whenever $x_i = x_j$ for $i \neq j$, we may replace $x_j$ by a fresh variable $x_j'$ and conjoin the modified $\phi_e$ with a new equality $x_j = x_j'$. 
 %
-We also that all disequality constraint $t \neq t'$ are already converted to equal-satisfiable equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}.
+We also assume that all disequality constraint $t \neq t'$ are already converted to equivalent equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}.
 %
 
 
@@ -1046,7 +1053,10 @@ Finally, the linear formula created for $\phi_l$ is
 $$
 \underf R {\phi_{l}} \defeq \phi_l \land \bigwedge_{|x|\in X} \Psi_{|x|}
 $$
-\lh{a correctness lemma would be good here, but it needs some modification of encoding probably, to be done}
+and the following lemma states its correctness.
+\begin{lemma}\label{lemma:eqcorrect}
+$\semof {\underf R {\phi_l}}_{V_R  \cup \#V_R} = \encode R (\semof{\phi_l})$
+\end{lemma}
 
 \hide{The length of $x$ can be specified by the following formula.
 
@@ -1237,7 +1247,7 @@ Notice that the constraint above contains an exponential component $\frac{100^{\
 
 Let us have a look at another example. If we restrict the domain of $x$ to the PFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0 \times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#v_0-1})\times 10\times 100^{\#v_3}+ v_2 \times 100^{\#v_3}  +(v_3\times 10+ v_4) \times (1+100 +100^2 + \ldots 100 ^{\#v_3-1}) =  (v_0\times 10+ v_1) \times \frac{100^{\#v_0-1}}{100-1}\times 10\times 100^{\#v_3} + v_2 \times 100^{\#v_3}+ (v_3\times 10+ v_4) \times \frac{100^{\#v_3-1}}{100-1}$. Observe that the formula has multiple exponential components, including $\frac{100^{\#v_0}\times 100^{\#v_3} }{100-1}$ and $\frac{100^{\#v_3} }{100-1}$.
 
-It is not difficult to see from the examples above that, if $R(x)$ is an arbitrary PFA with $m$ loops, the formula to defines the number $n$ contains at least $m$ exponential components, one for each loop.
+It is not difficult to see from the examples above that, if $R(x)$ is an arbitrary PFA with $m$ loops, the formula that defines the number $n$ contains at least $m$ exponential components, one for each loop.
 To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. As said in the introduction, the problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure which is double-exponential to the length of the input formula and hence cannot handle large instances. We therefore do not expect that such constraint can be solved efficiently. Instead, we will define a special form of the flat restriction $R(x)$ of $x$ that leads to an easies linear formula.
 
 \paragraph{PFA that allows efficient string-number conversion: } 
@@ -1246,7 +1256,7 @@ To the best of our knowledge, the satisfiability problem of integer constraints 
 We will now discuss the special form of $R(x)$, called numeric PFA, which we choose for string variables appearing in string-integer constraints that leads to efficient underapproximation.
 %
 Besides simple induced linear formulae, we still want single $R(x)$ to cover as many numerals as possible.
-We want an ``easy completeness'' property, that is, that the space of all numerals can be covered completely by our special numeric PFAs, and that these numeric PFAs are generated easily, and each of them covers a large and practically significant portion of numerals (so that satifiable assignments can be often found within the domain restriction of just few of numeric PFAs).
+We want an ``easy'' completeness property, that is, that the space of all numerals can be covered completely by our special numeric PFAs, and that these numeric PFAs are generated easily, and each of them covers a large and practically significant portion of numerals (so that satifiable assignments can be often found within the domain restriction of just few of numeric PFAs).
 %
 Particularly, we will proceed towards a definition of \emph{number PFA} $(A^m,\paf^m),m\in\nat$ which covers all numerals that encode integers with $m$ digits.
 
@@ -1278,7 +1288,7 @@ Our first attempt is a PFA without loop, i.e., a straight line structure
 	\end{tikzpicture}
 	} should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable, because the length of $x$ cannot be $5$  under this domain restriction.
 
-However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$. The key is that even for a bounded integer, the corresponding string can be of unbounded length with arbitrarily many trailing `$0$'s at the front. All numbers with up to $m$-digits can be however still handled without having to solve exponential constraints. It is enough to equip the initial state of the PFA with a  $0$-self-loop.
+However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$. The key is that even for a bounded integer, the corresponding numeral can be of an unbounded length with arbitrarily many trailing `$0$'s at the front. All numbers with up to $m$-digits can be however still handled without having to solve exponential constraints. It is enough to equip the initial state of the PFA with a  $0$-self-loop.
 
 Consequently, the automaton $A^m$ of our number PFA will have the following form illustrated in Figure~\ref{fig:sfa_its}. 
 It has a self-loop on the initial state labeled by the character variable $v_0$, 
@@ -1287,8 +1297,9 @@ $$
 \Psi_{v_0}\defeq v_0=0
 $$ 
 to hold the value $0$. 
-This transition ensures that the under-approximation handles all numerals with arbitrary number of trailing zeros.  
-The self-loop is followed by a chain of $m$ transitions $(q_{i-1},v_i,q_{i}),1\leq i \leq m$, leading towards the final state $q_m$. The chain encodes at most $m$ meaningful digits (only \emph{at most} because the first variables in the sequence can still be assigned zeros and some variables may be assigned $\epsilon$). Hence this PFA covers all numerals that encode numbers with at most $m$ digits.
+This transition ensures that the under-approximation handles numerals with arbitrary number of trailing zeros.  
+The self-loop is followed by a chain of $m$ transitions $(q_{i-1},v_i,q_{i}),1\leq i \leq m$, leading towards the final state $q_m$. 
+The chain encodes at most $m$ meaningful digits (only \emph{at most} because the first variables in the sequence can still be assigned zeros and some variables may be assigned $\epsilon$). Hence this PFA covers all numerals that encode numbers with at most $m$ digits.
 Although it still has a loop, it will not create any exponential component defining the value of $n$ because the loop only represents a sequence of ``0'' at the front of $x$. It will not affect the integer value of $n=\sti{x}$.
 
 \begin{figure}
@@ -1314,7 +1325,7 @@ Although it still has a loop, it will not create any exponential component defin
 \end{figure}
 
 %Such PFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
-Numeric PFA with these restrictions would satisfy our primary objective, that is, they would induce linear formulae and would easily and completely cover all numerals.
+Numeric PFA with these restrictions would satisfy our primary objective, that is, they would induce linear formulae and would ``easily'' and completely cover all numerals.
 %
 A last problem still needs to be solved beofe they can be efficient in practice. 
 %
@@ -1330,7 +1341,7 @@ In order to eliminate this blow-up in the size of the formula, we add to $\paf^m
 $$
 \Psi_{\mathsf{shift}}^m \defeq \bigwedge_{1\leq i \leq m} v_i \neq \noepsilon \implies v_{i-1}\neq \noepsilon \ .
 $$
-Last, since this restriction is meanigfull only when the string is indeed numeral,  
+Last, since this restriction is meanigfull only when the string is indeed a numeral,  
 we also define the constraint representing the strings which are not numerals, the formula
 $$
 \Psi_{\mathsf{NaN}}^m \defeq  \bigvee_{i\in [1,m]} v_i>9
@@ -1364,12 +1375,9 @@ the formula underapproximating $\phi_s$ is finally constructed as
 The following lemma states correctness of this construction:
 \begin{lemma}
 $
-\semof {\underf R {\psi_s} }_{V_R \cup \#V_R \cup \{n\}} = \encode  R'(\semof{\phi_s})
+\semof {\underf R {\psi_s} }_{V_R \cup \#V_R \cup \{n\}} = \encode  R(\semof{\phi_s})
 $
 \end{lemma}
-The lemma uses the encoding function generalised to assignments of string \emph{and integer} variables. 
-It is defined so that, for an interpretation $I$ of string variables $X$ and an interpetation $I'$ of integer variables $N$, $X\cap N = \emptyset$, 
-$\encode R' {(I\cup I')} \defeq \{e \cup I' \mid e\in \encode R(I)\}$, which is then lifted to sets in the standard manner. 
 
 
 
