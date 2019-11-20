@@ -903,7 +903,7 @@ When $\syncof \pa {\pa'}$ takes a transition $((q_1,q_1'), (v,\epsilon),(q_2,q_1
 it means that the character variable $v$ should be assigned $\epsilon$, 
 $\pa$ transitions under $v$ to $q_1$, and ${\pa'}$ takes no action, since no action is needed to match $\pa$'s reading of $\epsilon$ (hence consumes no symbol from the input word). Symmetrically, ${\pa'}$ might read a variable $v$ assigned $\epsilon$ and $\pa$ may stay.
 
-Formally, the asynchronous product automaton is a tuple $\syncof \pa {\pa'} = ((Q\times Q', \syncT, \cvarone_\epsilon \times \cvartwo_\epsilon, (q_i,q_i'),(q_f,q_f')),\paf\land\paf')$, where the transition relation $\syncT$ is the minimal set satisfying the following:
+Formally, the asynchronous product automaton is a tuple $\syncof \pa {\pa'} = (Q\times Q', \syncT, \cvarone_\epsilon \times \cvartwo_\epsilon, (q_i,q_i'),(q_f,q_f'))$, where the transition relation $\syncT$ is the minimal set satisfying the following:
 %
 \begin{itemize}
 \item If $(q_1,v,q_2) \in T$ and $(q_1',v',q_2') \in T'$, then we have $((q_1,q_1'),(v,v'),(q_2,q_2'))\in \syncT$.
@@ -927,7 +927,7 @@ $$ \Psi_= \defeq
 $$
 The synchronization formula is then the conjunction 
 $$
-\syncfof \pa {\pa'} \defeq \parikhfof{\syncof \pa {\pa'}} \land \Psi_{\#} \land \Psi_=
+\syncfof \pa {\pa'} \defeq \parikhfof{\syncof \pa {\pa'}} \land \Psi_{\#} \land \Psi_= \land \paf \land \paf'
 $$
 
 The correctness of this construction is stated in Lemma~\ref{lemma:synccorrect} below. 
@@ -937,7 +937,7 @@ The correctness of the construction of under-approximations of equality constrai
 \begin{lemma}\label{lemma:synccorrect}
 $
 \semof {\syncfof \pa {\pa'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} =
-\{e\cup e'\mid e \in \encode \pa (w),\\ e'\in\encode {\pa'} (w), w\in\semof \pa \cap \semof {\pa'}\} 
+\{e\cup e'\mid e \in \encode \pa (w), e'\in\encode {\pa'} (w), w\in\semof \pa \cap \semof {\pa'}\} 
 $
 \end{lemma}
 
