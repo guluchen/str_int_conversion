@@ -144,18 +144,18 @@ In fact, for many languages such as Java, string-number conversions are a niche 
 
 \begin{Verbatim}[fontsize=\small]
 function checkLuhn(value) {
- var sum = 0;
- for (var i = value.length - 1; i >= 0; i-=2) {
-  var d = parseInt(value.charAt(i));
-  sum += d;
- }	
- for (var i = value.length - 2; i >= 0; i-=2) {
-  var d = parseInt(value.charAt(i));
-  if ((d *= 2) > 9) d -= 9;
-  sum += d;
- }
- var last= sum.toString().charAt(sum.length-1);
- return last == '0';
+   var sum = 0;
+   for (var i = value.length - 1; i >= 0; i-=2) {
+       var d = parseInt(value.charAt(i));
+       sum += d;
+   }	
+   for (var i = value.length - 2; i >= 0; i-=2) {
+       var d = parseInt(value.charAt(i));
+       if ((d *= 2) > 9) d -= 9;
+       sum += d;
+   }
+   var last= sum.toString().charAt(sum.length-1);
+   return last == '0';
 }
 \end{Verbatim}
 
@@ -203,8 +203,8 @@ Currently, even for the above constraint, which is from a simple program, most s
 	\begin{minipage}{5cm}
 		\begin{verbatim}
     for(var i = 0; i < 10; i++) {
-        arr[i] = 0
-    }
+        arr[i] = 0;
+   }
 		\end{verbatim}
 	\end{minipage}
 \end{center}
@@ -226,7 +226,7 @@ A casual glance at the above code reveals no use of strings at all, but the sema
 
 Here \texttt{x[3]} in line 2, \texttt{x[03]} in line 3, and \texttt{x["3"]} in line 4 all denote the same array element of \texttt{x["3"]}, but \texttt{x["03"]} denotes a completely different element (which is stored at the index \texttt{"03"} of the array). So na\"ive modeling of array indices with integers will not work -- it cannot distinguish the indices \texttt{"3"} and \texttt{"03"}. 
 
-But if array indices are modelled as strings, we must handle arithmetic somehow. Let us look at the case of line 6, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather basic array operation in Javascript, and so having only limited capability for handling string-number conversion operations will cripple any analysis of non-trivial JavaScript code.
+But if array indices are modelled as strings, we must handle arithmetic somehow. Let us look at the case of line 6, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather basic array operation in JavaScript, and so having only limited capability for handling string-number conversion operations will cripple any analysis of non-trivial JavaScript code.
 
 
 
@@ -306,9 +306,11 @@ to explain the main ideas behind our decision procedure.  To make our terminolog
 Our decision procedure has two steps: the first step is over-approximating the set of input constraints into a set that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Observe that we could  over-approximate the input constraint into any decidable fragment, e.g. the acyclic fragment~\cite{abdulla2014string} or the straight-line fragment~\cite{chen2019decision}. Our choice of the  chain-free fragment~\cite{abdulla2019chain} is motivated by the fact that the chain-free fragment is the {\em largest} known decidable fragment for that class of string constraints. In our example, we over-approximate the formula $\Phi$ by converting $xy=yx$ to two formulas $\{x_1=xy, x_2=yx\}$ using two auxiliary variables $x_1,x_2$ and replace the constraint $n=\sti{x}$ with $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$). The over-approximation module uses also some heuristics to derive the constant value of any side of the constraint $n=\sti{x}$ to refine the over-approximation. For instance, assume in some case, we could derive the value of $n=12$ from some integer constraints.  Then we could further derive the value of $x$ is in the regular language $(0^*12)$. 
 Observe that if the over-approximation is UNSAT then our decision procedure  declares that the original formula is also UNSAT and terminates. Since $\Phi$ is satisfiable, the over-approximation module will not return UNSAT. 
 
-\begin{figure*}
+\begin{figure}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
+	
+	\scalebox{0.7}{
 	\begin{tikzpicture} 
 		\node[state,initial] (q0) {$\st{0}{0}$};
 		\node[state] (q1) [right = 3cm of q0] {$\st{1}{0}$};
@@ -345,11 +347,11 @@ Observe that if the over-approximation is UNSAT then our decision procedure  dec
  		\draw[->] (q1) edge [bend left] node [left]{$\sym{1}{0}$} (q11) ;
 		\draw[->] (q11) edge [bend left] node [above]{$\sym{1}{1}$} (q12) ;
 		\draw[->] (q12) edge [bend left] node [right]{$\sym{1}{2}$} (q1) ;
-	\end{tikzpicture} 
+	\end{tikzpicture} }
 
 	\caption{An example of a parametric flat automaton}
 	\label{fig:sfa_def}
-\end{figure*}
+\end{figure}
 
 
 The second step of our decision procedure is only enabled if the over-approximation is SAT. In this case, our decision procedure restricts the domain of each string variable to strings that obey some predefined and parameterized pattern.  Adjusting the parameters enlarges or prunes the potential solution space. In this paper, we propose to use patterns defined by \emph{parametric flat automata} (PFA). A PFA is a {\em flat} finite state automaton consisting of a predefined sequence of loops, each of fixed length (see Figure \ref{fig:sfa_def}). The approach based on PFA is very flexible yet allows very efficient manipulation. One can pick PFA of \emph{arbitrary structure} for search space restriction and reduce the string constraint solving problem to a linear formula satisfiability problem in polynomial-time. Furthermore, we associate a unique natural number with each character. This allows us to assume that the input alphabet is a subset of natural numbers to avoid the \textit{alphabet explosion problem} from which the approach in~\cite{abdulla2017flatten} suffers.  We label each transition between two states of a PFA with a unique \emph{character} variable (whose domain is the set of natural numbers) instead of having a transition between each two states for each symbol in the alphabet.  
@@ -360,11 +362,12 @@ Such reduction based on PFA is the key to handling string-number conversion effi
 %Such reduction based on PFA is the key to handle string-number conversion efficiently. When we restrict the solution space to those defined by PFAs, the original undecidable problem (i.e., string constraint with string-number conversion) is reduced to linear formulas and can be solved efficiently. We can step-wisely enrich the PFAs and hence solve the satisfiability problem of string constraints in a systematic manner.
 
 
-\begin{figure*}
+\begin{figure}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 	
-	\begin{minipage}[t]{0.15\textwidth} 
+	\begin{minipage}[t]{0.1\textwidth} 
+			\scalebox{0.7}{
 		\begin{tikzpicture}
 		\node[state,initial,accepting] (q0) {$q_0$};
 		
@@ -372,69 +375,50 @@ Such reduction based on PFA is the key to handling string-number conversion effi
 		
 		\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
 		\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
-		\end{tikzpicture} 
+		\end{tikzpicture} }
 		
 		\centering
 		(a) $A_x$
 	\end{minipage}
-	\begin{minipage}[t]{0.15\textwidth} 
+	\begin{minipage}[t]{0.1\textwidth} 
+			\scalebox{0.7}{
 		\begin{tikzpicture} 
-		\node[state,initial,accepting] (q0) {$p_0$};
+		\node[state,initial,accepting] (q0) {$q_2$};
 		
-		\node[state] (q01) [above = 0.5cm of q0] {$p_1$};
+		\node[state] (q01) [above = 0.5cm of q0] {$q_3$};
 		
 		\draw[->] (q0) edge [bend left] node [left]{$v_2$} (q01) ;
 		\draw[->] (q01) edge [bend left] node [right]{$v_3$} (q0) ;
-		\end{tikzpicture} 
+		\end{tikzpicture} }
 		
 		\centering
 		(b) $A_y$
 	\end{minipage}
-	\begin{minipage}[t]{0.28\textwidth}
+	\begin{minipage}[t]{0.2\textwidth}
+			\scalebox{0.7}{
 		\begin{tikzpicture} 
 		\node[state,initial] (q0) {$q_0$};
-		\node[state,accepting] (q1) [right = 1.3cm of q0] {$p_0$};
+		\node[state,accepting] (q1) [right = 1.3cm of q0] {$q_2$};
 		
 		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
 		
-		\draw[->] (q0) edge [bend left] node [left]{$v_0^{(0)}$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_1^{(0)}$} (q0) ;
+		\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
+		\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
 		
-		\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
+		\node[state] (q11) [above = 0.5cm of q1] {$q_3$};
 		
-		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(0)}$} (q11) ;
-		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(0)}$} (q1) ;
-		\draw[->] (q0) edge node [below]{$v_{\epsilon_0}$} (q1) ;
-		\end{tikzpicture}
-		
-		\centering
-		(c) $A_{xy}$
-	\end{minipage}
-	\ \ \ 
-	\begin{minipage}[t]{0.28\textwidth}
-		\begin{tikzpicture} 
-		\node[state,accepting] (q0) {$q_0$};
-		\node[state,initial] (q1) [left = 1.3cm of q0] {$p_0$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_0^{(1)}$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_1^{(1)}$} (q0) ;
-		
-		\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
-		
-		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(1)}$} (q11) ;
-		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(1)}$} (q1) ;
-		\draw[->] (q1) edge node [below]{$v_{\epsilon_1}$ }(q0) ;
-		\end{tikzpicture}
+		\draw[->] (q1) edge [bend left] node [left]{$v_3$} (q11) ;
+		\draw[->] (q11) edge [bend left] node [right]{$v_4$} (q1) ;
+		\draw[->] (q0) edge node [below]{$v_2$} (q1) ;
+		\end{tikzpicture}}
 		
 		\centering
-		(d) $A_{yx}$
+		(c) $A'_{x}$
 	\end{minipage}
 	
-	\caption{Parametric flat automata of $x$, $y$, $xy$ and $yx$}
+	\caption{Parametric flat automata of $x$ and $y$}
 	\label{fig:sfa}
-\end{figure*}
+\end{figure}
 
 
 In the following, we explain the construction of the linear formula using $\Phi$ as an example. Assume that we project the domains of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. Thus, $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from the formula $ y \in (12)^+$, we may derive $v_3=1$ and $v_4=2$. 
@@ -485,8 +469,6 @@ If a model of the produced linear formula is found, then the procedure concludes
 
 To demonstrate the usefulness of our approach, we have implemented our decision procedure in an open source solver, called {\tool} and evaluated it on a large set of benchmarks obtained from literatures and from symbolic execution of real world programs. The experimental results show that {\tool} is among the best tools for solving basic string constraints and significantly outperforms all other tools on benchmarks with string-number conversion constraints. In this benchmark, the total amount of tests cannot be solved by {\tool} is only a half to the second best tool.
 
-
-\todo{Talk about experiments}
 
 \smallskip
 
@@ -764,52 +746,6 @@ $A$ is an automaton operating over an alphabet $\cvar$ of \emph{character variab
 and $\paf$ is an \emph{interpretation constraint}, a linear formula over $\cvar$. 
 \emph{Parametric flat automaton (PFA)} then is a parametric automaton with its finite automaton flat.
 
-
-\begin{figure*}
-	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
-			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
-	\begin{tikzpicture} 
-		\node[state,initial] (q0)  {$\st{0}{0}$};
-		\node[state] (q1) [right = 3cm of q0] {$\st{1}{0}$};
-		\node (q2) [right = 1.8cm of q1]{};
-		\node (q3) [right = 1cm of q2]{};
-		\node[state,accepting] (qm) [right = 1.8cm of q3] {$\st{m}{0}$};
-		
-		\node[state] (q01) [above left = 0.6cm of q0] {$\st{0}{1}$};
-		\node[state] (q02) [above = 1cm of q0] {$\st{0}{2}$};
-		\node[state] (q03) [above right = 0.6cm of q0] {$\st{0}{3}$};
-
-		\node[state] (q11) [above left = 0.8cm of q1] {$\st{1}{1}$};
-		\node[state] (q12) [above right = 0.8cm of q1] {$\st{1}{2}$};
-
-		\node[state] (qm1) [above left = 0.6cm of qm] {$\st{m}{1}$};
-		\node[state] (qm2) [above = 1cm of qm] {$\st{m}{2}$};
-		\node[state] (qm3) [above right = 0.6cm of qm] {$\st{m}{3}$};
-
-  		\draw[->] (q0) edge [bend left] node [left]{$\sym{0}{0}$} (q01) ;
-  		\draw[->] (q01) edge [bend left] node [left]{$\sym{0}{1}$} (q02) ;
-  		\draw[->] (q02) edge [bend left] node [right]{$\sym{0}{2}$} (q03) ;
-  		\draw[->] (q03) edge [bend left] node [right]{$\sym{0}{3}$} (q0) ;
-  		
-  		\draw[->] (q0) edge node [below]{$v_0$} (q1) ;
-  		\draw[->] (q1) edge node [below]{$v_1$} (q2) ;
-  		\draw[dotted] (q2) edge (q3) ;
-  		\draw[->] (q3) edge node [below]{$v_{m-1}$} (qm) ;
-
-  		\draw[->] (qm) edge [bend left] node [left]{$\sym{m}{0}$} (qm1) ;
-		\draw[->] (qm1) edge [bend left] node [left]{$\sym{m}{1}$} (qm2) ;
-		\draw[->] (qm2) edge [bend left] node [right]{$\sym{m}{2}$} (qm3) ;
-		\draw[->] (qm3) edge [bend left] node [right]{$\sym{m}{3}$} (qm) ;
-
-  		\draw[->] (q1) edge [bend left] node [left]{$\sym{1}{0}$} (q11) ;
-		\draw[->] (q11) edge [bend left] node [above]{$\sym{1}{1}$} (q12) ;
-		\draw[->] (q12) edge [bend left] node [right]{$\sym{1}{2}$} (q1) ;
-	\end{tikzpicture} 
-
-	\caption{An example of a parametric flat automaton}
-	\label{fig:sfa_def}
-\end{figure*}
-
 %A finite automaton $D=(Q,T',\Sigma,q_0,q_m)$ is an \emph{instance} of a PFA $S=(Q,T,\cvar,q_0,q_m)$, if there exists an interpretation $I: \cvar \cup \{\epsilon\} \rightarrow \Sigma_\epsilon$ satisfying $I(\epsilon)=\epsilon$ and $T'=\{(q,I(c),q')\mid (q,c,q')\in T\}$. We write $I(S)$ to denote the instance of $S$ wrt. $I$. The language of $S$ is defined as $L(S)= \cup\{L(D) \mid D \mbox{ is an instance of } S\}$. Notice that $L(S)$ is regular because every PFA has only finitely many instance and the finite union of regular languages are also regular.
 
 
@@ -929,17 +865,17 @@ Particularly, we will need to
 To this end, we define an additional notation.
 For an interpretation $I:X\rightarrow \Sigma^*$, we define its $R$-encoding as the set $\encode R(I) = \bigcup_{x\in X} \encode \pa(I(x))$. We lift this notation to sets of interpretation in the standard manner, i.e., $\encode R (J) = \bigcup_{I \in J}\encode R (I)$ for a set of interpretations $J$.
 %
-The inductive argument needed in the proof of the correctness of the underapproximation then reads as
+The inductive argument needed in the proof of the correctness of the under-approximation then reads as
 $$\semof{\underf R \phi}_{V_R\cup V_{\#R}}  = \encode R{\semof{\phi}}$$ 
 %
-In the nexr sections, 
-we will formulate the corresponding lemma for linear formulae constructed from each type of atomic string constraints.
+In the next sections, 
+we will formulate the corresponding lemma for linear formulas constructed from each type of atomic string constraints.
 %
 We note that the restriction of the semantics of $\underf R \phi$ here is needed since $\underf R \phi$ is constructed with some auxiliary variables. 
 
 
 \paragraph{Encoding epsilon.}
-A minor technical difficulty is that we wish to build underapproximation in the form of pure arithmetic formulas, 
+A minor technical difficulty is that we wish to build under-approximation in the form of pure arithmetic formulas, 
 but we may also wish to specify when a character variable is assigned $\epsilon$, but $\epsilon$ is not a number. 
 Hence, to allow purely arithmetic formulas talk about $\epsilon$, 
 we encode $\epsilon$ as some fixed number $\noepsilon\in\nat\setminus\Sigma$.
@@ -947,8 +883,8 @@ we encode $\epsilon$ as some fixed number $\noepsilon\in\nat\setminus\Sigma$.
 
 %\subsection{Handling Regular Constraints Symbolically} \label{section:mem}
 \section{Flattening of Basic String Constraints}
-We will first discuss flattening of the basic string contraints, that is,
-regular, equality, and lenght constraints. We start by two needed operations over PA, synchronisation and concatenation.
+We will first discuss flattening of the basic string constraints, that is,
+regular, equality, and integer constraints. We start by two needed operations over PA, synchronization and concatenation.
 
 \paragraph{Synchronization of PAs}
 We will now discuss a construction of the \emph{synchronization formula} for two PAs $\pa$ and $\pa'$. 
@@ -1010,7 +946,7 @@ $$
 $$
 
 The correctness of this construction is stated in Lemma~\ref{lemma:synccorrect} below. 
-The correctness of the construction of under-approximations of equality constraints and regular constarints in Sections~\ref{section:mem}, \ref{section:eq} rely on it. 
+The correctness of the construction of under-approximations of equality constraints and regular constraints in Sections~\ref{section:mem}, \ref{section:eq} rely on it. 
 %
 
 \begin{lemma}\label{lemma:synccorrect}
@@ -1024,14 +960,14 @@ Informally, the lemma states that the models of $\syncfof \pa {\pa'}$ encode pre
 Since that the models of $\syncfof \pa {\pa'}$ include also an assignment to the auxiliary variables of $(\cvarone_\epsilon\times\cvartwo_\epsilon) \cup \pvarsof{(\cvarone_\epsilon\times\cvartwo_\epsilon)}$, the statement of the lemma, 
 restrics the semantics of $\syncfof \pa {\pa'}$ to the original variables $\cvarone \cup \cvartwo \cup \pvarsof{\cvarone} \cup \pvarsof\cvartwo$. %This is  achieve by quantifying out the variables of $V_\times$.
 
-Notice that if $\pa$ is flat (or, symmetrically, if $\pa'$ is flat), then the semantic intersection $\semof \pa \cap \semof {\pa'}$ can be still decoded from the synchronisation formula $\semof {\syncfof \pa {\pa'}}$. 
+Notice that if $\pa$ is flat (or, symmetrically, if $\pa'$ is flat), then the semantic intersection $\semof \pa \cap \semof {\pa'}$ can be still decoded from the synchronization formula $\semof {\syncfof \pa {\pa'}}$. 
 Namely, due to Corollary~\ref{corollary:pfa}, we have that if $\pa$ is a PFA, then
 %$\semof A \cap \semof {A'} = \{\decode A(I\cup \pim) \mid (I\cup \pim) \in \semof{\syncfof A {A'}}_{\cvarone\cup \pvarone}\}$.  
 $$\decode \pa (\semof{\syncfof \pa {\pa'}}_{\cvarone\cup \pvarone}) = \semof \pa \cap \semof {\pa'}$$  
 
 \paragraph{Concatenation of PFAs}
 Concatenation of PFAs will be needed when flattening equality constraints. Its implementation is straightforward, connect the final state of the first PFA with the initial state of the second by an $\epsilon$-transition. Since our automata do not allow transition directly labeled by $\epsilon$, 
-the $\epsilon$-transition is labeled by a fresh variable $v_\epsilon$ contrained by the constraint $v_\epsilon = \epsilon$.  
+the $\epsilon$-transition is labeled by a fresh variable $v_\epsilon$ restricted by the constraint $v_\epsilon = \epsilon$.  
 
 Formally, given PFA $\pa = ((Q,T,\cvarone,q_i,q_f),\paf)$ and ${\pa'} = ((Q',T',\cvartwo,q_i',q_f'),\paf')$ with $Q\cap Q'=\emptyset = \cvarone\cap\cvartwo$, 
 their concatenation is the PFA $\pa\cdot \pa' = (Q\cup Q',T\cup T'\cup \{(q_f,v_\epsilon,q_i')\},\cvarone\cup\cvartwo\cup\{v_\epsilon\},q_i,q_f',\paf\land\paf'\land v_\epsilon = \epsilon)$ where $v_\epsilon$ is fresh, not from $\cvarone\cup\cvartwo$. 
@@ -1043,12 +979,12 @@ $\encode{\pa\cdot \pa'}{\semof{\pa\cdot \pa}}_{\cvarone\cup \cvartwo \cup \pvaro
 \{e \cup e'\mid e \in \encode \pa (\semof{\pa}),\\ e' \in\encode {\pa'} (\semof{\pa'})\}$.
 \end{lemma}
 
-With syncrhonisation and concatenation of PA, we are ready to describe flattening of the basic string constraints.
+With synchronization and concatenation of PA, we are ready to describe flattening of the basic string constraints.
 
 \subsection{Flattening of Regular Constraints} \label{section:mem}
 
 Let us first describe the construction of $\underf R {\phi_r}$ for a regular constraint $\phi_r \defeq x \in L(A)$. 
-In order to synchronise the FA $A$ with the PFA $R(x)$, 
+In order to synchronize the FA $A$ with the PFA $R(x)$, 
 we represent $A$ by a PA $\pa' = (A',\Psi_{\mathit{char}})$.
 The automaton $A'$ of $\pa'$ operates over fresh character variables $v_a, a\in\Sigma_\epsilon$, 
 and is obtained from $A$ by replacing every occurrence of each character $a\in\Sigma_{\epsilon}$ on a transition by the variable $v_a$. 
@@ -1062,83 +998,6 @@ It follows from Corollary~\ref{corollary:pfa} and Lemma~\ref{lemma:synccorrect}.
 \begin{lemma}\label{lemma:memcorrect}  $\semof {\underf R {\phi_r}}_{V_R \cup V_{\#R}} = \encode {R} (\semof{\phi_r})$ . 
 \end{lemma}
 
-\begin{figure*}
-	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
-			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
-	
-	\begin{minipage}[t]{0.15\textwidth} 
-		\begin{tikzpicture}
-		\node[state,initial,accepting] (q0)  {$q_0$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
-		\end{tikzpicture} 
-		
-		\centering
-		(a) $A_x$
-	\end{minipage}
-	\begin{minipage}[t]{0.15\textwidth} 
-		\begin{tikzpicture} 
-		\node[state,initial,accepting] (q0)  {$p_0$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$p_1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_2$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_3$} (q0) ;
-		\end{tikzpicture} 
-		
-		\centering
-		(b) $A_y$
-	\end{minipage}
-	\begin{minipage}[t]{0.28\textwidth}
-		\begin{tikzpicture} 
-		\node[state,initial] (q0)  {$q_0$};
-		\node[state,accepting] (q1) [right = 1.3cm of q0] {$p_0$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_0^{(0)}$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_1^{(0)}$} (q0) ;
-		
-		\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
-		
-		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(0)}$} (q11) ;
-		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(0)}$} (q1) ;
-		\draw[->] (q0) edge  node [below]{$v_{\epsilon_0}$} (q1) ;
-		\end{tikzpicture}
-		
-		\centering
-		(c) $A_{xy}$
-	\end{minipage}
-	\ \ \ 
-	\begin{minipage}[t]{0.28\textwidth}
-		\begin{tikzpicture} 
-		\node[state,accepting] (q0)  {$q_0$};
-		\node[state,initial] (q1) [left = 1.3cm of q0] {$p_0$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_0^{(1)}$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_1^{(1)}$} (q0) ;
-		
-		\node[state] (q11) [above = 0.5cm of q1] {$p_1$};
-		
-		\draw[->] (q1) edge [bend left] node [left]{$v_2^{(1)}$} (q11) ;
-		\draw[->] (q11) edge [bend left] node [right]{$v_3^{(1)}$} (q1) ;
-		\draw[->] (q1) edge  node [below]{$v_{\epsilon_1}$ }(q0) ;
-		\end{tikzpicture}
-		
-		\centering
-		(d) $A_{yx}$
-	\end{minipage}
-	
-	\caption{Parametric flat automata of $x$, $y$, $xy$ and $yx$}
-	\label{fig:sfa}
-\end{figure*}
-
-
 
 
 \subsection{Flattening of Equality Constraints} \label{section:eq}
@@ -1146,7 +1005,7 @@ It follows from Corollary~\ref{corollary:pfa} and Lemma~\ref{lemma:synccorrect}.
 
 We now describe the construction of $\underf R {\phi_e}$ for an equality constraint $\phi_e\defeq x_0\cdot x_1 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$. 
 %
-To simplify the presentation, we assume that the varriables are pairwise different, i.e. that $i\neq j \implies x_i \neq x_j$. We may make this assumption without loss of generality, since multiple occurences of variables in $\phi_e$ can be eliminated: whenever $x_i = x_j$ for $i \neq j$, we may replace $x_j$ by a fresh variable $x_j'$ and conjoin the modified $\phi_e$ with a new equality $x_j = x_j'$. 
+To simplify the presentation, we assume that the variables are pairwise different, i.e. that $i\neq j \implies x_i \neq x_j$. We may make this assumption without loss of generality, since multiple occurrences of variables in $\phi_e$ can be eliminated: whenever $x_i = x_j$ for $i \neq j$, we may replace $x_j$ by a fresh variable $x_j'$ and conjoin the modified $\phi_e$ with a new equality $x_j = x_j'$. 
 %
 We also that all disequality constraint $t \neq t'$ are already converted to equal-satisfiable equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}.
 %
@@ -1157,7 +1016,7 @@ Having made these assumptions, we may proceed follows. First, we build two PFAs 
 \leftA \defeq& R(x_1)\cdot\ldots \cdot R(x_n)\\
 \rightA \defeq& R(x_{n+1})\cdot\ldots \cdot R(x_m)
 \end{eqnarray*}
-The underapproximation of $\phi_e$ is then obtained as their synchronisation formula
+The under-approximation of $\phi_e$ is then obtained as their synchronization formula
 $$
 \underf R {\phi_e} = \syncfof \leftA \rightA
 $$
@@ -1167,18 +1026,18 @@ $\semof {\underf R {\phi_e}}_{V_R  \cup \#V_R} = \encode R (\semof{\phi_e})$.
 \end{lemma}
 
 \subsection{Encoding Length Constraints}
-Length constraints are not underapproximated by flattenting. 
-Given a length constraint $\phi_l$ with string lenght variables $X$,
-we keep $\phi_l$ as is and add a formula to express the lenghts of strings $|x|$ in terms of character variables $V_x$ and Parikh variables $\# V_x$ of $R(x)$.
+Length constraints are not under-approximated by flattening. 
+Given a length constraint $\phi_l$ with string length variables $X$,
+we keep $\phi_l$ as is and add a formula to express the lengths of strings $|x|$ in terms of character variables $V_x$ and Parikh variables $\# V_x$ of $R(x)$.
 
 For every length variable $|x|\in X$, 
-we add a set of fresh auxiliary variables $\{|v|\mid v\in V_x\}$ to express the length by which $v$ contributes to the lenght of an $R$-encoded word. 
+we add a set of fresh auxiliary variables $\{|v|\mid v\in V_x\}$ to express the length by which $v$ contributes to the length of an $R$-encoded word. 
 That is, $|v|$ will be $0$ if $v$ is assigned $\noepsilon$,
 otherwise it will equal the number $\#v$ of its occurrences in the word:
 $$
 \Psi_{\mathsf{|v|}} \defeq (v = \noepsilon \land |v|=0) \lor (v \neq \noepsilon \land |v| = \# v)
 $$
-The lenght of the encoded word $x$ is then the sum of the lenghts contributed by the individual character variables in $V_x$, 
+The lenght of the encoded word $x$ is then the sum of the lengths contributed by the individual character variables in $V_x$, 
 hence we let 
 $$
 \Psi_{|x|} \defeq |x| = \sum_{v\in V_x} |v| \land  \bigwedge_{v\in V_x} \Psi_{\mathsf{|v|}}\ .
@@ -1372,13 +1231,13 @@ Last, we present a central part of this paper, the construction of $\underf R {\
 
 Let us begin with a simple example. Assume that we use the PFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee (n=-1 \wedge (v_0 >9 \vee v_1 >9))$.
 
-For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0)-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#(v_0)}-1}{100-1}$. 
-The constraint uses $\#(v_0)$ to capture the total number of loop traversals.
-Notice that the constraint above contains an exponential component $\frac{100^{\#(v_0)}}{100-1}$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
+For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint (assume character variables are not assigned $\epsilon$) $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#v_0-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#v_0}-1}{100-1}$. 
+The constraint uses $\#v_0$ to capture the total number of loop traversals.
+Notice that the constraint above contains an exponential component $\frac{100^{\#v_0}}{100-1}$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
 
-Let us have a look at another example. If we restrict the domain of $x$ to the PFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0^{(0)}\times 10+ v_1^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_0^{(0)})-1})\times 100^{\#(v_2^{(0)})}+(v_2^{(0)}\times 10+ v_3^{(0)}) \times (1+100 +100^2 + \ldots 100 ^{\#(v_2^{(0)})-1}) =  (v_0^{(0)}\times 10+ v_1^{(0)}) \times \frac{100^{\#(v_0^{(0)})}-1}{100-1}\times 100^{\#(v_2^{(0)})} + (v_2^{(0)}\times 10+ v_3^{(0)}) \times \frac{100^{\#(v_2^{(0)})}-1}{100-1}$. Observe that the formula has two exponential components $\frac{100^{\#(v_0^{(0)})}\times 100^{\#(v_2^{(0)})} }{100-1}$ and $\frac{100^{\#(v_2^{(0)})} }{100-1}$.
+Let us have a look at another example. If we restrict the domain of $x$ to the PFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0 \times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#v_0-1})\times 10\times 100^{\#v_3}+ v_2 \times 100^{\#v_3}  +(v_3\times 10+ v_4) \times (1+100 +100^2 + \ldots 100 ^{\#v_3-1}) =  (v_0\times 10+ v_1) \times \frac{100^{\#v_0-1}}{100-1}\times 10\times 100^{\#v_3} + v_2 \times 100^{\#v_3}+ (v_3\times 10+ v_4) \times \frac{100^{\#v_3-1}}{100-1}$. Observe that the formula has multiple exponential components, including $\frac{100^{\#v_0}\times 100^{\#v_3} }{100-1}$ and $\frac{100^{\#v_3} }{100-1}$.
 
-It is not difficult to see from the examples above that, if $R(x)$ is an arbitrary PFA with $m$ loops, the formula to defines the number $n$ contains $m$ exponential components, one for each loop.
+It is not difficult to see from the examples above that, if $R(x)$ is an arbitrary PFA with $m$ loops, the formula to defines the number $n$ contains at least $m$ exponential components, one for each loop.
 To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. As said in the introduction, the problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure which is double-exponential to the length of the input formula and hence cannot handle large instances. We therefore do not expect that such constraint can be solved efficiently. Instead, we will define a special form of the flat restriction $R(x)$ of $x$ that leads to an easies linear formula.
 
 \paragraph{PFA that allows efficient string-number conversion: } 
@@ -1433,6 +1292,7 @@ The self-loop is followed by a chain of $m$ transitions $(q_{i-1},v_i,q_{i}),1\l
 Although it still has a loop, it will not create any exponential component defining the value of $n$ because the loop only represents a sequence of ``0'' at the front of $x$. It will not affect the integer value of $n=\sti{x}$.
 
 \begin{figure}
+	\scalebox{0.7}{
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 	\begin{tikzpicture} 
@@ -1447,7 +1307,7 @@ Although it still has a loop, it will not create any exponential component defin
 	\draw[dotted] (q2) edge (q3) ;
 	\draw[->] (q3) edge node [below]{$v_m$} (qm) ;
 	\path (q0) edge [loop above] node {$v_0$} (q0);
-	\end{tikzpicture} 
+	\end{tikzpicture} }
 	
 	\caption{PFA for string-number conversion constraints}
 	\label{fig:sfa_its}
