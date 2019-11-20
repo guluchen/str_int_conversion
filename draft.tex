@@ -15,7 +15,7 @@
 
 
 
-\title{Handling String-Number Conversion in String Constraint Solving}
+\title{Efficient Handling of String-Number Conversion}
 \author{}
 
 
@@ -117,10 +117,10 @@
 \section{Introduction} \label{section:introduction}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Symbolic execution is a very popular technique that allows programmers to check the feasibility of a path in a given program, i.e., determining the value of the inputs under which the given path can be executed. \cite{????}.
-The path feasibility problem is usually solved by a reduction to the satisfiability of a formula. More precisely, program statements in the path are usually translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{satisfiability module theory (SMT)} solvers. The types of constraints needed depend on the types of program expressions to be analyzed; therefore, SMT solvers must support different combinations of theories to handle a wide range of types.
+Symbolic execution is a very popular technique that allows programmers to check the feasibility of a path in a given program, i.e., determining the value of the inputs under which the given path can be executed.
+The path feasibility problem is usually solved by a reduction to the satisfiability of a formula. More precisely, program statements in the path are  translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{Satisfiability Modulo Theory (SMT)} solvers. The types of constraints needed depend on the types of program expressions to be analyzed. Therefore, SMT solvers need to support different combinations of theories so that they can handle a wide range of  types.
 
-Among all types of program variables, \emph{string data type} is omnipresent in modern programming languages. Various security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values. Therefore, string constraint solving has received considerable attention in the constraint solving community. 
+Among all data types, the \emph{string data type} is omnipresent in modern programming languages. Various security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values. Therefore, string constraint solving has received considerable attention in the constraint solving community. 
 Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$), are widely supported by most state-of-the-art string constraint solvers such as, CVC4 \cite{?}, OSTRICH \cite{}, Sloth \cite{},  Trau+ \cite{?}, Z3 \cite{?} and Z3Str3 \cite{?}. 
 However,  solvers have limited support for operations that convert between strings and integers; string length operations are sometimes well supported, but not parsing a string as an integer or turning an integer value into its string form. When there is support, it is often very limited. Thus, $n = \sti{\texttt{"2"}}$ or $x = \its{5}$ are handled but $n = \sti{x}$ (i.e., converting the string $x$ to the integer $n$) and $x = \its{n}$ (i.e., converting the integer $n$ to the string $x$) are core operations that require stronger solver support to handle real code.
 
