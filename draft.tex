@@ -531,8 +531,8 @@ our approach on both existing and real-life benchmarks
 
 
 \paragraph{Outline.}
-After recalling the  definition in Section \ref{section:sc}. 
-Section \ref{section:sfa} presents  the class of parametric flat automata. 
+After recalling the  definition in Section \ref{section:sc}. Section \ref{section:over} presents a brief overview of our decision procedure. 
+Section \ref{section:sfa} introduces  the class of parametric flat automata. 
 Section \ref{section:under_approximate} describes how to use PFA to restrict the searching domain of string variables.
 Section \ref{sec:flattening} shows how to construct the linear formula for  basic string constraints (i.e., 
 regular, equality, and integer constraints). 
@@ -729,19 +729,34 @@ Supporting only positive integer is not a strong restriction, since conversing f
 %\yfc{say handling regular constraint can be exponential to the number of constraints, but in our under-approximation, it is polynomial.}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Over-Approximation} \label{section:over}
+\section{Decision Procedure Overview} \label{section:over}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Our procedure has two steps. In the first step, it replaces all string-number conversion constraint $n=\sti{x}$ with $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$) to obtain an over-approximation $\Phi$ consisting of only basic string constraints. 
-In the second step, it over-approximates $\Phi$ to a \emph{chain-free string constraint}~\cite{abdulla2019chain}, 
-which constitutes with only integer, membership, and \emph{chain-free} equality constraints. In order to explain this step, we need to first describe what is a \emph{chain} in a set of equality constraints.
-For two equality constraints, 
-$\begin{array}{rcll}
-	t_1&\defeq& \ldots x\ldots = \ldots y\ldots\\
-	t_2&\defeq& \ldots y \ldots = \ldots&,
-\end{array}$\\
-we say the $x$ in $t_1$ \emph{depends on} the $y$ in $t_2$, because $y$ occurs on the other side of $x$ in $t_1$ and occurs on the same side of $x$ in $t_2$. A set of equality constraints has a \emph{chain}, informally, if we can find some circular dependency in the equality constraints.
-Our procedure iteratively searches for chains in the equality constraints, breaks the chain by replacing some variable in the dependency circle to a fresh one, and repeats until all chains are broken.
 
+
+Our decision procedure has two steps: the first step consists in over-approximating the set of input constraints into a set that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. 
+The over-approximation module proceeds as follows: First,  it replaces all string-number conversion constraint $n=\sti{x}$ by $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$) to obtain an over-approximation $\Phi$ consisting of only basic string constraints. 
+Then, it over-approximates $\Phi$ to a \emph{chain-free string constraint}~\cite{abdulla2019chain}, 
+which  consists of only integer, membership, and \emph{chain-free} equality constraints. Informally, a set of equality constraints has a \emph{chain} if we can find some circular dependency between the string variables in the equality constraints.
+Our procedure iteratively searches for such dependency chains in the equality constraints. If a chain is found then we replace a variable appearing in that chain by a  fresh one. By doing this, we  break  that chain. We   repeat this procedure until there are no more chains. Observe that if the over-approximation is UNSAT then our decision procedure  declares that the original formula is also UNSAT.
+
+
+
+
+The second step of our decision procedure is only enabled if the over-approximation step returns SAT. In this case, our decision procedure  restricts the search domain of each string variable to strings that obey some predefined and parameterized pattern.  We propose to use patterns defined by \emph{parametric flat automata} (PFA). A PFA is a {\em flat} finite state automaton consisting of a predefined sequence of loops, each of fixed length. The size of the PFA is parameterized by the length of the sequence of loops and the size of each loop. Adjusting these parameters enlarges or prunes the potential solution space. This approach based on PFA is very flexible yet allows very efficient manipulation. Then, we show that given such restriction, one can  reduce the string constraint solving problem to a linear formula satisfiability problem.
+
+The rest of the paper will be mainly dedicated to the explanation of the under-approximation technique (which is our main contribution).
+
+
+
+
+%
+%In order to explain this step, we need to first describe what is a \emph{chain} in a set of equality constraints.
+%For two equality constraints, 
+%$\begin{array}{rcll}
+%	t_1&\defeq& \ldots x\ldots = \ldots y\ldots\\
+%	t_2&\defeq& \ldots y \ldots = \ldots&,
+%\end{array}$\\
+%we say the $x$ in $t_1$ \emph{depends on} the $y$ in $t_2$, because $y$ occurs on the other side of $x$ in $t_1$ and occurs on the same side of $x$ in $t_2$. 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parametric Flat Automata} \label{section:sfa}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
