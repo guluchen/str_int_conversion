@@ -622,8 +622,7 @@ The \emph{language} of $A$ (denoted by $L(A)$) consists of  the set  of all acce
 Through the paper, we will use quantifier-free linear integer arithmetic formulae, and call them \emph{linear formulae} for short.  
 Given a linear formula $\phi$ over variables $V$ and an \emph{integer interpretation} of $V$, a function $I:V\rightarrow \integers$, 
 we denote by $I\models \phi$ that $I$ satisfies $\phi$ (which is defined in the standard manner), and call $I$ a \emph{model} of $\phi$. 
-We use $\modelsof \phi$ to denote the set all models of $\phi$. 
-%
+We use $\modelsof \phi$ to denote the set all models of $\phi$.%
 %Let $J$ and $J'$ be two sets integer interpretations, $J$ containting interpretation of variables $V$ and $J'$ of variables $V'$. 
 %We say that $J$ and $J'$ are \emph{equivalent}, written $J\iequiv J'$, if their interpretations restricted to the common variables are the same, that is, if 
 %$\{\restrict I {V\cap V'} \mid I \in J\} = \{\restrict {I'} {V\cap V'} \mid I' \in J'\}$. We may write $J\eqwrt{V\cap V'} J'$ if we wish to made the common variables explicit.
@@ -653,21 +652,19 @@ Let $A$ be a FA over the alphabet $\Sigma$. Then, we can compute, in linear time
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-In this section, we formally define string constraints. To begin with, we fix an finite alphabet $\Sigma \subseteq \mathbb{N}$. Note that here we assume the alphabet is a finite subset of natural numbers. Essentially, we try to capture the numerical encoding of the corresponding symbols in computers (e.g., in ASCII, `A' is encoded as $65$). We assume there is an one-one mapping between numbers in $\Sigma$ and the character it encodes. For the simplicity of presentation, we assume the character `$0$' is mapped to the number $0$, `$1$' to $1$,$\ldots$, and `$9$' to $9$. For other character $c$, we use $\enc{c}$ to denote the number that it maps to. Notice that this approach is general enough to support any finite set of characters. 
+In this section, we formally define string constraints. To begin with, we fix a finite alphabet $\Sigma \subseteq \mathbb{N}$. Note that here we assume that the alphabet is a finite subset of natural numbers. Essentially, we try to capture the numerical encoding of the corresponding symbols in computers (e.g., in ASCII, `A' is encoded as $65$). Hence, we can  assume w.l.o.g. that  there is a one-to-one mapping between numbers in $\Sigma$ and the character it encodes. For the simplicity of presentation, we assume that the character `$0$' is mapped to the number $0$, `$1$' to $1$,$\ldots$, and `$9$' to $9$. For other character $c$, we use $\enc{c}$ to denote the number that it maps to. Notice that this approach is general enough to support any finite set of characters. 
 
 
 We call $\vars$ the set of \emph{string variables} ranging over $\Sigma^*$ and $\varn$ the set of \emph{integer variables} ranging over $\mathbb{Z}$.
 For a variable $x$, we call its primed version (e.g., $x'$) or indexed versions (e.g., $x_1$) its \emph{variants}.
-In this paper, we use $x,y$ (or their variants) to denote string variables and $n$ (or its variants) to denote integer variables.
-
-An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I$ from $\vars\cup \varn$ to $\Sigma^* \cup \mathbb{N}$. A \emph{term} is an element in $(\vars\cup \Sigma)^*$. We lift the interpretation $I$ to terms and linear constraints in the standard manner. 
+In this paper, we use $x,y$ (or their variants) to denote string variables and $n$ (or its variants) to denote integer variables. An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I$ from $\vars\cup \varn$ to $\Sigma^* \cup \mathbb{Z}$. A \emph{term} is an element in $(\vars\cup \Sigma)^*$. We lift the interpretation $I$ to terms and linear constraints in the standard manner. 
 
 We will use four types of \emph{atomic string constraint}: 
 \smallskip
 
 
 $\bullet$ An \emph{equality constraint} $\phi_e$ is of the form $t_1 = t_2$ where $t_1, 
-t_2$ are terms in $(\vars\cup \Sigma)^*$. The \emph{model} of $\phi_e$ is the set of interpretations $\modelsof{\phi_e}=\{I\mid 
+t_2$ are terms. The \emph{model} of $\phi_e$ is the set of interpretations $\modelsof{\phi_e}=\{I\mid 
 I(t_1)=I(t_2)\}$. A \emph{disequality constraint} $\phi_d$ is of the form $t_1 \neq 
 t_2$ and is interpreted analogously.
 
@@ -684,13 +681,15 @@ I(x) \in L(A) \}$.
 $\bullet$ A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$. The \emph{number-string} conversion constraint $x=\its{n}$ is treated as a syntactic sugar for $n=\sti{x}$.
 \smallskip
 
-A \emph{string constraint} is then a conjunction of atomic string constraints, with the semantics defined in the standard manner. It is \emph{satisfiable} if its semantics is nonempty. Often we refer to the first three types of atomic string constraints the \emph{basic string constraints}.
+A \emph{string constraint} is then a conjunction of atomic string constraints, with the semantics defined in the standard manner. It is \emph{satisfiable} if there is an interpretation which evaluates the  constraint to $\true$. Often we refer to the first three types of atomic string constraints the \emph{basic string constraints}.
 
 Notice that only positive integer is supported in the string-number conversion function. This is the semantics used by most of the SMT solvers, and hence we follow it in this paper. The encoding has a benefit that it can also handle the case where $x$ is ``not a number", using the condition $\sti{x} = -1$.
+Supporting only positive integer is not a strong restriction, since conversing from negative integer can still be encoded using only the positive  version. 
 
-Supporting only positive integer is not a strong restriction, since conversing from negative integer can still be encoded using the positive only version. More specifically, if we want to say $n \in \varn$ is the integer value of the string $x \in \Sigma^*$, we can write the following constraint (ignore the case that $x$ is ``not a number", which can also be encoded using more conditions):
-$$(n= \sti{x}) \vee (n=-\sti{x'} \wedge x = \enc{-}\cdot x')$$
-Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \emph{number-string conversion function} $\its{n}$ is defined symmetrically. We have $x = \its{n}$ iff $y= \sti{n}$. 
+
+%More specifically, if we want to say $n \in \varn$ is the integer value of the string $x \in \Sigma^*$, we can write the following constraint (ignore the case that $x$ is ``not a number", which can also be encoded using more conditions):
+%$$(n= \sti{x}) \vee (n=-\sti{x'} \wedge x = \enc{-}\cdot x')$$
+%Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \emph{number-string conversion function} $\its{n}$ is defined symmetrically. We have $x = \its{n}$ iff $y= \sti{n}$. 
 
 
 %\section{Under-approximation} \label{section:under_approximate}
