@@ -744,7 +744,7 @@ $\begin{array}{rcll}
 	t_2&\defeq& \ldots y \ldots = \ldots&,
 \end{array}$\\
 we say the $x$ in $t_1$ \emph{depends on} the $y$ in $t_2$, because $y$ occurs on the other side of $x$ in $t_1$ and occurs on the same side of $x$ in $t_2$. A set of equality constraints has a \emph{chain}, informally, if we can find some circular dependency in the equality constraints.
-The way to break a chain is simple, one just needs to find any variable $x$ in the dependency circle, and replace it to a fresh variable. Our procedure iteratively searches for chains in the equality constraints, breaks the chain by replacing some variable to a fresh one, and repeats until all chains are broken.
+Our procedure iteratively searches for chains in the equality constraints, breaks the chain by replacing some variable in the dependency circle to a fresh one, and repeats until all chains are broken.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parametric Flat Automata} \label{section:sfa}
