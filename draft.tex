@@ -25,7 +25,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\hide}[1]{}
 \newcommand{\tool}{{\textsf{Z3-PFA}}}
-
+\newcommand{\dr}{\mathcal{R}}
 \newcommand{\nat}{\mathbb{N}}
 \newcommand{\integers}{\mathbb{Z}}
 \newcommand{\todo}[1]{{\color{blue}TODO: #1}}
@@ -898,45 +898,44 @@ We start the description of the algorithm that converts a string constraint $\in
 The domain restriction is formally defined by restricting the domain of each string variable by a chosen PFA. 
 %
 Namely, assuming that $X$ is the set of string variables of $\insc$,
-a \emph{flat domain restriction} for $\insc$ is a mapping $R$ that assigns to every variable $x\in X$ a PFA $R(x)$ \changed{over character variables $V_x$.}
-string %
-We require that these PFA operate over pairwise disjoint sets of character variables\changed{, that is if $x\neq y$ then $V_x \cap V_y = \emptyset$.}
+a \emph{flat domain restriction} for $\insc$ is a mapping $\dr$ that assigns to every variable $x\in X$ a PFA $\dr(x)$ over character variables $V_x$.
+We require that these PFA operate over pairwise disjoint sets of character variables, that is if $x\neq y$ then $V_x \cap V_y = \emptyset$.
 %
 The particular choice of a PFA 
-for each variable  depends on the strategy used in the implementation, and will be discussed in Section~\ref{section:implementation}.
+for each variable  depends on the strategy used in the implementation, and will be discussed in Section~\ref{section:evaluation}.
 %
 The flattening $\outlf$ will be  built inductively to the structure of $\insc$.
-Namely, in the following subsections we show how to build a flattening $\underf R {\phi}$ for every atomic string constraint $\phi$, 
-and for a conjunction of string constraints, we let $\underf R {\phi \land \phi'} \defeq \underf R {\phi} \land \underf R {\phi'}$.
-We then let $\outlf \defeq \underf R \insc$
+Namely, in the following subsections we show how to build a flattening $\underf \dr {\phi}$ for every atomic string constraint $\phi$, 
+and for a conjunction of string constraints, we let $\underf \dr {\phi \land \phi'} \defeq \underf \dr {\phi} \land \underf \dr {\phi'}$.
+We then let $\outlf \defeq \underf \dr \insc$
 
-The semantics of a string constraint $\phi$ restricted by $R$ is then defined as 
-$\semof{\phi}^R = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{R(x)}\}$. 
+The semantics of a string constraint $\phi$ restricted by $\dr$ is then defined as 
+$\semof{\phi}^\dr = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{\dr(x)}\} \subseteq \vars\times \varn \rightarrow \Sigma^* \times\nat$.
 The following sections will be devoted to describing the flattening of the atomic string constraints. 
 The correctness of the entire construction of $\outlf$ is expressed by  Theorem~\ref{theorem:correct}:
 \begin{theorem}\label{theorem:correct}
-$\decode R (\semof {\outlf}) = \semof{\insc}_R$ 
+$\decode R (\semof {\outlf}) = \semof{\insc}^\dr$ 
 \end{theorem}
 
-The theorem can be proved by induction to the structure of $\insc$,
-however, for the induction step to go through, we will need a more meticulous view into the correspondence of $\phi$ and $\underf R \phi$ than just equality of their semantics. 
+The theorem can be proved by a structural induction over $\insc$.
+However, for the induction step to go through, we will need a more meticulous view into the correspondence of $\phi$ and $\underf \dr \phi$ than just equality of their semantics. \yfc{I do not understand the previous sentence}
 Particularly, we will need to
- ensure that $\underf R \phi$ captures exactly all $R$-encodings of $\semof \phi^R$
-(indeed, notice that if it would be allowed to capture only some of the encodings, then for instance $\underf R {\phi} \land \underf R {\phi'}$ could only underapproximate $\semof{\phi\land\phi'}^R$).
+ ensure that $\underf \dr \phi$ captures exactly all $\dr$-encodings of $\semof \phi^\dr$
+(indeed, notice that if it would be allowed to capture only some of the encodings, then for instance $\underf \dr {\phi} \land \underf \dr {\phi'}$ could only underapproximate $\semof{\phi\land\phi'}^\dr$).
 
-To formalise this correctness argument, we define an additional notation.
+To formalize this correctness argument, we define an additional notation.
 For an interpretation $I$ of string variables, 
-we define its $R$-encoding as the set $\encode R(I) = \bigcup_{x\in X} \encode \pa(I(x))$ of interpretations of $V_R\cup \#V_R$, containing combinations of interpretations of character variables of each $R(x)$ that encode the $I$.
+we define its $\dr$-encoding as the set $\encode \dr(I) = \bigcup_{x\in X} \encode {\dr(x)} (I(x))$ of interpretations of $V_\dr\cup \#V_\dr$, containing combinations of interpretations of character variables of each $\dr(x)$ that encode the $I$. \yfc{the sentence is difficult to parse. I did not find the definition of $V_\dr\cup \#V_\dr$.}
 %
 \changed{
-Further, we define an $R$-encoding for an interpretation $I \cup I'$ of a general string constraint, consiting of an interpretation $I$ of string variables and an interpretation $I'$ of integer variables.
+Further, we define an $\dr$-encoding for an interpretation $I \cup I'$ of a general string constraint, consisting of an interpretation $I$ of string variables and an interpretation $I'$ of integer variables.
 %
-An $R$-encoding of $I \cup I'$ is a union  $e \cup I'$ of an encoding $e\in \encode R(I)$ and the original integer interpretation $I'$ which satisfies that for every string leght variable $|x|$ in the domain of $I'$,
+An $\dr$-encoding of $I \cup I'$ is a union  $e \cup I'$ of an encoding $e\in \encode \dr(I)$ and the original integer interpretation $I'$ which satisfies that for every string length variable $|x|$ in the domain of $I'$,
 $|x| = \sum_{v\in V_x,I(v)\neq\epsilon}\#v$. 
 That is, the interpretation of string variables is encoded as usual, the interpretation of integer variables is kept as is, 
-and for each string legth variable $|x|$ in the domain of $I'$, 
+and for each string length variable $|x|$ in the domain of $I'$, 
 the value of $|x|$ is consistent with the encoding of $x$ by variables $V_x$ and $\#V_x$.
-The set of all $R$-encodings of $(I\cup I')$ is then denoted $\encode R {(I\cup I')}$}
+The set of all $\dr$-encodings of $(I\cup I')$ is then denoted $\encode \dr {(I\cup I')}$}\yfc{need a serious rewrite :-) Maybe I need to know why you define so many encodings...}
 %
 %Further, if $I \cup I'$ is an interpretation of a general string constraint, that is, an interpretation $I$ of string variables $X$ united with an interpretation $I'$ of integer variables $N$,
 %%
@@ -944,15 +943,15 @@ The set of all $R$-encodings of $(I\cup I')$ is then denoted $\encode R {(I\cup 
 %such that $\encode R {(I\cup I')} \defeq \{e \cup I' \mid e\in \encode R(I)\}$ of interpretations of variables $V_R \cup \#V_R \cup N$. That is, the interpretation of string variables is encoded and the interpretation of integer variables is kept as is.
 %
 %
-and we lift this notation to sets of interpretation in the standard manner, i.e., $\encode R (J) = \bigcup_{I \in J}\encode R (I)$ for a set of interpretations $J$.
+and we lift this notation to sets of interpretation in the standard manner, i.e., $\encode \dr (J) = \bigcup_{I \in J}\encode \dr (I)$ for a set of interpretations $J$.
 %
-The inductive argument needed in the proof of the correctness of the under-approximation then reads as
-$$\semof{\underf R \phi}_{V_R\cup V_{\#R}}  = \encode R{\semof{\phi}}$$ 
+The inductive argument needed in the correctness proof of the under-approximation then reads as
+$$\semof{\underf \dr \phi}_{V_\dr\cup V_{\#\dr}}  = \encode \dr{\semof{\phi}}$$ 
 %
 In the next sections, 
-we will formulate the corresponding correctness lemma for flattenings constructed from each type of atomic string constraints.
+we will formulate the corresponding correctness lemma for flattening constructed from each type of atomic string constraints.
 %
-We note that the restriction of the semantics of $\underf R \phi$ here is needed since $\underf R \phi$ will be constructed with some auxiliary variables. 
+We note that the restriction of the semantics of $\underf \dr \phi$ here is needed since $\underf \dr \phi$ will be constructed with some auxiliary variables. 
 
 \lh{do we want to discuss some sort of completeness? That is, every interpretation of every integer constraint is are covered by some flat restriction. ?}
 
