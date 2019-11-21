@@ -678,7 +678,7 @@ I(x) \in L(A) \}$.
 $\bullet$ A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$. The \emph{number-string} conversion constraint $x=\its{n}$ is treated as a syntactic sugar for $n=\sti{x}$.
 \smallskip
 
-A \emph{string constraint} is then a conjunction of atomic string constraints, with the semantics defined in the standard manner. It is \emph{satisfiable} if its semantics is nonempty.
+A \emph{string constraint} is then a conjunction of atomic string constraints, with the semantics defined in the standard manner. It is \emph{satisfiable} if its semantics is nonempty. Often we refer to the first three types of atomic string constraints the \emph{basic string constraints}.
 
 Notice that only positive integer is supported in the string-number conversion function. This is the semantics used by most of the SMT solvers, and hence we follow it in this paper. The encoding has a benefit that it can also handle the case where $x$ is ``not a number", using the condition $\sti{x} = -1$.
 
@@ -723,8 +723,11 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 %
 %\yfc{say handling regular constraint can be exponential to the number of constraints, but in our under-approximation, it is polynomial.}
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Over-Approximation} \label{section:over}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Our procedure for over-approximation is quite simple. In order to fit a formula into the chain-free fragment, we 
+For a string constraint 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
