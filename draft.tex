@@ -935,18 +935,22 @@ We start the description of the algorithm that converts a string constraint $\in
 The domain restriction is formally defined by restricting the domain of each string variable by a chosen PFA. 
 %
 Namely, assuming that $X$ is the set of string variables of $\insc$,
-a \emph{flat domain restriction} for $\insc$ is a mapping $\dr$ that assigns to every variable $x\in X$ a PFA $\dr(x)$ over character variables $V_x$ and we let $V_\dr = \bigcup_{x\in X} V_x$ be the set of all character variables used in $\dr$.
+a \emph{flat domain restriction} for $\insc$ is a mapping $\dr$ that assigns to each variable $x\in X$, a PFA $\dr(x)$ over character variables $V_x$. Let $V_\dr = \bigcup_{x\in X} V_x$ be the set of all character variables used in $\dr$.
 We require that these PFA operate over pairwise disjoint sets of character variables, that is if $x\neq y$ then $V_x \cap V_y = \emptyset$.
 %
 The particular choice of a PFA 
 for each variable depends on the strategy used in the implementation, and will be discussed in Section~\ref{section:evaluation}.
 %
-The flattening $\outlf$ will be built inductively to the structure of $\insc$.
-For a conjunction of string constraints, we let $\underf \dr {\phi \land \phi'} \defeq \underf \dr {\phi} \land \underf \dr {\phi'}$. We do such decomposition until reached atomic string constraints. We show how to build a flattening $\underf \dr {\phi}$ for every atomic string constraint $\phi$ in the following subsections.
+The flattening $\outlf$ will be built inductively following the structure of $\insc$.
+For a conjunction of string constraints, we let $\underf \dr {\phi \land \phi'} \defeq \underf \dr {\phi} \land \underf \dr {\phi'}$. We do such decomposition until reached atomic string constraints. We show how to build a flattening $\underf \dr {\phi}$ for every atomic string constraint $\phi$ in the following sections.
 At the end we set $\outlf \defeq \underf \dr \insc$.
 
+%The semantics of a string constraint $\phi$ restricted by $\dr$ is then defined as 
+%$\semof{\phi}^\dr = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{\dr(x)}\} \subseteq \vars\times \varn \rightarrow \Sigma^* \times\nat$.
+
 The semantics of a string constraint $\phi$ restricted by $\dr$ is then defined as 
-$\semof{\phi}^\dr = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{\dr(x)}\} \subseteq \vars\times \varn \rightarrow \Sigma^* \times\nat$.
+$\semof{\phi}^\dr = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{\dr(x)}\}$.
+
 
 
 The correctness of the entire construction of $\outlf$ is expressed by  Theorem~\ref{theorem:correct}. 
@@ -959,7 +963,7 @@ $\decode \dr (\semof {\outlf}) = \semof{\insc}^\dr$
 \end{theorem}
 
 The theorem can be proved by a structural induction over $\insc$.
-However, for the induction step to go through, we will need to guarantee a stronger correspondence of string constraints $\phi$ and their flattenings $\underf \dr \phi$ then just the semantic equality $\decode \dr (\semof {\underf \dr \phi}) = \semof{\phi}^\dr$.  
+However, for the induction step to go through, we will need to guarantee a stronger correspondence of string constraints $\phi$ and their flattenings $\underf \dr \phi$ than just the semantic equality $\decode \dr (\semof {\underf \dr \phi}) = \semof{\phi}^\dr$.  
 Particularly, we will need to
  ensure that $\underf \dr \phi$ captures exactly all $\dr$-encodings of $\semof \phi^\dr$
 (indeed, notice that if it would be allowed to capture only some of the encodings, then for instance $\underf \dr {\phi} \land \underf \dr {\phi'}$ could only underapproximate $\semof{\phi\land\phi'}^\dr$).
@@ -992,7 +996,7 @@ we will formulate the corresponding correctness lemma for flattening constructed
 %
 We note that the restriction of the semantics of $\underf \dr \phi$ here is needed since $\underf \dr \phi$ will be constructed with some auxiliary variables. 
 
-\lh{do we want to discuss some sort of completeness? That is, every interpretation of every integer constraint is are covered by some flat restriction. ?}
+%\lh{do we want to discuss some sort of completeness? That is, every interpretation of every integer constraint is are covered by some flat restriction. ?}
 
 
 %In the further development, $\epsilon$ will mean $-1$ when working with arithmetic formulae constraining interpretations of character variables. 
