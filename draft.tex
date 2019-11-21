@@ -29,6 +29,7 @@
 \newcommand{\integers}{\mathbb{Z}}
 \newcommand{\todo}[1]{{\color{blue}TODO: #1}}
 \newcommand{\lh}[1]{{\color{orange}Lukas: #1}}
+\newcommand{\changed}[1]{{\color{orange}#1}}
 \newcommand{\yfc}[1]{{\color{blue}YFC: #1}}
 \newcommand{\petr}[1]{{\color{pink}Petr: #1}}
 \newcommand{\chatAt}[2]{\mbox{\textsf{charAt}($#1$, $#2$)}}
@@ -816,9 +817,9 @@ We start the description of the algorithm that converts a string constraint $\in
 The domain restriction is formally defined by restricting the domain of each string variable by a chosen PFA. 
 %
 Namely, assuming that $X$ is the set of string variables of $\insc$,
-a \emph{flat domain restriction} for $\insc$ is a mapping $R$ that assigns to every variable $x\in X$ a PFA $R(x)$. 
-%
-We require that these PFA operate over pairwise disjoint sets of character variables. 
+a \emph{flat domain restriction} for $\insc$ is a mapping $R$ that assigns to every variable $x\in X$ a PFA $R(x)$ \changed{over character variables $V_x$.}
+string %
+We require that these PFA operate over pairwise disjoint sets of character variables\changed{, that is if $x\neq y$ then $V_x \cap V_y = \emptyset$.}
 %
 The particular choice of a PFA 
 for each variable  depends on the strategy used in the implementation, and will be discussed in Section~\ref{section:implementation}.
@@ -846,11 +847,23 @@ To formalise this correctness argument, we define an additional notation.
 For an interpretation $I$ of string variables, 
 we define its $R$-encoding as the set $\encode R(I) = \bigcup_{x\in X} \encode \pa(I(x))$ of interpretations of $V_R\cup \#V_R$, containing combinations of interpretations of character variables of each $R(x)$ that encode the $I$.
 %
-Further, if $I \cup I'$ is an interpretation of a general string constraint, that is, an interpretation $I$ of string variables $X$ united with an interpretation $I'$ of integer variables $N$,
+\changed{
+Further, we define an $R$-encoding for an interpretation $I \cup I'$ of a general string constraint, consiting of an interpretation $I$ of string variables and an interpretation $I'$ of integer variables.
 %
-then its $R$-encoding is defined as the set $\encode R {(I\cup I')} \defeq \{e \cup I' \mid e\in \encode R(I)\}$ of interpretations of variables $V_R \cup \#V_R \cup N$. That is, the interpretation of string variables is encoded and the interpretation of integer variables is kept as is.
+An $R$-encoding of $I \cup I'$ is a union  $e \cup I'$ of an encoding where $e\in \encode R(I)$ and the original integer interpretation $I'$ which satisfies that for every string leght variable $|x|$ in the domain of $I'$,
+$|x| = \sum_{v\in V_x,I(v)\neq\epsilon}\#v$. 
+That is, the interpretation of string variables is encoded as usual, the interpretation of integer variables is kept as is, 
+and for each string legth variable $|x|$ in the domain of $I'$, 
+the value of $|x|$ is consistent with the encoding of $x$ by variables $V_x$ and $\#V_x$.
+The set of all $R$-encodings of $(I\cup I')$ is then denoted $\encode R {(I\cup I')}$}
 %
-We lift this notation to sets of interpretation in the standard manner, i.e., $\encode R (J) = \bigcup_{I \in J}\encode R (I)$ for a set of interpretations $J$.
+%Further, if $I \cup I'$ is an interpretation of a general string constraint, that is, an interpretation $I$ of string variables $X$ united with an interpretation $I'$ of integer variables $N$,
+%%
+%then an $R$-encoding of $I \cup I'$ is any interpretation $e \cup I$ with  $e:V_R \cup \#V_R \cup \Simga_\epsilon$ 
+%such that $\encode R {(I\cup I')} \defeq \{e \cup I' \mid e\in \encode R(I)\}$ of interpretations of variables $V_R \cup \#V_R \cup N$. That is, the interpretation of string variables is encoded and the interpretation of integer variables is kept as is.
+%
+%
+and we lift this notation to sets of interpretation in the standard manner, i.e., $\encode R (J) = \bigcup_{I \in J}\encode R (I)$ for a set of interpretations $J$.
 %
 The inductive argument needed in the proof of the correctness of the under-approximation then reads as
 $$\semof{\underf R \phi}_{V_R\cup V_{\#R}}  = \encode R{\semof{\phi}}$$ 
