@@ -860,8 +860,10 @@ Namely, words over $\cvar$ are interpreted as words over $\Sigma$ under an
 a mapping $I:\cvar\rightarrow\Sigma_\epsilon$ (recall that $\Sigma_\epsilon \subseteq \nat$). 
 For a parametric word $x= v_1v_2\cdots v_k$ over $\cvar$, its interpretation $I(x)$ is then defined as $I(v_1)\cdot I(v_2)\cdot \ldots \cdot I(v_k)$.
 %
-We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, the semantics of a language $L\subseteq V^*$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, and the semantics of a PA is the semantics of its language restricted by the formula $\paf$, that is,  
-$\semof {\pa} = \{I(w) \mid w\in L(A),I\in\semof \paf\}$. 
+%We define the semantics of $x$ as the set $\semof x$ of all possible interpretations of $x$, 
+%the semantics of a language $L\subseteq V^*$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, 
+We then define the semantics of the PA $P$ as the set of strings   
+$\semof {\pa} = \{I(x) \mid x\in L(A),I\in\semof \paf\}$ of all interpretations satisfying $\paf$ of all parametric strings in the language of $A$. 
 
 
 Observe that every word $w \in \semof{\pa}$ is uniquely determined by a parametric word $x\in L(A)$ and an interpretation $I\in\semof{\paf}$ such that $w = I(x)$.  
