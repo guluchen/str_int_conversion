@@ -726,9 +726,16 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Over-Approximation} \label{section:over}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Our procedure for over-approximation is quite simple. In order to fit a formula into the chain-free fragment, we 
-For a string constraint 
-
+Our procedure has two steps. In the first step, it replaces all string-number conversion constraint $n=\sti{x}$ with $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$) to obtain an over-approximation $\Phi$ consisting of only basic string constraints. 
+In the second step, it over-approximates $\Phi$ to a \emph{chain-free string constraint}~\cite{abdulla2019chain}, 
+which constitutes with only integer, membership, and \emph{chain-free} equality constraints. In order to explain this step, we need to first describe what is a \emph{chain} in a set of equality constraints.
+For two equality constraints, 
+$\begin{array}{rcll}
+	t_1&\defeq& \ldots x\ldots = \ldots y\ldots\\
+	t_2&\defeq& \ldots y \ldots = \ldots&,
+\end{array}$\\
+we say the $x$ in $t_1$ \emph{depends on} the $y$ in $t_2$, because $y$ occurs on the other side of $x$ in $t_1$ and occurs on the same side of $x$ in $t_2$. A set of equality constraints has a \emph{chain}, informally, if we can find some circular dependency in the equality constraints.
+The way to break a chain is simple, one just needs to find any variable $x$ in the dependency circle, and replace it to a fresh variable. Our procedure iteratively searches for chains in the equality constraints, breaks the chain by replacing some variable to a fresh one, and repeats until all chains are broken.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Parametric Flat Automata} \label{section:sfa}
