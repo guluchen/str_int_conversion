@@ -742,9 +742,7 @@ Our procedure iteratively searches for such dependency chains in the equality co
 
 
 
-The second step of our decision procedure is only enabled if the over-approximation step returns SAT. In this case, our decision procedure  restricts the search domain of each string variable to strings that obey some predefined and parameterized pattern.  We propose to use patterns defined by \emph{parametric flat automata} (PFA). A PFA is a {\em flat} finite state automaton consisting of a predefined sequence of loops, each of fixed length. The size of the PFA is parameterized by the length of the sequence of loops and the size of each loop. Adjusting these parameters enlarges or prunes the potential solution space. This approach based on PFA is very flexible yet allows very efficient manipulation. Then, we show that given such restriction, one can  reduce the string constraint solving problem to a linear formula satisfiability problem.
-
-The rest of the paper will be mainly dedicated to the explanation of the under-approximation technique (which is our main contribution).
+The second step of our decision procedure is only enabled if the over-approximation step returns SAT. In this case, our decision procedure  under-approximate the string constraints by restricting the search domain of each string variable to the language defined by some PFA that will be introduced in the next section. This approach based on PFA allows very efficient manipulation. We will show that given such restriction, one can reduce the string constraint solving problem to a linear formula satisfiability problem. The rest of the paper will be mainly dedicated to the explanation of the under-approximation technique (which is our main contribution).
 
 
 
