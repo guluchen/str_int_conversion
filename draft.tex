@@ -88,7 +88,7 @@
 
 \newcommand\insc{\phi_{\mathit{in}}}
 \newcommand\outlf{\Psi_{\mathit{out}}}
-\newcommand\noepsilon{|\!|\epsilon|\!|}
+\newcommand\noepsilon{\semof{\epsilon}}
 
 \newcommand{\st}[2]{q_{#1}^{#2}}
 \newcommand{\sym}[2]{v_{#1}^{#2}}
@@ -929,20 +929,19 @@ a \emph{flat domain restriction} for $\insc$ is a mapping $\dr$ that assigns to 
 We require that these PFA operate over pairwise disjoint sets of character variables, that is if $x\neq y$ then $V_x \cap V_y = \emptyset$.
 %
 The particular choice of a PFA 
-for each variable  depends on the strategy used in the implementation, and will be discussed in Section~\ref{section:evaluation}.
+for each variable depends on the strategy used in the implementation, and will be discussed in Section~\ref{section:evaluation}.
 %
-The flattening $\outlf$ will be  built inductively to the structure of $\insc$.
-Namely, in the following subsections we show how to build a flattening $\underf \dr {\phi}$ for every atomic string constraint $\phi$, 
-and for a conjunction of string constraints, we let $\underf \dr {\phi \land \phi'} \defeq \underf \dr {\phi} \land \underf \dr {\phi'}$.
-We then let $\outlf \defeq \underf \dr \insc$.
+The flattening $\outlf$ will be built inductively to the structure of $\insc$.
+For a conjunction of string constraints, we let $\underf \dr {\phi \land \phi'} \defeq \underf \dr {\phi} \land \underf \dr {\phi'}$. We do such decomposition until reached atomic string constraints. We show how to build a flattening $\underf \dr {\phi}$ for every atomic string constraint $\phi$ in the following subsections.
+At the end we set $\outlf \defeq \underf \dr \insc$.
 
 The semantics of a string constraint $\phi$ restricted by $\dr$ is then defined as 
 $\semof{\phi}^\dr = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{\dr(x)}\} \subseteq \vars\times \varn \rightarrow \Sigma^* \times\nat$.
-The following sections will be devoted to describing the flattening of the atomic string constraints. 
+
 
 The correctness of the entire construction of $\outlf$ is expressed by  Theorem~\ref{theorem:correct}. 
-It uses the decoding function $\decode \dr$ parameterised by the domain restriction $\dr$. 
-For an interpretation $e \cup I'$ consisting of an interpretation $e$ of $V_\dr$ and $\#V_\dr$ and an interpretation of integer variavles $I'$, we let $\decode \dr (e\cup I') = I \cup I'$ where $I$ is the interpretation of string variables such that for each $x\in X$,
+It uses the decoding function $\decode \dr$ parameterized by the domain restriction $\dr$. 
+For an interpretation $e \cup I'$ consisting of an interpretation $e$ of $V_\dr$ and $\#V_\dr$ and an interpretation of integer variables $I'$, we let $\decode \dr (e\cup I') = I \cup I'$ where $I$ is the interpretation of string variables such that for each $x\in X$,
 $I(x) = \decode {\dr(x)} (e_{V_{\dr(x)}\cup \#V_{\dr(x)}})$. That is, $\decode \dr (e\cup I')$ returns the original integer interpretation $I'$ together with each string variable $x$ interpreted as the ${\dr(x)}$-decoding of the values of $V_{\dr(x)}$ and $\#V_{\dr(x)}$. 
 We lift $\decode \dr$ to sets of interpretations in the standard manner.
 \begin{theorem}\label{theorem:correct}
@@ -1084,8 +1083,8 @@ their concatenation is the PFA $\pa\cdot \pa' = (Q\cup Q',T\cup T'\cup \{(q_f,v_
 \begin{lemma}
 For PFA $\pa$ and $\pa'$,  
 $\semof{\pa\cdot \pa'} = \semof{\pa}\cdot\semof{\pa'}$ and 
-$\encode{\pa\cdot \pa'}{\semof{\pa\cdot \pa}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} =
-\{e \cup e'\mid e \in \encode \pa (\semof{\pa}),\\ e' \in\encode {\pa'} (\semof{\pa'})\}$.
+$\encode{\pa\cdot \pa'}{(\semof{\pa\cdot \pa})}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} =
+\{e \cup e'\mid e \in \encode \pa (\semof{\pa}) \wedge e' \in\encode {\pa'} (\semof{\pa'})\}$.
 \end{lemma}
 
 With synchronization and concatenation of PA, we are ready to describe flattening of the basic string constraints.
