@@ -592,7 +592,7 @@ The approach combines techniques from both automata theory and SMT solving to ex
 
 %Given a finite automaton $A$ over $\{a_1,a_2,\ldots,a_n\}$, the Parikh image of $L$ is the set $\{(|w|_{a_1},\ldots, |w|_{a_n}) \mid w \in L(A) \}$, i.e., the number of occurrences of each symbol $\{a_1,a_2,\ldots,a_n\}$ of words in $L(A)$. Moreover, one can construct from $A$ in linear time a Presburger formula $\phi_A(v_1, \ldots,v_n)$ such that $\phi(c_1, \ldots,c_n) \iff (c_1, \ldots,c_n)$ in the Parikh image of $L$~\cite{SeidlSMH04}.
 
-We use $\mathbb{N}$ and $\mathbb{Z}$ to denote the sets of natural numbers (including 0) and 
+We use $\mathbb{N}$ and $\mathbb{Z}$ to denote the sets of natural numbers and 
 integers. For a set $A$, we use $|A|$ to denote its size. 
 For $n,m\in\nat$, we write $[n,m]$ for the set of natural numbers 
 %(or symbols in $\Sigma$) 
@@ -601,15 +601,15 @@ The function $f$ with the domain restricted to $D$ is denoted by $\restrict f D$
 and a set of functions $F$ restricted to $D$ is $\restrict F D = \{\restrict f D \mid f \in F\}$.
 An \emph{alphabet} is a finite set $\Sigma$ of \emph{characters} and a \emph{word} over $\Sigma$ is a sequence $w = a_1\ldots a_n$ of characters from $\Sigma$, with $\epsilon$ denoting the \emph{empty word}. 
 We use $w_1\cdot w_2$ to denote the \emph{concatenation} of words $w_1$ and $w_2$.
-$\Sigma^*$ is the set of all words over $\Sigma$, $\Sigma^+ = \Sigma^*\setminus \{\epsilon\}$, $\Sigma_\epsilon = \Sigma\cup\{\epsilon\}$, and 
+$\Sigma^*$ is the set of all words over $\Sigma$, $\Sigma^+ = \Sigma^*\setminus \{\epsilon\}$ and $\Sigma_\epsilon = \Sigma\cup\{\epsilon\}$.
 A \emph{language} over $\Sigma$ is a subset $L$ of $\Sigma^*$. 
 %
 We use $|w|$ to denote the length of $w$ and $|w|_a$ to denote the number of occurrences of the character $a\in \Sigma$ in $w$. 
 
 A \emph{finite automaton} (FA) is a tuple $(Q,T,\Sigma,q_i,q_f)$, where $Q$ is the set of \emph{states}, $T\subseteq Q\times \Sigma \times Q $ is the set of \emph{transitions}, $\Sigma$ is the alphabet, $q_i$ is the \emph{initial state}, and $q_f$ is the \emph{final state}. 
 %The semantics of finite automaton is defined in the standard manner. 
-A \emph{run} of $A$ over a word $w = a_1\cdots a_n$ is a sequence of transition $(q_0,a_1,q_1),(q_1,a_1,q_2),\ldots,(q_{n-1},a_n,q_n)$. The run is \emph{accepting} if $q_0 = q_i$ and $q_i = q_f$ and $w$ then is \emph{accepted}.
-The \emph{language} of $A$ is the set $L(A)$ of all accepted words.
+A \emph{run} $\pi$ of $A$ over a word $w = a_1\cdots a_n$ is a sequence of transitions $(q_0,a_1,q_1),(q_1,a_1,q_2),\ldots,(q_{n-1},a_n,q_n)$. The run $\pi$ (resp. the word $w$) is \emph{accepting} (resp. \emph{accepted}) if $q_0 = q_i$ and $q_n = q_f$.
+The \emph{language} of $A$ (denoted by $L(A)$) consists of  the set  of all accepted words.
 
 %Through the paper, we will use quantifier-free linear integer arithmetic formulae, and call them \emph{linear formulae} for short.  
 %Given a linear formula $\phi$, a set of variables $V$, and an \emph{interpretation} of $V$, i.e., a function $I:V\rightarrow \nat$, 
@@ -629,21 +629,18 @@ We use $\modelsof \phi$ to denote the set all models of $\phi$.
 %$\{\restrict I {V\cap V'} \mid I \in J\} = \{\restrict {I'} {V\cap V'} \mid I' \in J'\}$. We may write $J\eqwrt{V\cap V'} J'$ if we wish to made the common variables explicit.
 
 
-The \emph{Parikh image} of a word $w\in \Sigma^*$ is the assignment 
-$\parikhof w$ that for every character $a\in\Sigma$ maps the \emph{Parikh variable} $\#a$ to the number of occurrences of $a$ in $w$.
-Formally, let $\pvarsof S$ denote the set of Parikh variables $\{\#s \mid s\in S\}$ obtained from a set $S$. 
+The \emph{Parikh image} of a word $w\in \Sigma^*$ maps each \emph{Parikh variable} $\#a$, with $a \in \Sigma$ is a character, to the number of occurrences of $a$ in $w$.
+Formally, given a set $S$, let $\pvarsof S$ denote the set of Parikh variables $\{\#s \mid s\in S\}$. 
 The Parikh image of $w$ is a function $\parikhof w:\pvarsof \Sigma \rightarrow \nat$ such that $\parikhof w (\#a) = |w|_a$. 
-The Parikh image of a language $L$ is the set of Parikh images $\parikhof L = \{\parikhof w \mid w \in L\}$. %and the Parikh image of an FA $A$ is Parikh image of its language, $\parikhof{A} = \parikhof{L(A)}$. 
+The Parikh image of a language $L$ is defined as folllows $\parikhof L = \{\parikhof w \mid w \in L\}$. %and the Parikh image of an FA $A$ is Parikh image of its language, $\parikhof{A} = \parikhof{L(A)}$. 
 %
-It is well known that $\parikhof {L(A)}$ can be efficiently computed in the form of linear formula:
+It is well known that the Parikh image of a regular language  can be  charctaerized by a linear formula:
 
 
 
 \begin{lemma}[\cite{SeidlSMH04}]
-$\parikhof{L(A)}$ of an FA $A$ can be computed in the form of a linear formula $\parikhfof{A}$ such that 
-%$\modelsof{\parikhfof A}_{\#\Sigma} = \parikhof{L(A)}$, 
-$\modelsof{\parikhfof A} = \parikhof{L(A)}$, 
-in time linear to the size of $A$.
+Let $A$ be a FA over the alphabet $\Sigma$. Then, we can compute, in linear time,  a linear formula $\parikhfof{A}$, over $\pvarsof \Sigma$, such that $\modelsof{\parikhfof A} = \parikhof{L(A)}$.
+
 \end{lemma}
 
 
