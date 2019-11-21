@@ -5,7 +5,7 @@
 
 \begin{table}[h]
 \centering
-\caption{Results of {\tool}, CVC4, and Z3 on Basic String Constraint benchmarks.}
+\caption{Results of {\tool}, CVC4, and Z3/Z3str3 on Basic String Constraint benchmarks.}
 \scalebox{0.85}{
 \begin{tabular}{|l r | r r r r r|}
 \hline
@@ -37,7 +37,7 @@
 
 \begin{table}[h]
 \centering
-\caption{Results of {\tool}, CVC4, and Z3 on Basic String Constraints + String-Number Conversion benchmark.}
+\caption{Results of {\tool}, CVC4, and Z3/Z3str3 on Basic String Constraints + String-Number Conversion benchmark.}
 \scalebox{0.8}{
 \begin{tabular}{|l r | r r r r|}
 \hline
@@ -58,6 +58,30 @@
 \label{table:str_int_benchmark}
 \end{table}
 
+\begin{table}[h]
+\centering
+\caption{Comparison of {\tool}, CVC4, and Z3/Z3str3 with checkLuhn problems of 2 to 12 loops.}
+\scalebox{0.9}{
+\begin{tabular}{| c | c c c c|}
+\hline
+\# of Loops & {\tool} 	  &  CVC4    	 &       Z3   & Z3-str3 \\ \hline
+2 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(0.27s)   & \textbf{SAT}(0.2s)  & $\times$ \\
+3  			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(10.1s)  & \textbf{SAT}(0.1s)  & $\times$ \\
+4 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(48.7s) &   $\times$  & $\times$ \\
+5 			& \textbf{SAT}(<0.1s)  &  $\times$     &   $\times$  & $\times$ \\
+6 			& \textbf{SAT}(0.16s)  &  $\times$     & \textbf{SAT}(0.13s) & $\times$ \\
+7 			& \textbf{SAT}(0.24s)  &  $\times$     &   $\times$  & $\times$ \\
+8 			& \textbf{SAT}(0.31s)  &  $\times$     & \textbf{SAT}(0.37s) & $\times$ \\
+9 			& \textbf{SAT}(0.26s)  &  $\times$     &   $\times$  & $\times$ \\
+10 			& \textbf{SAT}(0.21s)  &  $\times$     & \textbf{SAT}(0.53s) & $\times$ \\
+11 			& \textbf{SAT}(0.23s)  &  $\times$     & \textbf{SAT}(0.37s) & $\times$ \\
+12 			& \textbf{SAT}(0.33s)  &  $\times$     & \textbf{SAT}(0.40s) & $\times$ \\ \hline
+\end{tabular}}
+\label{table:checkLuhn}
+\end{table}
+
+
+\hide{
 \begin{figure}
 \begin{tikzpicture}
 \begin{axis}
@@ -149,7 +173,7 @@ coordinates
 \end{tikzpicture}
 \caption{checkLuhn: z3str3 (UNKNOWN if not timeout)}
 \end{figure}
-
+}
 
 
 \hide{ % keep data of abc and ostrich
@@ -356,7 +380,7 @@ In {\tool}, we use the following PFA selection strategy: we select PFA's of size
 
 The way our theory solver and Z3 interacts is almost standard. Every time when Z3 asks our theory solver a string constraint satisfiability problem, our solver tries to prove it SAT or UNSAT using the aforementioned procedure. For under-approximation, every time when a corresponding linear formula is created, we create a new Z3 solver instance to solve it. If our theory solver reports UNKNOWN, Z3 remembers it in a global flag \textsf{incomplete} and tries another solution branch. If Z3 completes the search of all solution branches, it reports UNSAT if the flag \textsf{incomplete} is down, and UNKNOWN otherwise.
 
-We compare {\tool} with other state-of-the-art string solvers, namely CVC4(Relese-1.7)~\cite{cvc4Tool}, Z3(master:dde8da853)~\cite{z3}, \textsf{Z3-str3}(master:109dfc5e8)~\cite{zheng2013z3}, \textsf{Trau+}~\cite{parosh2019chain}, , and Ostrich~\cite{chen2019decision}. We do not compare with Sloth \cite{sloth} since it does not support length constraints, which occurs in most of our benchmarks. We also do not compare with ABC~\cite{aydin2018parameterized} (a model counter for string constraints), which over-approximates cases that cannot be modeled by \emph{aligned multi-track automata}~\cite{yu2016optimal} and hence cannot solve our benchmark examples precisely.
+We compare {\tool} with other state-of-the-art string solvers, namely CVC4~(relese-1.7)~\cite{cvc4Tool}, Z3~(\texttt{dde8da853})~\cite{z3}, \textsf{Z3-str3}~(\texttt{109dfc5e8})~\cite{zheng2013z3}, \textsf{Trau+}~\cite{parosh2019chain}, , and Ostrich~\cite{chen2019decision}. We do not compare with Sloth \cite{sloth} since it does not support length constraints, which occurs in most of our benchmarks. We also do not compare with ABC~\cite{aydin2018parameterized} (a model counter for string constraints), which over-approximates cases that cannot be modeled by \emph{aligned multi-track automata}~\cite{yu2016optimal} and hence cannot solve our benchmark examples precisely.
 
 We perform two sets of experiments. In the first experiment, we compare with other tools on benchmarks over basic string constraints. We use the following benchmark examples in this experiments:
 \begin{itemize}
@@ -369,7 +393,7 @@ We perform two sets of experiments. In the first experiment, we compare with oth
 
 In the second experiment, we compare with tools supporting to string-number conversion on the  benchmarks collected from the symbolic executor \texttt{Py-Conbyte}\footnote{\url{https://github.com/spencerwuwu/py-conbyte}}, which has the supports of string-number conversion. We run it on several examples collected from the LeetCode platform and from Python core libraries. We also have examples that encode execution paths of some JavaScript programs (the Luhn algorithm and some array manipulation).
 
-All experiments were executed on a computer with 4-core CPU, 8 GiB RAM and Ubuntu 18.4-LVM OS. The timeout was set to 10s for each test.
+All experiments were executed on a computer with 4-core CPU, 8 GiB RAM. The timeout was set to 10s for each test.
 We use the results from {\tool}, CVC4, and Z3 as the reference answer for the validation of the correctness of the results. Occasionally, two of them report inconsistent (one SAT and one UNSAT) answers to the same test. To decide which solver reports the incorrect answer, we developed a validator, which takes the model $I$ returned from the solver who reported SAT, assigns $I(x)$ to all variables $x$ in the test to obtained a modified test, and re-evaluates the modified test by multiple solvers. If the results from all solvers are consistent, we mark the test SAT or UNSAT according to the results. Otherwise, we manually simplify and inspect the test until we get a conclusive result. 
 
 The results of the experiments are summarized in Table~\ref{table:base_benchmark} and Table~\ref{table:str_int_benchmark}, respectively. Columns with heading \texttt{sat}/\texttt{unsat} show numbers of solved formulas. Columns with heading $\times$ indicate the number of instances the solver fails (including timeout, report unknown, report incorrect result, or crash). 
