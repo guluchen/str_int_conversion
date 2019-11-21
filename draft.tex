@@ -129,7 +129,7 @@ Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular
 
 An important class of string operations is  the string-number conversions.  While string length operations are sometimes well supported, converting a string $x$ to an integer $n$ (e.g., using the operation $n = \sti{x}$) or turning an integer value $n$ into its string form $x$ (e.g., using the operation $x = \its{n}$)  suffer from extremely limited support by the state-of-the-art string constraint solvers. 
 
-For many languages such as Java, string-number conversions are core operations, and much symbolic execution can not been done without supporting it. In fact,  a code that receives input tends to need to convert at least some of that input into numbers,  which makes the handling of string-integer conversions of the utmost importance. For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
+For many languages such as Java, string-number conversions are core operations, and much symbolic execution can not been done without supporting it. In fact,  a code that receives input tends to need to convert at least some of that input into numbers,  which makes the handling of string-integer conversions of the utmost importance. For example, the program fragment below is a variant of the Luhn test algorithm that is often used in credit card or personal ID validation.
 
 
 
@@ -173,9 +173,9 @@ function checkLuhn(value) {
 \end{Verbatim}
 
 
-The input \verb|value| of the Luhn test algorithm is a sequence of digits. The algorithm process the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) subtracts its value by $9$ if the doubled-value is bigger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends by an $0$ (i.e., \verb| sum mod 10=0|).
+The input \verb|value| of the Luhn test algorithm is a sequence of digits. The algorithm processes the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) subtracts its value by $9$ if the doubled-value is larger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends by an $0$ (i.e., \verb| sum mod 10=0|).
 
-To check whether the program path that traverses both loop exactly once, which corresponds to the case when $| \verb|value||=2$, and finally passes this test has a valid input, we create the following (string) constraint:
+To check whether the program path that traverses both loops exactly once, which corresponds to the case when $| \verb|value||=2$, and finally passes this test has a valid input, we create the following (string) constraint:
 
 $$\begin{array}{lc}
 1&	{\it value_0} \in [1,9]^+ \wedge 	{\it sum_0} = 0 \wedge \\
