@@ -1348,27 +1348,27 @@ $\begin{array}{ccc}
 \section{Flattening of String-Integer Conversion} \label{section:s2i}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Last, we a major contribution of this paper, 
+Last, we present the main contribution of this paper, 
 the construction of a flattening $\underf \dr {\phi_s}$ of string-number conversion constraint $\phi_s \defeq n=\sti{x}$. 
 
 Let us begin with a simple example. Assume that we use the PFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee (n=-1 \wedge (v_0 >9 \vee v_1 >9))$.
 
 For the case that $n$ is a positive integer, the value of $n$ can be characterized by a constraint (assume character variables are not assigned $\epsilon$) $n= (v_0\times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#v_0-1})=  (v_0\times 10+ v_1) \times \frac{100^{\#v_0}-1}{100-1}$. 
 The constraint uses $\#v_0$ to capture the total number of loop traversals.
-Notice that the constraint above contains an exponential component $\frac{100^{\#v_0}}{100-1}$. To solve the satisfiability of this formula, one need to solve an exponential constraint. 
+Notice that the constraint above contains an exponential component $\frac{100^{\#v_0}}{100-1}$. To solve the satisfiability of this formula, one needs to solve an exponential constraint. 
 
 Let us have a look at another example. If we restrict the domain of $x$ to the PFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0 \times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#v_0-1})\times 10\times 100^{\#v_3}+ v_2 \times 100^{\#v_3}  +(v_3\times 10+ v_4) \times (1+100 +100^2 + \ldots 100 ^{\#v_3-1}) =  (v_0\times 10+ v_1) \times \frac{100^{\#v_0-1}}{100-1}\times 10\times 100^{\#v_3} + v_2 \times 100^{\#v_3}+ (v_3\times 10+ v_4) \times \frac{100^{\#v_3-1}}{100-1}$. Observe that the formula has multiple exponential components, including $\frac{100^{\#v_0}\times 100^{\#v_3} }{100-1}$ and $\frac{100^{\#v_3} }{100-1}$.
 
 It is not difficult to see from the examples above that, if $\dr(x)$ is an arbitrary PFA with $m$ loops, the formula that defines the number $n$ contains at least $m$ exponential components, one for each loop.
-To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. As said in the introduction, the problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure which is double-exponential to the length of the input formula and hence cannot handle large instances. We therefore do not expect that such constraint can be solved efficiently. Instead, we will define a special form of the flat restriction $\dr(x)$ of $x$ that leads to an easies linear formula.
+To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. The problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure which is double-exponential to the length of the input formula and hence cannot handle large instances. We therefore do not expect that such constraint can be solved efficiently. Instead, we will define a special form of the flat restriction $\dr(x)$ of $x$ that leads to an easier linear formula.
 
 \paragraph{PFA that allows efficient string-number conversion: } 
 %Now we know that it is unlikely to use arbitrary PFA and gain efficient solving procedure, due to the requirement to solve exponential integer constraints. The cause of the problem is that each loop in the PFA creates an exponential component in the constraint. 
 %An immediate idea would be that maybe we can some pick some specific PFA that allow more efficient constraint solving. 
-We will now discuss the special form of $\dr(x)$, called numeric PFA, which we choose for string variables appearing in string-integer constraints that leads to efficient underapproximation.
+We will now discuss the special form of $\dr(x)$, called numeric PFA, which we choose for string variables appearing in string-integer constraints and that leads to efficient underapproximation technique.
 %
 Besides simple induced linear formulae, we still want single $\dr(x)$ to cover as many numerals as possible.
-We want an ``easy" completeness property, that is, that the space of all numerals can be covered completely by our special numeric PFAs, and that these numeric PFAs are generated easily, and each of them covers a large and practically significant portion of numerals (so that satisfiable assignments can be often found within the domain restriction of just few of numeric PFAs).
+We want an ``easy" completeness property, that is,  the space of all numerals can be covered completely by our special numeric PFAs, and that these numeric PFAs are generated easily, and each of them covers a large and practically significant portion of numerals (so that satisfiable assignments can be often found within the domain restriction of just few of numeric PFAs).
 %
 Particularly, we will proceed towards a definition of \emph{number PFA} $(A^m,\paf^m),m\in\nat$ which covers all numerals that encode integers with $m$ digits.
 
@@ -1412,7 +1412,7 @@ to hold the value $0$.
 This transition ensures that the under-approximation handles numerals with arbitrary number of trailing zeros.  
 The self-loop is followed by a chain of $m$ transitions $(q_{i-1},v_i,q_{i}),1\leq i \leq m$, leading towards the final state $q_m$. 
 The chain encodes at most $m$ meaningful digits (only \emph{at most} because the first variables in the sequence can still be assigned zeros and some variables may be assigned $\epsilon$). Hence this PFA covers all numerals that encode numbers with at most $m$ digits.
-Although it still has a loop, it will not create any exponential component defining the value of $n$ because the loop only represents a sequence of ``0" at the front of $x$. It will not affect the integer value of $n=\sti{x}$.
+Although it still has a loop, it will not create any exponential component defining the value of $n$ because the loop only represents a sequence of ``0" at the front of $x$. Thus, it will not affect the integer value of $n=\sti{x}$.
 
 \begin{figure}
 	\scalebox{0.7}{
@@ -1439,7 +1439,7 @@ Although it still has a loop, it will not create any exponential component defin
 %Such PFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
 Numeric PFA with these restrictions would satisfy our primary objective, that is, they would induce linear formulae and would ``easily" and completely cover all numerals.
 %
-A last problem still needs to be solved beofe they can be efficient in practice. 
+A last problem still needed to be solved beofe they can be efficient in practice. 
 %
 Recall that the character variables can be assigned $\epsilon$.  
 %
@@ -1447,9 +1447,9 @@ Therefore, a single chain of $k$ interesting digits, $k\leq m$, can be by $A^m$ 
 %
 \lh{I am not sure whether it is really impossible to make a small formula}
 %
-This would lead to an exponential explosion of the size of the linear formula defining the value of $n$.
+This may  lead to a formula of   exponential size  when defining  the value of $n$.
 %
-In order to eliminate this blow-up in the size of the formula, we add to $\paf^m$ an additional constraint that forces all epsilons to be \emph{shifted} behind the least significant digit, effectively prohibiting all interleavings but one. This is the formula
+In order to eliminate this potential blow-up in the size of the formula, we add to $\paf^m$ an additional constraint that forces all epsilons to be \emph{shifted} behind the least significant digit. This will leave us with only one interleaving. This is the formula
 $$
 \Psi_{\mathsf{shift}}^m \defeq \bigwedge_{1\leq i \leq m} v_i \neq \noepsilon \implies v_{i-1}\neq \noepsilon \ .
 $$
