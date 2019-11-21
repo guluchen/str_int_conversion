@@ -723,12 +723,59 @@ Recall that $\enc{-}$ is the integer encoding of the minus symbol `$-$'. The \em
 \section{Parametric Flat Automata} \label{section:sfa}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-We introduce \emph{parametric flat automata} that will be used to define patterns 
-used by the under-approximation module to restrict the domain of string variables. 
+We introduce \emph{parametric flat automata} that will be used to define patterns used by the under-approximation module to restrict the domain of string variables. 
+\scalebox{0.7}{
+	\tikzset{state/.style={circle,draw=green!80,fill=green!20,
+			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 
-\paragraph{Flat automata}
+	\renewcommand{\sym}[2]{a_{#1}^{#2}}
+	\begin{tikzpicture} 
+	\node[state,initial] (q0) {$\st{0}{0}$};
+	\node[state] (q1) [right = 3cm of q0] {$\st{1}{0}$};
+	\node (q2) [right = 1.8cm of q1]{};
+	\node (q3) [right = 1cm of q2]{};
+	\node[state,accepting] (qm) [right = 1.8cm of q3] {$\st{m}{0}$};
+	
+	\node[state] (q01) [above left = 0.6cm of q0] {$\st{0}{1}$};
+	\node[state] (q02) [above = 1cm of q0] {$\st{0}{2}$};
+	\node[state] (q03) [above right = 0.6cm of q0] {$\st{0}{l_0}$};
+	\node   (m1) [above right = -0.4cm and -0.3cm of q03] {$\ ^{-1}$};
+	
+	\node[state] (q11) [above left = 0.6cm of q1] {$\st{1}{1}$};
+	\node[state] (q12) [above = 1cm of q1] {$\st{1}{2}$};
+	\node[state] (q13) [above right = 0.6cm of q1] {$\st{1}{l_1}$};
+	\node   (m2) [above right = -0.4cm and -0.3cm of q13] {$\ ^{-1}$};
+	
+	\node[state] (qm1) [above left = 0.6cm of qm] {$\st{m}{1}$};
+	\node[state] (qm2) [above = 1cm of qm] {$\st{m}{2}$};
+	\node[state] (qm3) [above right = 0.6cm of qm] {$\st{m}{l_m}$};
+	\node   (mm) [above right = -0.4cm and -0.3cm of qm3] {$\ ^{-1}$};
+	
+	\draw[->] (q0) edge [bend left] node [left]{$\sym{0}{0}$} (q01) ;
+	\draw[->] (q01) edge [bend left] node [left]{$\sym{0}{1}$} (q02) ;
+	\draw[->,dotted] (q02) edge [bend left] node [right]{} (q03) ;
+	\draw[->] (q03) edge [bend left] node [right]{$\sym{0}{l_0-1}$} (q0) ;
+	
+	\draw[->] (q0) edge node [below]{$a_0$} (q1) ;
+	\draw[->] (q1) edge node [below]{$a_1$} (q2) ;
+	\draw[dotted] (q2) edge (q3) ;
+	\draw[->] (q3) edge node [below]{$a_{m-1}$} (qm) ;
+	
+	\draw[->] (qm) edge [bend left] node [left]{$\sym{m}{0}$} (qm1) ;
+	\draw[->] (qm1) edge [bend left] node [left]{$\sym{m}{1}$} (qm2) ;
+	\draw[dotted] (qm2) edge [bend left] node [right]{} (qm3) ;
+	\draw[->] (qm3) edge [bend left] node [right]{$\sym{m}{l_m-1}$} (qm) ;
+	
+	\draw[->] (q1) edge [bend left] node [left]{$\sym{1}{0}$} (q11) ;
+	\draw[->] (q11) edge [bend left] node [left]{$\sym{1}{1}$} (q12) ;
+	\draw[->,dotted] (q12) edge [bend left] node [right]{} (q13) ;
+	\draw[->] (q13) edge [bend left] node [right]{$\sym{1}{l_1-1}$} (q1) ;	
+	
+
+	\end{tikzpicture} }
+\paragraph{Flat automata} 
 First, we say that an FA 
-$A = (Q,T,\Sigma,\st{0}{0},\st{m}{0})$ is \emph{flat} if it satisfies the following structural constraints:
+$A = (Q,T,\Sigma,\st{0}{0},\st{m}{0})$ is \emph{flat} if it satisfies the following structural constraints (the figure above):
 \begin{enumerate}
 	\item The final state $\st{m}{0}$ is reached from  the initial state $\st{0}{0}$ through a straight path of $m-1$ transitions $(\st{i}{0},a_i,\st{i+1}{0}) \in T$, $\st{i}{0} \in Q$ for $i\in[0,m-1]$. 
 	\item  
@@ -738,11 +785,11 @@ Notice that the case when $l_i = 0$ is also admissible and means that there is n
 \end{enumerate} 
 
 The crucial feature of flat automata is that their semantics can be faithfully represented by a linear formula and handled efficiently by an SMT solver. 
-\lh{, allowing to circumvent more costly automata algorithms and decision procedures. Concretize and justify this better?}
+\lh{, allowing to circumvent more costly automata algorithms and decision procedures. Concertize and justify this better?}\yfc{maybe we can say according to the experience of verification of concurrent system, flattening is usually faster than pure automata operation? Faouzi should know something.}
 %
 This is facilitated by flatness, which guarantees that 
 every parametric word $w\in L(A)$ is uniquely determined by its Parikh image $\parikhof{w}$. 
-In fact, the Parikh image of a word $w\in L(A)$ can be seen as an encoding of $w$ and can be uniquelly decoded:
+In fact, the Parikh image of a word $w\in L(A)$ can be seen as an encoding of $w$ and can be uniquely decoded:
 
 
 \begin{lemma}\label{lemma:decoding}
@@ -755,20 +802,20 @@ Indeed, since every variable appears on at most one transition, then the $\parik
 The accepting run on $w$ (and so $w$ itself) can thus be reconstructed from $\parikhof w$. 
 
 More concretely, the function $\decode A$ can be implemented as follows. 
-Given $\pim:\#\cvar\rightarrow\nat$,
-and assuming that the lengths of the loops of $A$ are $l_0,\ldots,l_{m-1}$, 
-$\decode A(\pim)$ is constructed as the word $w_0 a_{0} \ldots a_{m-1} w_{m-1}$ where for each $i\in [0,m-1]$,
-$w_i = (a_i^0 \cdots a_i^{l_{i-1}})^{\pvarsof {a_i^0}}$ if $l_i >0$ and $w_i = \epsilon$ if $l_i = 0$. 
+Given $\pim:\#\Sigma\rightarrow\nat$,
+and assuming that the lengths of the loops of $A$ are $l_0,\ldots,l_{m}$, 
+$\decode A(\pim)$ is constructed as the word $w_0 a_{0} \ldots a_{m-1} w_{m}$ where for each $i\in [0,m]$,
+$w_i = (a_i^0 \cdots a_i^{l_{i}-1})^{\pvarsof {a_i^0}}$ if $l_i >0$ and $w_i = \epsilon$ if $l_i = 0$. 
 \end{proof}
 %
-For example, in the automaton of Figure~\ref{fig:sfa_def}, 
-from $\parikhwof x {v_0} = \parikhwof x {v_1} = \cdots = \parikhwof x {v_{m-1}}=1$ and $\parikhwof x {v^0_1}=\parikhwof x {v^1_1}=\parikhwof x {v^2_1}=2$ we derive that $x=v_0(v^0_1v^1_1v^2_1)^2v_1\cdots v_{m-1}$. 
+For example, in the automaton of the figure above, 
+from $\parikhwof x {a_0} = \parikhwof x {a_1} = \cdots = \parikhwof x {a_{m}}=1$ and $\parikhwof x {a^0_1}=\parikhwof x {a^1_1}=\parikhwof x {a^2_1}=2$ we derive that $x=a_0(a^0_1a^1_1a^2_1)^2a_1\cdots a_{m-1}$. 
 
 \paragraph{Parametric (flat) automata}
 Next we define \emph{parametric automaton} (PA) as a pair  $\pa = (A,\paf)$ where 
 $A$ is an automaton operating over an alphabet $\cvar$ of \emph{character variables}  
 and $\paf$ is an \emph{interpretation constraint}, a linear formula over $\cvar$. 
-\emph{Parametric flat automaton (PFA)} is then a parametric automaton with its finite automaton flat.
+\emph{Parametric flat automaton (PFA)} is then a parametric automaton with its finite automaton flat. See Figure~\ref{fig:sfa_def} and~\ref{fig:sfa} for examples of PFAs (automaton part only).
 
 Parametric automata accept words over $\cvar$, called \emph{parametric words}, but we still use them as representations of languages over $\Sigma$. 
 %
@@ -786,9 +833,9 @@ Since every word $w \in \semof{\pa}$ is uniquely determined by a parametric word
 $x = \decode \pa(\parikhof x)$, 
 we may say that the assignment $I \cup \parikhof x$ uniting the interpretation $I:\cvar\rightarrow\Sigma_\epsilon$ and the Parikh image $\parikhof x:\#\cvar\rightarrow \nat$ \emph{$\pa$-encodes} $w$. Lemma~\ref{lemma:decoding} implies that such $\pa$-encoding can be uniquely decoded. 
 We may hence extend the decoding function $\decode \pa$ to united assignments $e:\cvar\cup\#\cvar \rightarrow \nat$ 
-so that $\decode \pa(I \cup \parikhof x) = w$ (recall that $\Sigma_\epsilon \subseteq \nat$). 
+so that $\decode \pa(I \cup \parikhof x) = w$ (recall that $\Sigma_\epsilon \subseteq \nat$). \yfc{true only if we move the semantic of $\epsilon$ to preliminary. Now it is a symbol.}
 We again lift the decoding function to sets of united assignments in the standard manner.
-The following corollary of Lemma~\ref{lemma:decoding} states that encodings of words in $\semof{\pa}$ are encodings of parametric words of $L(A)$ paired with arbitrary interpretations of character variables $\cvar$ that satisfy $\paf$:
+The following corollary of Lemma~\ref{lemma:decoding} states that words in $\semof{\pa}$ are decodings of the Parikh image of parametric words in $L(A)$ paired with character variables interpretations satisfying $\paf$:
 
 \begin{corollary}\label{corollary:pfa}
 For a PFA $\pa = (A,\paf)$,
