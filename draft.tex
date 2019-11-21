@@ -84,7 +84,7 @@
 \newcommand{\rightA}{\pa^{\mathit{right}}}
 \newcommand{\leftV}{V^{\mathit{left}}}
 \newcommand{\rightV}{V^{\mathit{right}}}
-\newcommand\renvars{V_R^\mathsf{ver}}
+\newcommand\renvars{V_\dr^\mathsf{ver}}
 
 \newcommand\insc{\phi_{\mathit{in}}}
 \newcommand\outlf{\Psi_{\mathit{out}}}
@@ -129,7 +129,7 @@ Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular
 
 An important class of string operations is  the string-number conversions.  While string length operations are sometimes well supported, converting a string $x$ to an integer $n$ (e.g., using the operation $n = \sti{x}$) or turning an integer value $n$ into its string form $x$ (e.g., using the operation $x = \its{n}$)  suffer from extremely limited support by the state-of-the-art string constraint solvers. 
 
-For many languages such as Java, string-number conversions are core operations, and much symbolic execution can not been done without supporting it. In fact,  a code that receives input tends to need to convert at least some of that input into numbers,  which makes the handling of string-integer conversions of the utmost importance. For example, the program fragment below is a variant of the Luhn test algorithm \cite{?} that is often used in credit card or personal ID validation.
+For many languages such as Java, string-number conversions are core operations, and much symbolic execution can not been done without supporting it. In fact,  a code that receives input tends to need to convert at least some of that input into numbers,  which makes the handling of string-integer conversions of the utmost importance. For example, the program fragment below is a variant of the Luhn test algorithm that is often used in credit card or personal ID validation.
 
 
 
@@ -173,9 +173,9 @@ function checkLuhn(value) {
 \end{Verbatim}
 
 
-The input \verb|value| of the Luhn test algorithm is a sequence of digits. The algorithm process the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) subtracts its value by $9$ if the doubled-value is bigger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends by an $0$ (i.e., \verb| sum mod 10=0|).
+The input \verb|value| of the Luhn test algorithm is a sequence of digits. The algorithm processes the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) subtracts its value by $9$ if the doubled-value is larger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends by an $0$ (i.e., \verb| sum mod 10=0|).
 
-To check whether the program path that traverses both loop exactly once, which corresponds to the case when $| \verb|value||=2$, and finally passes this test has a valid input, we create the following (string) constraint:
+To check whether the program path that traverses both loops exactly once, which corresponds to the case when $| \verb|value||=2$, and finally passes this test has a valid input, we create the following (string) constraint:
 
 $$\begin{array}{lc}
 1&	{\it value_0} \in [1,9]^+ \wedge 	{\it sum_0} = 0 \wedge \\
@@ -657,21 +657,26 @@ In this paper, we use $x,y$ (or their variants) to denote string variables and $
 An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I$ from $\vars\cup \varn$ to $\Sigma^* \cup \mathbb{N}$. A \emph{term} is an element in $(\vars\cup \Sigma)^*$. We lift the interpretation $I$ to terms and linear constraints in the standard manner. 
 
 We will use four types of \emph{atomic string constraint}: 
+\smallskip
 
-An \emph{equality constraint} $\phi_e$ is of the form $t_1 = t_2$ where $t_1, 
+
+$\bullet$ An \emph{equality constraint} $\phi_e$ is of the form $t_1 = t_2$ where $t_1, 
 t_2$ are terms in $(\vars\cup \Sigma)^*$. The \emph{model} of $\phi_e$ is the set of interpretations $\modelsof{\phi_e}=\{I\mid 
 I(t_1)=I(t_2)\}$. A \emph{disequality constraint} $\phi_d$ is of the form $t_1 \neq 
 t_2$ and is interpreted analogously.
 
-An \emph{integer constraint} $\phi_i$ is a linear constraint over the variables in $\varn$ and length of a word $|x|$ for all $x \in \vars$.
+\smallskip
+$\bullet$ An \emph{integer constraint} $\phi_i$ is a linear constraint over the variables in $\varn$ and values of $|x|$ for all $x \in \vars$, where $|\cdot|:\vars \rightarrow \nat$ is the string length function defined in the standard way.
 %Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelsof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
 We define $\modelsof{\phi_i}= \{I \mid I(\phi_i)= \true \}$. 
-\lh{should we somehow define the sematntics of the lengt constraints more precisely? That is, how is the value of $|x|$ related to the value of $x$. ?}
+\smallskip
 
-A \emph{regular constraint} $\phi_r$ is of the form $x \in L(A)$ where $x$ is a string variable and $A$ is a finite automaton. The \emph{model} of $\phi_m$ is the set of interpretations $\modelsof{\phi_m}=\{I\mid 
+$\bullet$ A \emph{regular constraint} $\phi_r$ is of the form $x \in L(A)$ where $x$ is a string variable and $A$ is a finite automaton. The \emph{model} of $\phi_m$ is the set of interpretations $\modelsof{\phi_m}=\{I\mid 
 I(x) \in L(A) \}$. 
+\smallskip
 
-A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$. The \emph{number-string} conversion constraint $x=\its{n}$ is treated as a syntactic sugar for $n=\sti{x}$.
+$\bullet$ A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$. The \emph{number-string} conversion constraint $x=\its{n}$ is treated as a syntactic sugar for $n=\sti{x}$.
+\smallskip
 
 A \emph{string constraint} is then a conjunction of atomic string constraints, with the semantics defined in the standard manner. It is \emph{satisfiable} if its semantics is nonempty.
 
@@ -747,12 +752,12 @@ We introduce \emph{parametric flat automata} that will be used to define pattern
 	\node[state] (q11) [above left = 0.6cm of q1] {$\st{1}{1}$};
 	\node[state] (q12) [above = 1cm of q1] {$\st{1}{2}$};
 	\node[state] (q13) [above right = 0.6cm of q1] {$\st{1}{l_1}$};
-	\node   (m2) [above right = -0.4cm and -0.3cm of q13] {$\ ^{-1}$};
+	\node   (m2) [above right = -0.4cm and -0.25cm of q13] {$\ ^{-1}$};
 	
 	\node[state] (qm1) [above left = 0.6cm of qm] {$\st{m}{1}$};
 	\node[state] (qm2) [above = 1cm of qm] {$\st{m}{2}$};
 	\node[state] (qm3) [above right = 0.6cm of qm] {$\st{m}{l_m}$};
-	\node   (mm) [above right = -0.4cm and -0.3cm of qm3] {$\ ^{-1}$};
+	\node   (mm) [above right = -0.45cm and -0.2cm of qm3] {$\ ^{-1}$};
 	
 	\draw[->] (q0) edge [bend left] node [left]{$\sym{0}{0}$} (q01) ;
 	\draw[->] (q01) edge [bend left] node [left]{$\sym{0}{1}$} (q02) ;
@@ -846,12 +851,13 @@ For a PFA $\pa = (A,\paf)$,
 \centerline{$\semof {\pa} = \decode \pa \{(I\cup \pim)\mid \pim\in\parikhof{L(A)} ,I\in\semof\paf\}$.}
 \end{corollary}
 %
+%\changed{removed definition of $\encode P (L)$.}
 
-Last, we define the encoding function as a counterpart of the decoding. Given a PFA $\pa$ and a language $L\subseteq \Sigma^*$, the set of \emph{$\pa$-encodings} of the words in $L$ is defined as
-$\encode \pa (L) = \{e \mid \decode \pa (e) \in L\}$. 
-%
-Notice that only the words from $L\cap \semof \pa$ have a $\pa$-encoding, 
-hence $\encode \pa(L) = \encode \pa(L\cap\semof \pa)$, and so due to Corollary~\ref{corollary:pfa}, $\decode \pa({\encode \pa}(L)) = L\cap\semof \pa$.
+%Last, we define the encoding function as a counterpart of the decoding. Given a PFA $\pa$ and a language $L\subseteq \Sigma^*$, the set of \emph{$\pa$-encodings} of the words in $L$ is defined as
+%$\encode \pa (L) = \{e \mid \decode \pa (e) \in L\}$. 
+%%
+%Notice that only the words from $L\cap \semof \pa$ have a $\pa$-encoding, 
+%hence $\encode \pa(L) = \encode \pa(L\cap\semof \pa)$, and so due to Corollary~\ref{corollary:pfa}, $\decode \pa({\encode \pa}(L)) = L\cap\semof \pa$.
 
 %\section{Under-approximation} \label{section:under_approximate}
 %In this section, we describe formally how to restrict the domain of string variables to patterns defined by \emph{parametric flat automata} (PFA) (Section~\ref{section:sfa}) and hence convert string constraints $\insc$ to a set of equisatisfiable linear formulae $\outlf$ in polynomial-time. We assume all disequality constraint $t_1 \neq t2$ are already converted to equal-satisfiable equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}. 
@@ -900,7 +906,7 @@ We start the description of the algorithm that converts a string constraint $\in
 The domain restriction is formally defined by restricting the domain of each string variable by a chosen PFA. 
 %
 Namely, assuming that $X$ is the set of string variables of $\insc$,
-a \emph{flat domain restriction} for $\insc$ is a mapping $\dr$ that assigns to every variable $x\in X$ a PFA $\dr(x)$ over character variables $V_x$.
+a \emph{flat domain restriction} for $\insc$ is a mapping $\dr$ that assigns to every variable $x\in X$ a PFA $\dr(x)$ over character variables $V_x$ and we let $V_\dr = \bigcup_{x\in X} V_x$ be the set of all character variables used in $\dr$.
 We require that these PFA operate over pairwise disjoint sets of character variables, that is if $x\neq y$ then $V_x \cap V_y = \emptyset$.
 %
 The particular choice of a PFA 
@@ -909,35 +915,38 @@ for each variable  depends on the strategy used in the implementation, and will 
 The flattening $\outlf$ will be  built inductively to the structure of $\insc$.
 Namely, in the following subsections we show how to build a flattening $\underf \dr {\phi}$ for every atomic string constraint $\phi$, 
 and for a conjunction of string constraints, we let $\underf \dr {\phi \land \phi'} \defeq \underf \dr {\phi} \land \underf \dr {\phi'}$.
-We then let $\outlf \defeq \underf \dr \insc$
+We then let $\outlf \defeq \underf \dr \insc$.
 
 The semantics of a string constraint $\phi$ restricted by $\dr$ is then defined as 
 $\semof{\phi}^\dr = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{\dr(x)}\} \subseteq \vars\times \varn \rightarrow \Sigma^* \times\nat$.
 The following sections will be devoted to describing the flattening of the atomic string constraints. 
-The correctness of the entire construction of $\outlf$ is expressed by  Theorem~\ref{theorem:correct}:
+
+The correctness of the entire construction of $\outlf$ is expressed by  Theorem~\ref{theorem:correct}. 
+It uses the decoding function $\decode \dr$ parameterised by the domain restriction $\dr$. 
+For an interpretation $e \cup I'$ consisting of an interpretation $e$ of $V_\dr$ and $\#V_\dr$ and an interpretation of integer variavles $I'$, we let $\decode \dr (e\cup I') = I \cup I'$ where $I$ is the interpretation of string variables such that for each $x\in X$,
+$I(x) = \decode {\dr(x)} (e_{V_{\dr(x)}\cup \#V_{\dr(x)}})$. That is, $\decode \dr (e\cup I')$ returns the original integer interpretation $I'$ together with each string variable $x$ interpreted as the ${\dr(x)}$-decoding of the values of $V_{\dr(x)}$ and $\#V_{\dr(x)}$. 
+We lift $\decode \dr$ to sets of interpretations in the standard manner.
 \begin{theorem}\label{theorem:correct}
-$\decode R (\semof {\outlf}) = \semof{\insc}^\dr$ 
+$\decode \dr (\semof {\outlf}) = \semof{\insc}^\dr$ 
 \end{theorem}
 
 The theorem can be proved by a structural induction over $\insc$.
-However, for the induction step to go through, we will need a more meticulous view into the correspondence of $\phi$ and $\underf \dr \phi$ than just equality of their semantics. \yfc{I do not understand the previous sentence}
+However, for the induction step to go through, we will need to guarantee a stronger correspondence of string constraints $\phi$ and their flattenings $\underf \dr \phi$ then just the semantic equality $\decode \dr (\semof {\underf \dr \phi}) = \semof{\phi}^\dr$.  
 Particularly, we will need to
  ensure that $\underf \dr \phi$ captures exactly all $\dr$-encodings of $\semof \phi^\dr$
 (indeed, notice that if it would be allowed to capture only some of the encodings, then for instance $\underf \dr {\phi} \land \underf \dr {\phi'}$ could only underapproximate $\semof{\phi\land\phi'}^\dr$).
 
-To formalize this correctness argument, we define an additional notation.
-For an interpretation $I$ of string variables, 
-we define its $\dr$-encoding as the set $\encode \dr(I) = \bigcup_{x\in X} \encode {\dr(x)} (I(x))$ of interpretations of $V_\dr\cup \#V_\dr$, containing combinations of interpretations of character variables of each $\dr(x)$ that encode the $I$. \yfc{the sentence is difficult to parse. I did not find the definition of $V_\dr\cup \#V_\dr$.}
+%To formalize this correctness argument, we need the notion of 
+%%
+%an \emph{$\dr$-encoding} of an interpretation $I \cup I'$ of a general string constraint, consisting of an interpretation $I$ of string variables and an interpretation $I'$ of integer variables:
+%%
+%An $\dr$-encoding of $I \cup I'$ is a union $e \cup I'$ of the original integer interpretation $I'$ and an interpretation $e : V_\dr \cup \#V_\dr \rightarrow \nat$ that encodes $I$, that is, it satisfies that for each string variable $x$ of $I$, $\decode {\dr(x)} (e_{V_x\cup\#V_x}) = I(x)$.  
+
+To formalize this correctness argument, we define the $\dr$-encoding function as the counterpart of $\dr$-decoding,  
 %
-\changed{
-Further, we define an $\dr$-encoding for an interpretation $I \cup I'$ of a general string constraint, consisting of an interpretation $I$ of string variables and an interpretation $I'$ of integer variables.
-%
-An $\dr$-encoding of $I \cup I'$ is a union  $e \cup I'$ of an encoding $e\in \encode \dr(I)$ and the original integer interpretation $I'$ which satisfies that for every string length variable $|x|$ in the domain of $I'$,
-$|x| = \sum_{v\in V_x,I(v)\neq\epsilon}\#v$. 
-That is, the interpretation of string variables is encoded as usual, the interpretation of integer variables is kept as is, 
-and for each string length variable $|x|$ in the domain of $I'$, 
-the value of $|x|$ is consistent with the encoding of $x$ by variables $V_x$ and $\#V_x$.
-The set of all $\dr$-encodings of $(I\cup I')$ is then denoted $\encode \dr {(I\cup I')}$}\yfc{need a serious rewrite :-) Maybe I need to know why you define so many encodings...}
+namely, for a set $J$ of string/integer variables interpretations,  
+we let $\encode \dr (J) \defeq \{e\mid \decode \dr (e) \in J\}$.
+%\yfc{need a serious rewrite :-) Maybe I need to know why you define so many encodings...}
 %
 %Further, if $I \cup I'$ is an interpretation of a general string constraint, that is, an interpretation $I$ of string variables $X$ united with an interpretation $I'$ of integer variables $N$,
 %%
@@ -945,7 +954,7 @@ The set of all $\dr$-encodings of $(I\cup I')$ is then denoted $\encode \dr {(I\
 %such that $\encode R {(I\cup I')} \defeq \{e \cup I' \mid e\in \encode R(I)\}$ of interpretations of variables $V_R \cup \#V_R \cup N$. That is, the interpretation of string variables is encoded and the interpretation of integer variables is kept as is.
 %
 %
-and we lift this notation to sets of interpretation in the standard manner, i.e., $\encode \dr (J) = \bigcup_{I \in J}\encode \dr (I)$ for a set of interpretations $J$.
+%and we lift this notation to sets of interpretation in the standard manner, i.e., $\encode \dr (J) = \bigcup_{I \in J}\encode \dr (I)$ for a set of interpretations $J$.
 %
 The inductive argument needed in the correctness proof of the under-approximation then reads as
 $$\semof{\underf \dr \phi}_{V_\dr\cup V_{\#\dr}}  = \encode \dr{\semof{\phi}}$$ 
@@ -1063,24 +1072,24 @@ With synchronization and concatenation of PA, we are ready to describe flattenin
 
 \subsection{Flattening of Regular Constraints} \label{section:mem}
 
-Let us first describe the construction of $\underf R {\phi_r}$ for a regular constraint $\phi_r \defeq x \in L(A)$. 
-In order to synchronize the FA $A$ with the PFA $R(x)$, 
+Let us first describe the construction of $\underf \dr {\phi_r}$ for a regular constraint $\phi_r \defeq x \in L(A)$. 
+In order to synchronize the FA $A$ with the PFA $\dr(x)$, 
 we represent $A$ by a PA $\pa' = (A',\Psi_{\mathit{char}})$.
 The automaton $A'$ of $\pa'$ operates over fresh character variables $v_a, a\in\Sigma_\epsilon$, 
 and is obtained from $A$ by replacing every occurrence of each character $a\in\Sigma_{\epsilon}$ on a transition by the variable $v_a$. 
 The interpretation restriction formula $\Psi_{\mathit{char}}$ of $\pa'$ then binds the fresh character variables to the character values they represent, 
 namely, $\Psi_{\mathit{char}} = \bigwedge_{a\in\Sigma_\epsilon} v_a = a$. Obviously, $L(A) = \semof{\pa'}$. 
 We then let 
-$$\underf R {\phi_r} = \syncfof{R(x)} {\pa'}$$ 
+$$\underf \dr {\phi_r} = \syncfof{\dr(x)} {\pa'}$$ 
 
 The following lemma states the correctness of this construction. 
 It follows from Corollary~\ref{corollary:pfa} and Lemma~\ref{lemma:synccorrect}. 
-\begin{lemma}\label{lemma:memcorrect}  $\semof {\underf R {\phi_r}}_{V_R \cup V_{\#R}} = \encode {R} (\semof{\phi_r})$ . 
+\begin{lemma}\label{lemma:memcorrect}  $\semof {\underf \dr {\phi_r}}_{V_\dr \cup \#V_{\dr}} = \encode {\dr} (\semof{\phi_r})$ . 
 \end{lemma}
 
 \subsection{Flattening of Equality Constraints} \label{section:eq}
 
-We now describe the construction of $\underf R {\phi_e}$ for an equality constraint $\phi_e\defeq x_0\cdot x_1 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$. 
+We now describe the construction of $\underf \dr {\phi_e}$ for an equality constraint $\phi_e\defeq x_0\cdot x_1 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$. 
 %
 To simplify the presentation, we assume that the variables are pairwise different, i.e. that $i\neq j \implies x_i \neq x_j$. We may make this assumption without loss of generality, since multiple occurrences of variables in $\phi_e$ can be eliminated: whenever $x_i = x_j$ for $i \neq j$, we may replace $x_j$ by a fresh variable $x_j'$ and conjoin the modified $\phi_e$ with a new equality $x_j = x_j'$. 
 %
@@ -1088,42 +1097,46 @@ We also assume that all disequality constraint $t \neq t'$ are already converted
 
 Having made these assumptions, we may proceed follows. First, we build two PFAs $\leftA$ and $\rightA$ that encode the left and the right-hand side term of the equality constraint $\phi_e$, respectively, by concatenating the restrictions of the individual variables. That is
 \begin{eqnarray*}
-\leftA \defeq& R(x_1)\cdot\ldots \cdot R(x_n)\\
-\rightA \defeq& R(x_{n+1})\cdot\ldots \cdot R(x_m)
+\leftA \defeq& \dr(x_1)\cdot\ldots \cdot \dr(x_n)\\
+\rightA \defeq& \dr(x_{n+1})\cdot\ldots \cdot \dr(x_m)
 \end{eqnarray*}
 The under-approximation of $\phi_e$ is then obtained as their synchronization formula
 $$
-\underf R {\phi_e} = \syncfof \leftA \rightA
+\underf \dr {\phi_e} = \syncfof \leftA \rightA
 $$
 The correctness of the construction is stated by the lemma:
 \begin{lemma}\label{lemma:eqcorrect}
-$\semof {\underf R {\phi_e}}_{V_R  \cup \#V_R} = \encode R (\semof{\phi_e})$.
+$\semof {\underf \dr {\phi_e}}_{V_\dr  \cup \#V_\dr} = \encode \dr (\semof{\phi_e})$.
 \end{lemma}
 
 \subsection{Flattening of Integer Constraints}
+\changed{
+\newcommand{\lx}{l_x}
+\newcommand{\lv}{l_v}
 Length constraints are encoded precisely by flattening, not under-approximated. 
-Given a length constraint $\phi_l$ that talks about string length variables $|x|,x\in X$, 
-we keep $\phi_l$ as is and add a formula to express the lengths of strings $|x|$ in terms of character variables $V_x$ and Parikh variables $\# V_x$ of $R(x)$.
-
-For every length variable $|x|\in X$, 
-we add a set of fresh auxiliary variables $\{|v|\mid v\in V_x\}$ to express the length by which $v$ contributes to the length of an $R$-encoded word. 
-That is, $|v|$ will be $0$ if $v$ is assigned $\noepsilon$,
+Given a length constraint $\phi_l$ that talks about lengths $|x|$ of string variables $x\in X$. 
+We use a version of $\phi_l$ where every occurence of every leght term $|x|$ is replaced by an auxiliary lenght variable $\lx$ and add a formula to ensure that the value of $\lx$ is equal to that of $|x|$ even when $x$ is encoded using the character variables $V_x$ and Parikh variables $\# V_x$ of $\dr(x)$.
+%
+%For every length variable $x\in X$, we add an auxiliary variable $\lx$ that records the length of $x$,   
+We will need a set auxiliary variables $\{l_v\mid v\in V_x\}$ to express the length by which the character variable $v$ contributes to the length of an $\dr$-encoded string $x$. 
+That is, $\lv$ will be $0$ if $v$ is assigned $\noepsilon$,
 otherwise it will equal the number $\#v$ of its occurrences in the word:
 $$
-\Psi_{\mathsf{|v|}} \defeq (v = \noepsilon \land |v|=0) \lor (v \neq \noepsilon \land |v| = \# v)
+\Psi_{\lv} \defeq (v = \noepsilon \land l_v=0) \lor (v \neq \noepsilon \land l_v = \# v)
 $$
 The length of the encoded word $x$ is then the sum of the lengths contributed by the individual character variables in $V_x$, 
 hence we let 
 $$
-\Psi_{|x|} \defeq |x| = \sum_{v\in V_x} |v| \land  \bigwedge_{v\in V_x} \Psi_{\mathsf{|v|}}\ .
+\Psi_{\lx} \defeq \lx = \sum_{v\in V_x} l_v \land  \bigwedge_{v\in V_x} \Psi_{\lv}\ .
 $$
 Finally, the linear formula created for $\phi_l$ is 
 $$
-\underf R {\phi_{l}} \defeq \phi_l \land \bigwedge_{|x|\in X} \Psi_{|x|}
+\underf \dr {\phi_{l}} \defeq \phi_l \land \bigwedge_{x\in X} \Psi_{\lx}
 $$
 and the following lemma states its correctness.
+}
 \begin{lemma}\label{lemma:eqcorrect}
-$\semof {\underf R {\phi_l}}_{V_R  \cup \#V_R} = \encode R (\semof{\phi_l})$
+$\semof {\underf \dr {\phi_l}}_{V_\dr  \cup \#V_\dr} = \encode \dr (\semof{\phi_l})$
 \end{lemma}
 
 \hide{The length of $x$ can be specified by the following formula.
@@ -1305,7 +1318,7 @@ $\begin{array}{ccc}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Last, we a major contribution of this paper, 
-the construction of a flattening $\underf R {\phi_s}$ of string-number conversion constraint $\phi_s \defeq n=\sti{x}$. 
+the construction of a flattening $\underf \dr {\phi_s}$ of string-number conversion constraint $\phi_s \defeq n=\sti{x}$. 
 
 Let us begin with a simple example. Assume that we use the PFA in Figure~\ref{fig:sfa} (a) to restrict the domain of $x$. Then we know that when $0\leq v_0,v_1 \leq 9$, then $n$ is a positive integer value, and otherwise $n =-1$. So we should first add the constraint $ ((0\leq v_0\leq 9) \wedge (0\leq v_1\leq 9)) \vee (n=-1 \wedge (v_0 >9 \vee v_1 >9))$.
 
@@ -1315,15 +1328,15 @@ Notice that the constraint above contains an exponential component $\frac{100^{\
 
 Let us have a look at another example. If we restrict the domain of $x$ to the PFA in Figure~\ref{fig:sfa} (c), for the case when $n$ is positive, we have the relation $n= (v_0 \times 10+ v_1) \times (1+100 +100^2 + \ldots 100 ^{\#v_0-1})\times 10\times 100^{\#v_3}+ v_2 \times 100^{\#v_3}  +(v_3\times 10+ v_4) \times (1+100 +100^2 + \ldots 100 ^{\#v_3-1}) =  (v_0\times 10+ v_1) \times \frac{100^{\#v_0-1}}{100-1}\times 10\times 100^{\#v_3} + v_2 \times 100^{\#v_3}+ (v_3\times 10+ v_4) \times \frac{100^{\#v_3-1}}{100-1}$. Observe that the formula has multiple exponential components, including $\frac{100^{\#v_0}\times 100^{\#v_3} }{100-1}$ and $\frac{100^{\#v_3} }{100-1}$.
 
-It is not difficult to see from the examples above that, if $R(x)$ is an arbitrary PFA with $m$ loops, the formula that defines the number $n$ contains at least $m$ exponential components, one for each loop.
-To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. As said in the introduction, the problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure which is double-exponential to the length of the input formula and hence cannot handle large instances. We therefore do not expect that such constraint can be solved efficiently. Instead, we will define a special form of the flat restriction $R(x)$ of $x$ that leads to an easies linear formula.
+It is not difficult to see from the examples above that, if $\dr(x)$ is an arbitrary PFA with $m$ loops, the formula that defines the number $n$ contains at least $m$ exponential components, one for each loop.
+To the best of our knowledge, the satisfiability problem of integer constraints with a mix of polynomials and exponentials is still open. As said in the introduction, the problem is difficult even for the case that variables are real numbers. For example, the algorithm in~\cite{kincaid2019closed} involves a quantifier elimination procedure which is double-exponential to the length of the input formula and hence cannot handle large instances. We therefore do not expect that such constraint can be solved efficiently. Instead, we will define a special form of the flat restriction $\dr(x)$ of $x$ that leads to an easies linear formula.
 
 \paragraph{PFA that allows efficient string-number conversion: } 
 %Now we know that it is unlikely to use arbitrary PFA and gain efficient solving procedure, due to the requirement to solve exponential integer constraints. The cause of the problem is that each loop in the PFA creates an exponential component in the constraint. 
 %An immediate idea would be that maybe we can some pick some specific PFA that allow more efficient constraint solving. 
-We will now discuss the special form of $R(x)$, called numeric PFA, which we choose for string variables appearing in string-integer constraints that leads to efficient underapproximation.
+We will now discuss the special form of $\dr(x)$, called numeric PFA, which we choose for string variables appearing in string-integer constraints that leads to efficient underapproximation.
 %
-Besides simple induced linear formulae, we still want single $R(x)$ to cover as many numerals as possible.
+Besides simple induced linear formulae, we still want single $\dr(x)$ to cover as many numerals as possible.
 We want an ``easy" completeness property, that is, that the space of all numerals can be covered completely by our special numeric PFAs, and that these numeric PFAs are generated easily, and each of them covers a large and practically significant portion of numerals (so that satisfiable assignments can be often found within the domain restriction of just few of numeric PFAs).
 %
 Particularly, we will proceed towards a definition of \emph{number PFA} $(A^m,\paf^m),m\in\nat$ which covers all numerals that encode integers with $m$ digits.
@@ -1418,7 +1431,7 @@ and define the final form of the interpretation restriction used by $A^m$ as
 $$
 \paf^m \defeq  \Psi_{\mathsf{NaN}}^m \lor (\Psi_{v_0} \land \Psi_{\mathsf{shift}}^m)\ .
 $$
-Consequently, we design our domain restrictions $R$ so that for string variables $x$ that appear within string-integer constraints,  $R(x)$ is a number PFA $(A^m,\paf^m),m\in \nat$. 
+Consequently, we design our domain restrictions $\dr$ so that for string variables $x$ that appear within string-integer constraints,  $\dr(x)$ is a number PFA $(A^m,\paf^m),m\in \nat$. 
 
 Assuming that the domain restriction for $x$ is $(A^m,\paf^m)$, 
 the value of the integer $n$ can be extracted from a numeral using the formula
@@ -1432,7 +1445,7 @@ $$
 Since we also need to distinguish the case when $x$ is not a number, in which case $n$ should equal $-1$, 
 the formula underapproximating $\phi_s$ is finally constructed as  
 \begin{multline*}
-\underf R {\phi_s} 
+\underf \dr {\phi_s} 
 \defeq 
 \parikhfof{A^m} 
 \land \\
@@ -1443,7 +1456,7 @@ the formula underapproximating $\phi_s$ is finally constructed as
 The following lemma states correctness of this construction:
 \begin{lemma}
 $
-\semof {\underf R {\psi_s} }_{V_R \cup \#V_R \cup \{n\}} = \encode  R(\semof{\phi_s})
+\semof {\underf \dr {\psi_s} }_{V_\dr \cup \#V_\dr \cup \{n\}} = \encode  \dr(\semof{\phi_s})
 $
 \end{lemma}
 
