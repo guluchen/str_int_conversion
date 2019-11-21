@@ -923,8 +923,8 @@ The following sections will be devoted to describing the flattening of the atomi
 
 The correctness of the entire construction of $\outlf$ is expressed by  Theorem~\ref{theorem:correct}. 
 It uses the decoding function $\decode \dr$ parameterised by the domain restriction $\dr$. 
-For an interpretation $e \cup I'$ consisting of an interpretaton $e$ of $V_\dr$ and $\#V_\dr$ and an interpretation fo integer variavles $I'$, we let $\decode \dr (e\cup I') = (I \cup I')$ where $I$ is the interpretation of string variables such that for each $x\in X$,
-$I(x) = \decode {\dr(x)} (e_{V_{\dr(x)}\cup \#V_{\dr(x)}})$. That is, $\decode \dr (e\cup I')$ returns the original integer interpretation $I'$ together with each string variable $x$ interpreted as the $\decode {\dr(x)}$-decoding of the values of $V_{\dr(x)}$ and $\#V_{\dr(x)}$. 
+For an interpretation $e \cup I'$ consisting of an interpretation $e$ of $V_\dr$ and $\#V_\dr$ and an interpretation of integer variavles $I'$, we let $\decode \dr (e\cup I') = I \cup I'$ where $I$ is the interpretation of string variables such that for each $x\in X$,
+$I(x) = \decode {\dr(x)} (e_{V_{\dr(x)}\cup \#V_{\dr(x)}})$. That is, $\decode \dr (e\cup I')$ returns the original integer interpretation $I'$ together with each string variable $x$ interpreted as the ${\dr(x)}$-decoding of the values of $V_{\dr(x)}$ and $\#V_{\dr(x)}$. 
 We lift $\decode \dr$ to sets of interpretations in the standard manner.
 \begin{theorem}\label{theorem:correct}
 $\decode \dr (\semof {\outlf}) = \semof{\insc}^\dr$ 
