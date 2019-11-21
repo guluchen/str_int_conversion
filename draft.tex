@@ -1013,7 +1013,7 @@ that specifies how each word in the semantic intersection $\semof \pa \cap \semo
 %
 More precisely, the models of $\syncfof \pa {\pa'}$ represent pairs of word
 encodings 
-$e$ and $e'$ such that $e\in\encode \pa(w)$ and $e'\in\encode \pa(w')$ (hence $w\in\semof{\pa}\cap\semof{\pa'}$).
+$e$ and $e'$ such that $e\in\encode \pa(w)$ and $e'\in\encode \pa(w)$ (hence $w\in\semof{\pa}\cap\semof{\pa'}$).
 
 Particularly, the synchronization formula is built for two PAs  
 $\pa = ((Q,T,\cvarone,q_i,q_f),\paf)$ and ${\pa'} = ((Q',T',\cvartwo,q_i',q_f'),\paf')$ such that $\cvarone \cap \cvartwo = \emptyset$. 
@@ -1030,11 +1030,11 @@ The word accepted by the run of $\syncof \pa {\pa'}$ induces constraints on the 
 
 Intuitively, when the product automaton $\syncof \pa {\pa'}$ takes a transition $((q_1,q_1'), (v,v'),(q_2,q_2'))$, 
 it means the character variable $v$ and $v'$ should be assigned the same value,
-$\pa$ transitions under $v$ from state $q_1$ to state $q_2$ and ${\pa'}$ from $q_1'$ to $q_2'$ under $v'$.
+$\pa$ moves under $v$ from state $q_1$ to state $q_2$ and ${\pa'}$ from $q_1'$ to $q_2'$ under $v'$.
 %
 When $\syncof \pa {\pa'}$ takes a transition $((q_1,q_1'), (v,\epsilon),(q_2,q_1'))$, 
 it means that the character variable $v$ should be assigned $\epsilon$, 
-$\pa$ transitions under $v$ to $q_1$, and ${\pa'}$ takes no action, since no action is needed to match $\pa$'s reading of $\epsilon$ (hence consumes no symbol from the input word). Symmetrically, ${\pa'}$ might read a variable $v$ assigned $\epsilon$ and $\pa$ may stay.
+$\pa$ moves under $v$ to $q_1$, and ${\pa'}$ takes no action, since no action is needed to match $\pa$'s reading of $\epsilon$ (hence consumes no symbol from the input word). Symmetrically, ${\pa'}$ might read a variable $v$ assigned $\epsilon$ and $\pa$ may stay.
 
 Formally, the asynchronous product automaton is a tuple $\syncof \pa {\pa'} = (Q\times Q', \syncT, \cvarone_\epsilon \times \cvartwo_\epsilon, (q_i,q_i'),(q_f,q_f'))$, where the transition relation $\syncT$ is the minimal set satisfying the following:
 %
@@ -1139,17 +1139,17 @@ $\semof {\underf \dr {\phi_e}}_{V_\dr  \cup \#V_\dr} = \encode \dr (\semof{\phi_
 \end{lemma}
 
 \subsection{Flattening of Integer Constraints}
-\changed{
+{
 \newcommand{\lx}{l_x}
 \newcommand{\lv}{l_v}
 Length constraints are encoded precisely by flattening, not under-approximated. 
 Given a length constraint $\phi_l$ that talks about lengths $|x|$ of string variables $x\in X$. 
-We use a version of $\phi_l$ where every occurence of every leght term $|x|$ is replaced by an auxiliary lenght variable $\lx$ and add a formula to ensure that the value of $\lx$ is equal to that of $|x|$ even when $x$ is encoded using the character variables $V_x$ and Parikh variables $\# V_x$ of $\dr(x)$.
+We use a version of $\phi_l$ where every occurrence of every length term $|x|$ is replaced by an auxiliary length variable $\lx$ and we add a formula to ensure that the value of $\lx$ is equal to that of $|x|$ even when $x$ is encoded using the character variables $V_x$ and Parikh variables $\# V_x$ of $\dr(x)$.
 %
 %For every length variable $x\in X$, we add an auxiliary variable $\lx$ that records the length of $x$,   
 We will need a set auxiliary variables $\{l_v\mid v\in V_x\}$ to express the length by which the character variable $v$ contributes to the length of an $\dr$-encoded string $x$. 
 That is, $\lv$ will be $0$ if $v$ is assigned $\noepsilon$,
-otherwise it will equal the number $\#v$ of its occurrences in the word:
+otherwise it will equal to the number $\#v$ of its occurrences in the word:
 $$
 \Psi_{\lv} \defeq (v = \noepsilon \land l_v=0) \lor (v \neq \noepsilon \land l_v = \# v)
 $$
