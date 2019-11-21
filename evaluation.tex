@@ -5,61 +5,175 @@
 
 \begin{table}[h]
 \centering
-\caption{Results of Z3-Trau, CVC4, and Z3 on Basic String Constraint benchmarks (numbers with * will be updated later)}
+\caption{Results of {\tool}, CVC4, and Z3/Z3str3 on Basic String Constraint benchmarks.}
 \scalebox{0.85}{
 \begin{tabular}{|l r | r r r r r|}
 \hline
 \multicolumn{2}{|c}{}                   & {\tool} & CVC4  &Z3 & Z3-str3 & Trau+  \\ \hline
-\multirow{3}{*}{PyEx}		& sat      & 19586*   & 20123 & 18490 &   3024*  & 19149 \\ 
-							& unsat    &  3858*   &  3950 &  3855 &   3839*  & 3828 \\
-							& $\times$ &  1977*   &  1457 &  3076 &  18558*  & 2444 \\ \hline
-\multirow{3}{*}{APLAS}		& sat      &   128*   &    51 &    19 &     38*  & 132 \\
-							& unsat    &   287*   &   214 &   100 &    111*  & 82 \\
-							& $\times$ &   185*   &   335 &   481 &    451*  & 386 \\ \hline
-\multirow{3}{*}{LeetCode}	& sat      &   856*   &   871 &   881 &    670*  & 778 \\
-							& unsat    &  1784*   &  1785 &  1785 &   1780*  & 1827 \\
-							& $\times$ &    26*   &    10 &     0 &    216*  & 61 \\ \hline
-\multirow{3}{*}{StringFuzz}	& sat      &   502*   &   610 &   316 &    493*  & 688 \\
-							& unsat    &   294*   &   255 &   206 &    190*  & 339 \\
-							& $\times$ &   269*   &   200 &   543 &    382*  & 38 \\\hline
-\multirow{3}{*}{cvc4\textsubscript{pred}} & sat & 16* & 11 &   12 &      8*  & 247 \\
-							& unsat    &   814*   &   818 &   807 &    772*  & 500 \\
-							& $\times$ &     5*   &     6 &    16 &     55*  & 88 \\ \hline
-\multirow{3}{*}{cvc4\textsubscript{term}} & sat & 13* & 9 &     6 &     16*  & 311 \\
-							& unsat    &  1030*   &   1025 &  1020 &    958*  & 596 \\
-							& $\times$ &     2*   &   11 &    19 &     71*  & 137 \\ \hline
-\multirow{3}{*}{SLOG}  		& sat      & 0* & 1309 & 0 & 0* & 1228 \\
-							& unsat    & 3391* & 2082 & 2824 & 2205* & 2079 \\
-							& $\times$ & 0* & 0 & 567 & 1186* & 84 \\ \hline \hline
-\multirow{3}{*}{Total} 		& sat      & 21101* & 22984 & 19724 & 4249* & 22533  \\
-							& unsat    & 11458* & 10129 & 10597 & 9855* & 9251  \\
-							& $\times$ &  2464* & 2019 &  4702 & 20919* & 3238  \\\hline
+\multirow{3}{*}{PyEx}		& SAT      & 19586*   & 20123 & 18490 &  3514 & 19149 \\ 
+							& UNSAT    &  3858*   &  3841 &  3855 &  4521 & 3828 \\
+							& $\times$ &  1977*   &  1457 &  3076 & 17386 & 2444 \\ \hline
+\multirow{3}{*}{APLAS}		& SAT      &   128*   &    51 &    19 &    52 & 132 \\
+							& UNSAT    &   287*   &   214 &   100 &   118 & 82 \\
+							& $\times$ &   185*   &   335 &   481 &   430 & 386 \\ \hline
+\multirow{3}{*}{LeetCode}	& SAT      &   856*   &   871 &   881 &   651 & 778 \\
+							& UNSAT    &  1784*   &  1785 &  1785 &  1787 & 1827 \\
+							& $\times$ &    26*   &    10 &     0 &   228 & 61 \\ \hline
+\multirow{3}{*}{StringFuzz}	& SAT      &   502*   &   610 &   316 &   605 & 688 \\
+							& UNSAT    &   294*   &   255 &   206 &   217 & 339 \\
+							& $\times$ &   269*   &   200 &   543 &   243 & 38 \\\hline
+\multirow{3}{*}{cvc4\textsubscript{pred}} & SAT & 16* & 11 &   12 &    10 & 247 \\
+							& UNSAT    &   814*   &   818 &   807 &   778 & 500 \\
+							& $\times$ &     5*   &     6 &    16 &    47 & 88 \\ \hline
+\multirow{3}{*}{cvc4\textsubscript{term}} & SAT & 13* & 9 &     6 &    16 & 311 \\
+							& UNSAT    &  1030*   &  1025 &  1020 &   962 & 596 \\
+							& $\times$ &     2*   &    11 &    19 &    67 & 138 \\ \hline
+\multirow{3}{*}{Total} 		& SAT      & 21101*  &  21675 & 19724 &  4848 & 21305  \\
+							& UNSAT    &  8067*  &   7938 &  7773 &  8383 & 7172  \\
+							& $\times$ &  2464*  &  2019 &   4135 & 18401 & 3155  \\\hline	
 \end{tabular}}
 \label{table:base_benchmark}
 \end{table}
 
 \begin{table}[h]
 \centering
-\caption{Results of {\tool}, CVC4, and Z3 on Basic String Constraints + String-Number Conversion benchmark (numbers with * will be updated later)}
+\caption{Results of {\tool}, CVC4, and Z3/Z3str3 on Basic String Constraints + String-Number Conversion benchmark.}
 \scalebox{0.8}{
 \begin{tabular}{|l r | r r r r|}
 \hline
 \multicolumn{2}{|c}{}                   			& {\tool} & CVC4   &    Z3  & Z3-str3 \\ \hline
-\multirow{3}{*}{String-Number-Leetcode}	 & sat      &   2356*  &  1679* &  1892* &    217* \\ 
-										 & unsat    &  16369*  & 15710* & 16105* &  15374* \\
-										 & $\times$ &    202*  &  1538* &  930* &   3336* \\ \hline 
-\multirow{3}{*}{String-Number-PythonLib} & sat      &    912*  &   529* &   797* &    201* \\ 
-										 & unsat    &    720*  &   666* &   724* &    644* \\
-										 & $\times$ &   1014*  &  1451* &  1125* &   1801* \\ \hline
-\multirow{3}{*}{String-Number-JavaScript}& sat      &   *  &  * &  * &    * \\ 
-										 & unsat    &  *  & * & * &  * \\
-										 & $\times$ &   *  &  * &  * &   * \\ \hline \hline
-\multirow{3}{*}{Total}					 & sat      &   3268*  &  2208* &  2689* &   418* \\ 
-										 & unsat    &  17089*  & 16376* & 16829* & 16018* \\
-										 & $\times$ &   1216*  &  2989* &  2055* &  5137* \\ \hline
+\multirow{3}{*}{String-Number-Leetcode}	 & SAT      &   2356*  &  1766 &  1025  &   333 \\ 
+										 & UNSAT    &  16369*  & 15612 & 17234  & 15543 \\
+										 & $\times$ &    202*  &  1549 &   668  &  3051 \\ \hline 
+\multirow{3}{*}{String-Number-PythonLib} & SAT      &    912*  &   586 &  1802  &   389 \\ 
+										 & UNSAT    &    720*  &   666 &   744  &   729 \\
+										 & $\times$ &   1014*  &  1394 &   100  &  1528 \\ \hline
+\multirow{3}{*}{String-Number-JavaScript}& SAT      &     20   &     5 &    16  &     4 \\ 
+										 & UNSAT    &      0   &     0 &     0  &     0 \\
+										 & $\times$ &      0   &    15 &     4  &    16 \\ \hline \hline
+\multirow{3}{*}{Total}					 & SAT      &   3288*  &  2357 &  2843  &   726 \\ 
+										 & UNSAT    &  17089*  & 16278 & 17978  & 16272 \\
+										 & $\times$ &   1216*  &  2958 &   772  &  4595 \\ \hline
 \end{tabular}}
 \label{table:str_int_benchmark}
 \end{table}
+
+\begin{table}[h]
+\centering
+\caption{Comparison of {\tool}, CVC4, and Z3/Z3str3 with checkLuhn problems of 2 to 12 loops.}
+\scalebox{0.9}{
+\begin{tabular}{| c | c c c c|}
+\hline
+\# of Loops & {\tool} 	  &  CVC4    	 &       Z3   & Z3-str3 \\ \hline
+2 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(0.27s)   & \textbf{SAT}(0.2s)  & $\times$ \\
+3  			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(10.1s)  & \textbf{SAT}(0.1s)  & $\times$ \\
+4 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(48.7s) &   $\times$  & $\times$ \\
+5 			& \textbf{SAT}(<0.1s)  &  $\times$     &   $\times$  & $\times$ \\
+6 			& \textbf{SAT}(0.16s)  &  $\times$     & \textbf{SAT}(0.13s) & $\times$ \\
+7 			& \textbf{SAT}(0.24s)  &  $\times$     &   $\times$  & $\times$ \\
+8 			& \textbf{SAT}(0.31s)  &  $\times$     & \textbf{SAT}(0.37s) & $\times$ \\
+9 			& \textbf{SAT}(0.26s)  &  $\times$     &   $\times$  & $\times$ \\
+10 			& \textbf{SAT}(0.21s)  &  $\times$     & \textbf{SAT}(0.53s) & $\times$ \\
+11 			& \textbf{SAT}(0.23s)  &  $\times$     & \textbf{SAT}(0.37s) & $\times$ \\
+12 			& \textbf{SAT}(0.33s)  &  $\times$     & \textbf{SAT}(0.40s) & $\times$ \\ \hline
+\end{tabular}}
+\label{table:checkLuhn}
+\end{table}
+
+
+\hide{
+\begin{figure}
+\begin{tikzpicture}
+\begin{axis}
+\addplot+[sharp plot]
+coordinates
+{
+(2,0.097)
+(3,0.078)
+(4,0.098)
+(5,0.098)
+(6,0.161)
+(7,0.236)
+(8,0.307)
+(9,0.26)
+(10,0.211)
+(11,0.228)
+(12,0.33)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{checkLuhn: z3-trau}
+\end{figure}
+
+\begin{figure}
+\begin{tikzpicture}
+\begin{axis}
+\addplot+[sharp plot]
+coordinates
+{
+(2,0.266)
+(3,10.084)
+(4,48.791)
+(5,120)
+(6,120)
+(7,120)
+(8,120)
+(9,120)
+(10,120)
+(11,120)
+(12,120)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{checkLuhn: cvc4 (SAT if not timeout)}
+\end{figure}
+
+\begin{figure}
+\begin{tikzpicture}
+\begin{axis}
+\addplot+[sharp plot]
+coordinates
+{
+(2,0.238)
+(3,0.128)
+(4,120)
+(5,120)
+(6,0.134)
+(7,120)
+(8,0.366)
+(9,120)
+(10,0.526)
+(11,0.374)
+(12,0.405)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{checkLuhn: z3 (SAT if not timeout)}
+\end{figure}
+
+\begin{figure}
+\begin{tikzpicture}
+\begin{axis}
+\addplot+[sharp plot]
+coordinates
+{
+(2,0.4743)
+(3,0.56052)
+(4,0.36695)
+(5,0.60905)
+(6,22.06429)
+(7,53.77536)
+(8,118.41196)
+(9,0.50559)
+(10,120)
+(11,0.42953)
+(12,120)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{checkLuhn: z3str3 (UNKNOWN if not timeout)}
+\end{figure}
+}
 
 
 \hide{ % keep data of abc and ostrich
@@ -266,7 +380,7 @@ In {\tool}, we use the following PFA selection strategy: we select PFA's of size
 
 The way our theory solver and Z3 interacts is almost standard. Every time when Z3 asks our theory solver a string constraint satisfiability problem, our solver tries to prove it SAT or UNSAT using the aforementioned procedure. For under-approximation, every time when a corresponding linear formula is created, we create a new Z3 solver instance to solve it. If our theory solver reports UNKNOWN, Z3 remembers it in a global flag \textsf{incomplete} and tries another solution branch. If Z3 completes the search of all solution branches, it reports UNSAT if the flag \textsf{incomplete} is down, and UNKNOWN otherwise.
 
-We compare {\tool} with other state-of-the-art string solvers, namely CVC4~\cite{cvc4Tool}, Z3~\cite{z3}, \textsf{Z3-str3}~\cite{zheng2013z3}, \textsf{Trau+}~\cite{parosh2019chain}, , and Ostrich~\cite{chen2019decision}. We do not compare with Sloth \cite{sloth} since it does not support length constraints, which occurs in most of our benchmarks. We also do not compare with ABC~\cite{aydin2018parameterized} (a model counter for string constraints), which over-approximates cases that cannot be modeled by \emph{aligned multi-track automata}~\cite{yu2016optimal} and hence cannot solve our benchmark examples precisely.
+We compare {\tool} with other state-of-the-art string solvers, namely CVC4~(relese-1.7)~\cite{cvc4Tool}, Z3~(\texttt{dde8da853})~\cite{z3}, \textsf{Z3-str3}~(\texttt{109dfc5e8})~\cite{zheng2013z3}, \textsf{Trau+}~\cite{parosh2019chain}, , and Ostrich~\cite{chen2019decision}. We do not compare with Sloth \cite{sloth} since it does not support length constraints, which occurs in most of our benchmarks. We also do not compare with ABC~\cite{aydin2018parameterized} (a model counter for string constraints), which over-approximates cases that cannot be modeled by \emph{aligned multi-track automata}~\cite{yu2016optimal} and hence cannot solve our benchmark examples precisely.
 
 We perform two sets of experiments. In the first experiment, we compare with other tools on benchmarks over basic string constraints. We use the following benchmark examples in this experiments:
 \begin{itemize}
@@ -279,7 +393,7 @@ We perform two sets of experiments. In the first experiment, we compare with oth
 
 In the second experiment, we compare with tools supporting to string-number conversion on the  benchmarks collected from the symbolic executor \texttt{Py-Conbyte}\footnote{\url{https://github.com/spencerwuwu/py-conbyte}}, which has the supports of string-number conversion. We run it on several examples collected from the LeetCode platform and from Python core libraries. We also have examples that encode execution paths of some JavaScript programs (the Luhn algorithm and some array manipulation).
 
-All experiments were executed on a computer with 4-core CPU, 8 GiB RAM and Ubuntu 18.4-LVM OS. The timeout was set to 10s for each test.
+All experiments were executed on a computer with 4-core CPU, 8 GiB RAM. The timeout was set to 10s for each test.
 We use the results from {\tool}, CVC4, and Z3 as the reference answer for the validation of the correctness of the results. Occasionally, two of them report inconsistent (one SAT and one UNSAT) answers to the same test. To decide which solver reports the incorrect answer, we developed a validator, which takes the model $I$ returned from the solver who reported SAT, assigns $I(x)$ to all variables $x$ in the test to obtained a modified test, and re-evaluates the modified test by multiple solvers. If the results from all solvers are consistent, we mark the test SAT or UNSAT according to the results. Otherwise, we manually simplify and inspect the test until we get a conclusive result. 
 
 The results of the experiments are summarized in Table~\ref{table:base_benchmark} and Table~\ref{table:str_int_benchmark}, respectively. Columns with heading \texttt{sat}/\texttt{unsat} show numbers of solved formulas. Columns with heading $\times$ indicate the number of instances the solver fails (including timeout, report unknown, report incorrect result, or crash). 
