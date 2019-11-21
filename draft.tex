@@ -657,21 +657,26 @@ In this paper, we use $x,y$ (or their variants) to denote string variables and $
 An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I$ from $\vars\cup \varn$ to $\Sigma^* \cup \mathbb{N}$. A \emph{term} is an element in $(\vars\cup \Sigma)^*$. We lift the interpretation $I$ to terms and linear constraints in the standard manner. 
 
 We will use four types of \emph{atomic string constraint}: 
+\smallskip
 
-An \emph{equality constraint} $\phi_e$ is of the form $t_1 = t_2$ where $t_1, 
+
+$\bullet$ An \emph{equality constraint} $\phi_e$ is of the form $t_1 = t_2$ where $t_1, 
 t_2$ are terms in $(\vars\cup \Sigma)^*$. The \emph{model} of $\phi_e$ is the set of interpretations $\modelsof{\phi_e}=\{I\mid 
 I(t_1)=I(t_2)\}$. A \emph{disequality constraint} $\phi_d$ is of the form $t_1 \neq 
 t_2$ and is interpreted analogously.
 
-An \emph{integer constraint} $\phi_i$ is a linear constraint over the variables in $\varn$ and length of a word $|x|$ for all $x \in \vars$.
+\smallskip
+$\bullet$ An \emph{integer constraint} $\phi_i$ is a linear constraint over the variables in $\varn$ and values of $|x|$ for all $x \in \vars$, where $|\cdot|:\vars \rightarrow \nat$ is the string length function defined in the standard way.
 %Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelsof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
 We define $\modelsof{\phi_i}= \{I \mid I(\phi_i)= \true \}$. 
-\lh{should we somehow define the sematntics of the lengt constraints more precisely? That is, how is the value of $|x|$ related to the value of $x$. ?}
+\smallskip
 
-A \emph{regular constraint} $\phi_r$ is of the form $x \in L(A)$ where $x$ is a string variable and $A$ is a finite automaton. The \emph{model} of $\phi_m$ is the set of interpretations $\modelsof{\phi_m}=\{I\mid 
+$\bullet$ A \emph{regular constraint} $\phi_r$ is of the form $x \in L(A)$ where $x$ is a string variable and $A$ is a finite automaton. The \emph{model} of $\phi_m$ is the set of interpretations $\modelsof{\phi_m}=\{I\mid 
 I(x) \in L(A) \}$. 
+\smallskip
 
-A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$. The \emph{number-string} conversion constraint $x=\its{n}$ is treated as a syntactic sugar for $n=\sti{x}$.
+$\bullet$ A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$. The \emph{number-string} conversion constraint $x=\its{n}$ is treated as a syntactic sugar for $n=\sti{x}$.
+\smallskip
 
 A \emph{string constraint} is then a conjunction of atomic string constraints, with the semantics defined in the standard manner. It is \emph{satisfiable} if its semantics is nonempty.
 
@@ -747,12 +752,12 @@ We introduce \emph{parametric flat automata} that will be used to define pattern
 	\node[state] (q11) [above left = 0.6cm of q1] {$\st{1}{1}$};
 	\node[state] (q12) [above = 1cm of q1] {$\st{1}{2}$};
 	\node[state] (q13) [above right = 0.6cm of q1] {$\st{1}{l_1}$};
-	\node   (m2) [above right = -0.4cm and -0.3cm of q13] {$\ ^{-1}$};
+	\node   (m2) [above right = -0.4cm and -0.25cm of q13] {$\ ^{-1}$};
 	
 	\node[state] (qm1) [above left = 0.6cm of qm] {$\st{m}{1}$};
 	\node[state] (qm2) [above = 1cm of qm] {$\st{m}{2}$};
 	\node[state] (qm3) [above right = 0.6cm of qm] {$\st{m}{l_m}$};
-	\node   (mm) [above right = -0.4cm and -0.3cm of qm3] {$\ ^{-1}$};
+	\node   (mm) [above right = -0.45cm and -0.2cm of qm3] {$\ ^{-1}$};
 	
 	\draw[->] (q0) edge [bend left] node [left]{$\sym{0}{0}$} (q01) ;
 	\draw[->] (q01) edge [bend left] node [left]{$\sym{0}{1}$} (q02) ;
@@ -846,7 +851,7 @@ For a PFA $\pa = (A,\paf)$,
 \centerline{$\semof {\pa} = \decode \pa \{(I\cup \pim)\mid \pim\in\parikhof{L(A)} ,I\in\semof\paf\}$.}
 \end{corollary}
 %
-\changed{removed definition of $\encode P (L)$.}
+%\changed{removed definition of $\encode P (L)$.}
 
 %Last, we define the encoding function as a counterpart of the decoding. Given a PFA $\pa$ and a language $L\subseteq \Sigma^*$, the set of \emph{$\pa$-encodings} of the words in $L$ is defined as
 %$\encode \pa (L) = \{e \mid \decode \pa (e) \in L\}$. 
@@ -901,7 +906,7 @@ We start the description of the algorithm that converts a string constraint $\in
 The domain restriction is formally defined by restricting the domain of each string variable by a chosen PFA. 
 %
 Namely, assuming that $X$ is the set of string variables of $\insc$,
-a \emph{flat domain restriction} for $\insc$ is a mapping $\dr$ that assigns to every variable $x\in X$ a PFA $\dr(x)$ over character variables $V_x$ \changed{ and we let $V_\dr = \bigcup_{x\in X} V_x$ be the set of all character variables used in $\dr$.}
+a \emph{flat domain restriction} for $\insc$ is a mapping $\dr$ that assigns to every variable $x\in X$ a PFA $\dr(x)$ over character variables $V_x$ and we let $V_\dr = \bigcup_{x\in X} V_x$ be the set of all character variables used in $\dr$.
 We require that these PFA operate over pairwise disjoint sets of character variables, that is if $x\neq y$ then $V_x \cap V_y = \emptyset$.
 %
 The particular choice of a PFA 
@@ -917,13 +922,11 @@ $\semof{\phi}^\dr = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{\dr(x)}\
 The following sections will be devoted to describing the flattening of the atomic string constraints. 
 The correctness of the entire construction of $\outlf$ is expressed by  Theorem~\ref{theorem:correct}:
 \begin{theorem}\label{theorem:correct}
-$\decode R (\semof {\outlf}) = \semof{\insc}^\dr$ 
+$\decode \dr (\semof {\outlf}) = \semof{\insc}^\dr$ 
 \end{theorem}
 
 The theorem can be proved by a structural induction over $\insc$.
 However, for the induction step to go through, we will need to guarantee a stronger correspondence of string constraints $\phi$ and their flattenings $\underf \dr \phi$ then just the semantic equality $\decode \dr (\semof {\underf \dr \phi}) = \semof{\phi}^\dr$.  
-\yfc{I do not understand the previous sentence}
-\lh{it is better?}
 Particularly, we will need to
  ensure that $\underf \dr \phi$ captures exactly all $\dr$-encodings of $\semof \phi^\dr$
 (indeed, notice that if it would be allowed to capture only some of the encodings, then for instance $\underf \dr {\phi} \land \underf \dr {\phi'}$ could only underapproximate $\semof{\phi\land\phi'}^\dr$).
