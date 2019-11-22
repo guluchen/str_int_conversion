@@ -18,7 +18,7 @@ We perform two sets of experiments. In the first set of experiments, we compare 
 	\item $\text{cvc4}_{\text{pred}}$ and $\text{cvc4}_{\text{term}}$ are obtained from the CVC4 group~\cite{termEQ}. These benchmarks contain a small amount of string-number conversion constraints (< $5\%$).
 \end{itemize}
 
-In the second experiment, we compare with tools supporting string-number conversion on the benchmarks collected from the symbolic executor \texttt{Py-Conbyte}\footnote{\url{https://github.com/spencerwuwu/py-conbyte}}, which has the supports of string-number conversion. We run it on several examples collected from the LeetCode platform and from Python core libraries. We also have examples that encode execution paths of some JavaScript programs (the Luhn algorithm and some array manipulation).
+In the second experiment, we compare with tools supporting string-number conversion on the benchmarks collected from the symbolic executor \texttt{Py-Conbyte}\footnote{\url{https://github.com/spencerwuwu/py-conbyte}}, which has the supports of string-number conversion. We ran it on several examples collected from the LeetCode platform and from Python core libraries. We also have examples that encode execution paths of some JavaScript programs (the Luhn algorithm and some array manipulation).
 
 All experiments were executed on a machine with 4-core CPU, 8 GiB RAM. The timeout was set to 10s for each test.
 We use the results from {\tool}, CVC4, and Z3 as the reference answer for the validation of the correctness of the results. Occasionally, two of them report inconsistent (one SAT and one UNSAT) answers to the same test. To decide which solver reports the incorrect answer, we developed a validator, which takes the model $I$ returned from the solver who reported SAT, assigns $I(x)$ to all variables $x$ in the test to obtained a modified test, and re-evaluates the modified test by multiple solvers. If the results from all solvers are consistent, we mark the test SAT or UNSAT according to the results. Otherwise, we manually simplify and inspect the test until we get a conclusive result. 
@@ -112,8 +112,9 @@ From Table~\ref{table:base_benchmark}, we can see that the performance of {\tool
 
 From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all other tools. The total number of failed cases is only a half to Z3, which is ranked the 2nd. In fact, most of the failed tests come from the analysis of one Python core library function that converts an IPv6 address to a number. We generated 2028 tests from this function, and among them around 1000 cases that are too difficult for all solvers.  If we exclude results on this function, then {\tool} has only $185$ failed cases in total. This is significantly better than the 2nd place tool Z3, which fails $893$ cases in total. \todo{Check and revise the numbers after table updated.}
 
-\todo{Mention about (1) checkLuhn cases (2) out tool solves much more cases if timeout is set to 30s. (3) update table with data of timeout=30s}
+To address the effectiveness of our PFA strategy, we also ran experiments on the String-Number Conversion benchmark with the the timeout set to 30s. Provided more time for solving, {\tool} managed to obtain more results and the timeout number is reduced to about 100, while other tools got almost the same number of timouts with the results of timeout set to 10s. Also, we have encoded the checkLuhn algorithm in SMT-lib for cases of 2 to 12 loops (digits). These problems ask for a model of a valid credit card number as a string of length 2 to 12 each case. We ran these tests additionally to the experiments above with the timeout set to 120s. In these tests, {\tool} can solve all 11 problems within 1s while CVC4 only returns a model for cases of 2 to 5 loops and Z3-str3 could not solve these problems (either timeout or UNKNOWN). However, Z3 can still solve 7 out of the 11 problems and the problems got timeout are cases for 4, 5, 7, and 9 loops. It seems that Z3 has some strategies that can solve problems of even loops efficiently. \todo{Update table with data of timeout=30s}
 
+\hide{
 \begin{table}[h]
 \centering
 \caption{Comparison of {\tool}, CVC4, and Z3/Z3str3 with checkLuhn problems of 2 to 12 loops.}
@@ -135,6 +136,7 @@ From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly 
 \end{tabular}}
 \label{table:checkLuhn}
 \end{table}
+}
 
 \hide{
 \paragraph{Basic constraint benchmarks.}
@@ -207,99 +209,6 @@ z3str3		& 424 & 1944 & 587 & 4106 & 330 & 5 \\ \hline
 
 
 
-\hide{
-\begin{figure}
-\begin{tikzpicture}
-\begin{axis}
-\addplot+[sharp plot]
-coordinates
-{
-(2,0.097)
-(3,0.078)
-(4,0.098)
-(5,0.098)
-(6,0.161)
-(7,0.236)
-(8,0.307)
-(9,0.26)
-(10,0.211)
-(11,0.228)
-(12,0.33)
-};
-\end{axis}
-\end{tikzpicture}
-\caption{checkLuhn: z3-trau}
-\end{figure}
-
-\begin{figure}
-\begin{tikzpicture}
-\begin{axis}
-\addplot+[sharp plot]
-coordinates
-{
-(2,0.266)
-(3,10.084)
-(4,48.791)
-(5,120)
-(6,120)
-(7,120)
-(8,120)
-(9,120)
-(10,120)
-(11,120)
-(12,120)
-};
-\end{axis}
-\end{tikzpicture}
-\caption{checkLuhn: cvc4 (SAT if not timeout)}
-\end{figure}
-
-\begin{figure}
-\begin{tikzpicture}
-\begin{axis}
-\addplot+[sharp plot]
-coordinates
-{
-(2,0.238)
-(3,0.128)
-(4,120)
-(5,120)
-(6,0.134)
-(7,120)
-(8,0.366)
-(9,120)
-(10,0.526)
-(11,0.374)
-(12,0.405)
-};
-\end{axis}
-\end{tikzpicture}
-\caption{checkLuhn: z3 (SAT if not timeout)}
-\end{figure}
-
-\begin{figure}
-\begin{tikzpicture}
-\begin{axis}
-\addplot+[sharp plot]
-coordinates
-{
-(2,0.4743)
-(3,0.56052)
-(4,0.36695)
-(5,0.60905)
-(6,22.06429)
-(7,53.77536)
-(8,118.41196)
-(9,0.50559)
-(10,120)
-(11,0.42953)
-(12,120)
-};
-\end{axis}
-\end{tikzpicture}
-\caption{checkLuhn: z3str3 (UNKNOWN if not timeout)}
-\end{figure}
-}
 
 
 \hide{ % keep data of abc and ostrich
