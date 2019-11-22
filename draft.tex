@@ -874,7 +874,7 @@ Conversely, $w$ is a \emph{$\pa$-decoding} of $e$.
 We use $\encode \pa(w)$ below to denote all $\pa$-encodings of a word $w$,
 and $\decode \pa (I_e)$ to denote all $\pa$-decodings of a word encoding $e$. Namely,  
 % to \emph{word encodings} $e:\cvar\cup\#\cvar \rightarrow \nat$ via the PA $\pa$ and the function $\decode \pa$ does it in the reverse direction.
-	$$\encode \pa( w ) = \{e \mid  x \in L(\pa) , I(x) =w, I\in\semof \paf, I_e = I \cup \parikhof{x}\}$$
+	$$\encode \pa( w ) = \{I_e \mid  x \in L(\pa) , I(x) =w, I\in\semof \paf, I_e = I \cup \parikhof{x}\}$$
 	$$\decode \pa(I_e) =\{ w \mid x \in L(\pa) , I(x) =w, I\in\semof \paf, I_e = I \cup \parikhof{x} \}$$
 
 Since a word encoding $I_e$ only records the numbers of occurrences of character variables (Parikh image), 
