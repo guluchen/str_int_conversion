@@ -867,8 +867,6 @@ For a parametric word $x= v_1v_2\cdots v_k$ over $\cvar$, its interpretation $I(
 We then define the semantics of the PA $P$ as the set of strings   
 $\semof {\pa} = \{I(x) \mid x\in L(A),I\in\semof \paf\}$ of all interpretations satisfying $\paf$ of all parametric strings in the language of $A$. 
 
-
-\changed{
 We say that a mapping $I_e:\cvar\cup\#\cvar \rightarrow \nat$ is a \emph{word encoding} a word $w$ (or a $\pa$-encoding of $w$) if $w$ is an instantiation of some parametric word $x \in L(\pa)$ whose Parikh image and interpretation of character variables are defined by $I_e$.  
 %
 Conversely, $w$ is a \emph{$\pa$-decoding} of $e$.
@@ -889,9 +887,9 @@ $$
 Consequently, as stated by the following corollary of Lemma~\ref{lemma:decoding}, 
 Parikh image of parametric words in $L(A)$ paired with character variable interpretations satisfying $\paf$ encode precisely the words in $\semof{\pa}$.
 %words in $\semof{\pa}$ are precisely the decodings of the Parikh image of parametric words in $L(A)$ paired with character variables interpretations satisfying $\paf$:
-}	
 
-\yfc{Plan to remove this one and use the orange one.
+
+\hide{Plan to remove this one and use the orange one.
 	
 Observe that every word $w \in \semof{\pa}$ is uniquely determined by a parametric word $x\in L(A)$ and an interpretation $I\in\semof{\paf}$ such that $w = I(x)$. 
 
