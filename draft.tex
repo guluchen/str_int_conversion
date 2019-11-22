@@ -22,6 +22,7 @@
 \begin{abstract}
 String-number conversion is an important class of constraint needed for the symbolic execution for programs. It is particular important in the analysis of scripting languages such as JavaScript and Python, where string-number conversion is a part of the definition of the core semantics of the language. However, the state-of-the-art constraint solvers have only very limited support to this type of constraint. In this paper, we propose an approach that can support a combination of string-number conversion as well as other common types of string constraints efficiently. Experimental results show that it significantly outperforms other state-of-the-art tools on benchmarks that involves string-number conversion.
 \end{abstract}
+ \setcopyright{none} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -221,7 +222,7 @@ Even, more crucially, in many programming languages, string-number conversion is
 
 
 %As solvers are applied to symbolic execution of programming languages, this is increasingly becoming a severe limitation. For many languages such as Java, conversion between integers and strings is a niche operation, and much symbolic execution can be done without supporting it; however, this is not true of some scripting languages, of which JavaScript is the most notable. JavaScript is a key language---it powers most interactive content on the Web, and increasingly server-side code with Node.js---and it has conversions between strings and integers embedded in the core of its semantics. 
-\smallskip
+
 \begin{center}
 	\begin{minipage}{5cm}
 		\begin{verbatim}
@@ -231,7 +232,7 @@ Even, more crucially, in many programming languages, string-number conversion is
 		\end{verbatim}
 	\end{minipage}
 \end{center}
-\smallskip
+
 
 
 A casual glance at the above code reveals no use of strings at all, but the semantics of field access is somewhat unusual in JavaScript: the arrays are indexed by strings, and numeric indices are converted to strings. This conversion is mandated explicitly by the JavaScript semantics: the 2019 edition of ECMAScript \cite{?} requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}). Therefore, any faithful symbolic execution of JavaScript must handle such conversions for even basic array operations to work correctly. Consider the following code snippet that manipulates an array \texttt{x}, with its value shown on the right:
