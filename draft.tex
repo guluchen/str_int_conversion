@@ -879,7 +879,17 @@ and $\decode \pa (e)$ to denote all $\pa$-decodings of a word encoding $e$. Name
 % to \emph{word encodings} $e:\cvar\cup\#\cvar \rightarrow \nat$ via the PA $\pa$ and the function $\decode \pa$ does it in the reverse direction.
 	$$\encode \pa( w ) = \{e \mid  x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x}\}$$
 	$$\decode \pa(e) =\{ w \mid x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x} \}$$
-Informally, a word encoding $e\in \encode \pa( w )$ means $w$ corresponds to a parametric word $x \in L(\pa)$ whose Parikh image and interpretation of character variables are defined by $e$. Since $e$ has only the information of number of occurrences of character variables (Parikh image), the same word encoding may be shared by multiple words, as formalized in the definition of $\decode \pa(e)$. For the case that $\pa$ is a PFA, by Lemma~\ref{lemma:decoding} each word encoding $e\in \encode \pa( w )$ uniquely encodes the word $w$. The following corollary of Lemma~\ref{lemma:decoding} states that words in $\semof{\pa}$ are decodings of the Parikh image of parametric words in $L(A)$ paired with character variables interpretations satisfying $\paf$:
+Informally, that a word encoding $e$ belongs to $\encode \pa( w )$ means that $w$ is an interpretation of a parametric word $x \in L(\pa)$ whose Parikh image and interpretation of character variables are defined by $e$. 
+Since $e$ only records the numbers of occurrences of character variables (Parikh image), 
+the same word encoding may be shared by multiple words, as formalized in the definition of $\decode \pa(e)$. 
+
+If $\pa$ is a PFA, then by Lemma~\ref{lemma:decoding}, each word encoding $e\in \encode \pa( w )$ can be decoded uniquely to the word $w$, i.e.
+$$
+w = \decode \pa (\encode \pa (w))
+$$
+Consequently, as stated by the following corollary of Lemma~\ref{lemma:decoding}, 
+Parikh image of parametric words in $L(A)$ paired with character variable interpretations satisfying $\paf$ encode precisely the words in $\semof{\pa}$.
+%words in $\semof{\pa}$ are precisely the decodings of the Parikh image of parametric words in $L(A)$ paired with character variables interpretations satisfying $\paf$:
 }	
 
 \yfc{Plan to remove this one and use the orange one.
