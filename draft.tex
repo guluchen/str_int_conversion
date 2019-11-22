@@ -867,7 +867,7 @@ For a parametric word $x= v_1v_2\cdots v_k$ over $\cvar$, its interpretation $I(
 We then define the semantics of the PA $P$ as the set of strings   
 $\semof {\pa} = \{I(x) \mid x\in L(A),I\in\semof \paf\}$ of all interpretations satisfying $\paf$ of all parametric strings in the language of $A$. 
 
-We say that a mapping $I_e:\cvar\cup\#\cvar \rightarrow \nat$ is a \emph{word encoding} a word $w$ (or a $\pa$-encoding of $w$) if $w$ is an instantiation of some parametric word $x \in L(\pa)$ whose Parikh image and interpretation of character variables are defined by $I_e$.  
+We say that a mapping $I_e:\cvar\cup\#\cvar \rightarrow \nat$ is a \emph{word encoding} a word $w$  (or a $\pa$-encoding of $w$) if $w$ is an instantiation of some parametric word $x \in L(\pa)$ whose Parikh image and interpretation of character variables are defined by $I_e$.  
 %
 Conversely, $w$ is a \emph{$\pa$-decoding} of $e$.
 %
@@ -880,7 +880,7 @@ and $\decode \pa (I_e)$ to denote all $\pa$-decodings of a word encoding $e$. Na
 Since a word encoding $I_e$ only records the numbers of occurrences of character variables (Parikh image), 
 the same word encoding may be shared by multiple words, as formalized in the definition of $\decode \pa(I_e)$. 
 
-If $\pa$ is a PFA, then by Lemma~\ref{lemma:decoding}, each word encoding $e\in \encode \pa( w )$ can be decoded uniquely to the word $w$, i.e.
+If $\pa$ is a PFA, then by Lemma~\ref{lemma:decoding}, each word encoding $I_e\in \encode \pa( w )$ can be decoded uniquely to the word $w$, i.e.
 $$
 \{w\} = \decode \pa (\encode \pa (w))
 $$
