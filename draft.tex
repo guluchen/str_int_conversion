@@ -625,7 +625,7 @@ The \emph{language} of $A$ (denoted by $L(A)$) consists of  the set  of all acce
 Through the paper, we will use quantifier-free linear integer arithmetic formulae, and call them \emph{linear formulae} for short.  
 Given a linear formula $\phi$ over variables $V$ and an \emph{integer interpretation} of $V$, a function $I:V\rightarrow \integers$, 
 we denote by $I\models \phi$ that $I$ satisfies $\phi$ (which is defined in the standard manner), and call $I$ a \emph{model} of $\phi$. 
-We use $\modelsof \phi$ to denote the set all models of $\phi$ \changed{and use $\modelsof \phi_{V'}$ to denote the same set but projected to the domain $V'$}.%
+We use $\modelsof \phi$ to denote the set all models of $\phi$.%
 %Let $J$ and $J'$ be two sets integer interpretations, $J$ containting interpretation of variables $V$ and $J'$ of variables $V'$. 
 %We say that $J$ and $J'$ are \emph{equivalent}, written $J\iequiv J'$, if their interpretations restricted to the common variables are the same, that is, if 
 %$\{\restrict I {V\cap V'} \mid I \in J\} = \{\restrict {I'} {V\cap V'} \mid I' \in J'\}$. We may write $J\eqwrt{V\cap V'} J'$ if we wish to made the common variables explicit.
@@ -866,13 +866,19 @@ For a parametric word $x= v_1v_2\cdots v_k$ over $\cvar$, its interpretation $I(
 %the semantics of a language $L\subseteq V^*$ is the union $\semof L = \cup_{x\in L} \semof{x}$ of semantics of its words, 
 We then define the semantics of the PA $P$ as the set of strings   
 $\semof {\pa} = \{I(x) \mid x\in L(A),I\in\semof \paf\}$ of all interpretations satisfying $\paf$ of all parametric strings in the language of $A$. 
-\yfc{I just found that we have not defined the restriction of the domain of functions such as $e_{V}$,  maybe need it somewhere. }
 
-\yfc{Some attempts to define both encodes and decodes of PA, need more explanation of why we define them I guess. It is planed to be a replacement of the text below him. One interesting observation: the definitions of both are almost the same
+\hide{Some attempts to define both encodes and decodes of PA, need more explanation of why we define them I guess. It is planed to be a replacement of the text below him. One interesting observation: the definitions of both are almost the same
 	$$\encode \pa( w ) = \{e \mid  x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x}\}$$
 	$$\decode \pa(e) =\{ w \mid x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x} \}$$
 	}
 \changed{
+The function $\encode \pa$ below encodes a word $w$ to \emph{word encodings} $e:\cvar\cup\#\cvar \rightarrow \nat$ via the PA $\pa$ and the function $\decode \pa$ does it in the reverse direction.
+	$$\encode \pa( w ) = \{e \mid  x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x}\}$$
+	$$\decode \pa(e) =\{ w \mid x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x} \}$$
+Informally, a word encoding $e\in \encode \pa( w )$ means $w$ corresponds to a parametric word $x \in L(\pa)$ whose Parikh image and interpretation of character variables are defined by $e$. Since $e$ has only the information of number of occurrences of character variables (Parikh image), the same word encoding may be shared by multiple word, as formalized in the definition of $\decode \pa(e)$. For the case that $\pa$ is flat, by Lemma~\ref{lemma:decoding} each word encoding $e\in \encode \pa( w )$ uniquely encodes the word $w$. The following corollary of Lemma~\ref{lemma:decoding} states that words in $\semof{\pa}$ are decodings of the Parikh image of parametric words in $L(A)$ paired with character variables interpretations satisfying $\paf$:
+}	
+
+\hide{
 	Observe that every word $w \in \semof{\pa}$ is uniquely determined by a parametric word $x\in L(A)$ and an interpretation $I\in\semof{\paf}$ such that $w = I(x)$. We call the union of $I$ and the Parikh image $\parikhof{x}$ a \emph{word encoding} of $w$ in $\pa$. More formally, a wording encoding of $\pa$ is mapping of the type $\cvar\cup\#\cvar \rightarrow \nat$ and the set of word encodings of $w$ in $\pa$ is defined as $\encode \pa( w ) = \{e \mid  x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x}\}$. For every word encoding $e\in \encode \pa( w )$, there must be a parametric word $x\in L(P)$ and some valid character assignment $I\in \semof \paf$ such that $I(x) =w$ and $e= I \cup \parikhof{x}$. When $e\in \encode \pa( w )$, we also say it \emph{$\pa$-encodes} $w$. We lift the encoding function $\encode \pa$ to set of word $W$ by defining  $\encode \pa(W) = \bigcup_{w\in W} \encode \pa(w)$.
 	
 	Conversely, given a word encoding $e:\cvar\cup\#\cvar \rightarrow \nat$, the decoding of $e$ in $\pa$ is defined as the set $\decode \pa(e) =\{ w \mid x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x} \}$. We lift the decoding function $\decode \pa$ to set of word encodings $E$ by defining  $\encode \pa(E) = \bigcup_{e\in E} \decode \pa(e)$.
