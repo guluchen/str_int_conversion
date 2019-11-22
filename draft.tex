@@ -625,7 +625,7 @@ The \emph{language} of $A$ (denoted by $L(A)$) consists of  the set  of all acce
 Through the paper, we will use quantifier-free linear integer arithmetic formulae, and call them \emph{linear formulae} for short.  
 Given a linear formula $\phi$ over variables $V$ and an \emph{integer interpretation} of $V$, a function $I:V\rightarrow \integers$, 
 we denote by $I\models \phi$ that $I$ satisfies $\phi$ (which is defined in the standard manner), and call $I$ a \emph{model} of $\phi$. 
-We use $\modelsof \phi$ to denote the set all models of $\phi$.%
+We use $\modelsof \phi$ to denote the set all models of $\phi$ \changed{and use $\modelsof \phi_{V'}$ to denote all models of $\phi$ projected to the domain $V'$}.%
 %Let $J$ and $J'$ be two sets integer interpretations, $J$ containting interpretation of variables $V$ and $J'$ of variables $V'$. 
 %We say that $J$ and $J'$ are \emph{equivalent}, written $J\iequiv J'$, if their interpretations restricted to the common variables are the same, that is, if 
 %$\{\restrict I {V\cap V'} \mid I \in J\} = \{\restrict {I'} {V\cap V'} \mid I' \in J'\}$. We may write $J\eqwrt{V\cap V'} J'$ if we wish to made the common variables explicit.
@@ -634,9 +634,9 @@ We use $\modelsof \phi$ to denote the set all models of $\phi$.%
 The \emph{Parikh image} of a word $w\in \Sigma^*$ maps each \emph{Parikh variable} $\#a$, with $a \in \Sigma$ is a character, to the number of occurrences of $a$ in $w$.
 Formally, given a set $S$, let $\pvarsof S$ denote the set of Parikh variables $\{\#s \mid s\in S\}$. 
 The Parikh image of $w$ is a function $\parikhof w:\pvarsof \Sigma \rightarrow \nat$ such that $\parikhof w (\#a) = |w|_a$. 
-The Parikh image of a language $L$ is defined as folllows $\parikhof L = \{\parikhof w \mid w \in L\}$. %and the Parikh image of an FA $A$ is Parikh image of its language, $\parikhof{A} = \parikhof{L(A)}$. 
+The Parikh image of a language $L$ is defined as follows $\parikhof L = \{\parikhof w \mid w \in L\}$. %and the Parikh image of an FA $A$ is Parikh image of its language, $\parikhof{A} = \parikhof{L(A)}$. 
 %
-It is well known that the Parikh image of a regular language  can be  charctaerized by a linear formula:
+It is well known that the Parikh image of a regular language  can be  characterized by a linear formula:
 
 
 
