@@ -869,23 +869,22 @@ $\semof {\pa} = \{I(x) \mid x\in L(A),I\in\semof \paf\}$ of all interpretations 
 
 
 \changed{
-We say that a mapping $e:\cvar\cup\#\cvar \rightarrow \nat$ is a \emph{word encoding} a word $w$ (or a $\pa$-encoding of $w$) if $e = \parikhof{x}\cup I$
-for some $x \in L(A)$ and $I\in\semof\paf$ such that $w = I(x)$.   
+We say that a mapping $I_e:\cvar\cup\#\cvar \rightarrow \nat$ is a \emph{word encoding} a word $w$ (or a $\pa$-encoding of $w$) if $w$ is an instantiation of some parametric word $x \in L(\pa)$ whose Parikh image and interpretation of character variables are defined by $I_e$.  
 %
 Conversely, $w$ is a \emph{$\pa$-decoding} of $e$.
 %
-We use $\encode \pa(w)$ below to denote all $\pa$-encoding of a word $w$,
-and $\decode \pa (e)$ to denote all $\pa$-decodings of a word encoding $e$. Namely,  
+We use $\encode \pa(w)$ below to denote all $\pa$-encodings of a word $w$,
+and $\decode \pa (I_e)$ to denote all $\pa$-decodings of a word encoding $e$. Namely,  
 % to \emph{word encodings} $e:\cvar\cup\#\cvar \rightarrow \nat$ via the PA $\pa$ and the function $\decode \pa$ does it in the reverse direction.
-	$$\encode \pa( w ) = \{e \mid  x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x}\}$$
-	$$\decode \pa(e) =\{ w \mid x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x} \}$$
-Informally, that a word encoding $e$ belongs to $\encode \pa( w )$ means that $w$ is an interpretation of a parametric word $x \in L(\pa)$ whose Parikh image and interpretation of character variables are defined by $e$. 
-Since $e$ only records the numbers of occurrences of character variables (Parikh image), 
-the same word encoding may be shared by multiple words, as formalized in the definition of $\decode \pa(e)$. 
+	$$\encode \pa( w ) = \{e \mid  x \in L(\pa) , I(x) =w, I\in\semof \paf, I_e = I \cup \parikhof{x}\}$$
+	$$\decode \pa(I_e) =\{ w \mid x \in L(\pa) , I(x) =w, I\in\semof \paf, I_e = I \cup \parikhof{x} \}$$
+
+Since a word encoding $I_e$ only records the numbers of occurrences of character variables (Parikh image), 
+the same word encoding may be shared by multiple words, as formalized in the definition of $\decode \pa(I_e)$. 
 
 If $\pa$ is a PFA, then by Lemma~\ref{lemma:decoding}, each word encoding $e\in \encode \pa( w )$ can be decoded uniquely to the word $w$, i.e.
 $$
-w = \decode \pa (\encode \pa (w))
+\{w\} = \decode \pa (\encode \pa (w))
 $$
 Consequently, as stated by the following corollary of Lemma~\ref{lemma:decoding}, 
 Parikh image of parametric words in $L(A)$ paired with character variable interpretations satisfying $\paf$ encode precisely the words in $\semof{\pa}$.
@@ -1047,7 +1046,8 @@ that specifies how each word in the semantic intersection $\semof \pa \cap \semo
 %
 More precisely, the models of $\syncfof \pa {\pa'}$ represent pairs of word
 encodings 
-$e$ and $e'$ such that $e\in\encode \pa(w)$ and $e'\in\encode \pa(w)$ (hence $w\in\semof{\pa}\cap\semof{\pa'}$).
+$e$ and $e'$ such that $e\in\encode \pa(w)$ and $e'\in\encode {\pa'} (w)$ (hence $w\in\semof{\pa}\cap\semof{\pa'}$).
+
 
 Particularly, the synchronization formula is built for two PAs  
 $\pa = ((Q,T,\cvarone,q_i,q_f),\paf)$ and ${\pa'} = ((Q',T',\cvartwo,q_i',q_f'),\paf')$ such that $\cvarone \cap \cvartwo = \emptyset$. 
