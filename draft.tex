@@ -827,8 +827,8 @@ Notice that the case when $l_i = 0$ is also admissible and means that there is n
 
 The crucial feature of flat automata is that their semantics can be faithfully represented by a linear formula and handled efficiently by an SMT solver. Such encoding into linear formula results in efficient algorithms and decision procedure for the class of flat automata and so we avoid dealing with costly standard automata operations (e.g., checking  the non-emptiness of the intersection of several regular languages
  is known to be {\sc Pspace}-complete while it is in {\sc NP} for the class of flat automata).
-This is due to the fact that 
-every word $w\in L(A)$ is uniquely determined by its Parikh image $\parikhof{w}$ due to the flatness. 
+This is possible thanks to the flatness, which causes that 
+every word $w\in L(A)$ is uniquely determined by its Parikh image $\parikhof{w}$. 
 More precisely, the Parikh image of a word $w\in L(A)$ can be seen as an encoding of $w$ and can be uniquely decoded:
 
 
@@ -838,7 +838,7 @@ For an flat FA $A$, there is a function $\decode A$ such that for each $w\in L(A
 %
 \begin{proof}
 First observe that the $\parikhof w$ value of any variable appearing within the a cycle of $A$ is equal to the number of repetitions of that cycle in the accepting run. This is an immediate consequence of the fact that 
- every variable appears on at most one transition. Thus, the accepting run on $w$ (and so $w$ itself) can thus be reconstructed from $\parikhof w$.  More concretely, the function $\decode A$ can be implemented as follows. 
+ every variable appears on at most one transition. Thus, the accepting run on $w$ (and so $w$ itself) can be reconstructed from $\parikhof w$.  More concretely, the function $\decode A$ can be implemented as follows. 
 Given $\pim:\#\Sigma\rightarrow\nat$,
 and assuming that the lengths of the loops of $A$ are $l_0,\ldots,l_{m}$, 
 $\decode A(\pim)$ is constructed as the word $w_0 a_{0} w_1 \cdots a_{m-1} w_{m}$ where for each $i\in [0,m]$,
@@ -849,7 +849,7 @@ For example, in the automaton given at the beginning of this section,
 from $\parikhwof x {a_0} = \parikhwof x {a_1} = \cdots = \parikhwof x {a_{m-1}}=1$, $\parikhwof x {a^0_1}=\parikhwof x {a^1_1}=\parikhwof x {a^2_1}=2$ and $\parikhwof x {a^i_j}=0$ otherwise,  we derive that $x=a_0(a^0_1a^1_1a^2_1)^2a_1\cdots a_{m-1}$. 
 
 \paragraph{Parametric (flat) automata}
-Next we define \emph{parametric automaton} (PA) as a pair  $\pa = (A,\paf)$ where 
+Next, we define \emph{parametric automaton} (PA) as a pair  $\pa = (A,\paf)$ where 
 $A$ is an automaton operating over an alphabet $\cvar$ of \emph{character variables}  
 and $\paf$ is an \emph{interpretation constraint}, a linear formula over $\cvar$. 
 \emph{Parametric flat automaton (PFA)} is then a parametric automaton whose  automaton is flat. See Figure~\ref{fig:sfa_def} and~\ref{fig:sfa} for examples of PFAs (without interpretation constraints, i.e., $\paf = \true$.).
