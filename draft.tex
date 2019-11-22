@@ -867,10 +867,7 @@ For a parametric word $x= v_1v_2\cdots v_k$ over $\cvar$, its interpretation $I(
 We then define the semantics of the PA $P$ as the set of strings   
 $\semof {\pa} = \{I(x) \mid x\in L(A),I\in\semof \paf\}$ of all interpretations satisfying $\paf$ of all parametric strings in the language of $A$. 
 
-\hide{Some attempts to define both encodes and decodes of PA, need more explanation of why we define them I guess. It is planed to be a replacement of the text below him. One interesting observation: the definitions of both are almost the same
-	$$\encode \pa( w ) = \{e \mid  x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x}\}$$
-	$$\decode \pa(e) =\{ w \mid x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x} \}$$
-	}
+
 \changed{
 The function $\encode \pa$ below encodes a word $w$ to \emph{word encodings} $e:\cvar\cup\#\cvar \rightarrow \nat$ via the PA $\pa$ and the function $\decode \pa$ does it in the reverse direction.
 	$$\encode \pa( w ) = \{e \mid  x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x}\}$$
@@ -878,16 +875,7 @@ The function $\encode \pa$ below encodes a word $w$ to \emph{word encodings} $e:
 Informally, a word encoding $e\in \encode \pa( w )$ means $w$ corresponds to a parametric word $x \in L(\pa)$ whose Parikh image and interpretation of character variables are defined by $e$. Since $e$ has only the information of number of occurrences of character variables (Parikh image), the same word encoding may be shared by multiple words, as formalized in the definition of $\decode \pa(e)$. For the case that $\pa$ is a PFA, by Lemma~\ref{lemma:decoding} each word encoding $e\in \encode \pa( w )$ uniquely encodes the word $w$. The following corollary of Lemma~\ref{lemma:decoding} states that words in $\semof{\pa}$ are decodings of the Parikh image of parametric words in $L(A)$ paired with character variables interpretations satisfying $\paf$:
 }	
 
-\hide{
-	Observe that every word $w \in \semof{\pa}$ is uniquely determined by a parametric word $x\in L(A)$ and an interpretation $I\in\semof{\paf}$ such that $w = I(x)$. We call the union of $I$ and the Parikh image $\parikhof{x}$ a \emph{word encoding} of $w$ in $\pa$. More formally, a wording encoding of $\pa$ is mapping of the type $\cvar\cup\#\cvar \rightarrow \nat$ and the set of word encodings of $w$ in $\pa$ is defined as $\encode \pa( w ) = \{e \mid  x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x}\}$. For every word encoding $e\in \encode \pa( w )$, there must be a parametric word $x\in L(P)$ and some valid character assignment $I\in \semof \paf$ such that $I(x) =w$ and $e= I \cup \parikhof{x}$. When $e\in \encode \pa( w )$, we also say it \emph{$\pa$-encodes} $w$. We lift the encoding function $\encode \pa$ to set of word $W$ by defining  $\encode \pa(W) = \bigcup_{w\in W} \encode \pa(w)$.
-	
-	Conversely, given a word encoding $e:\cvar\cup\#\cvar \rightarrow \nat$, the decoding of $e$ in $\pa$ is defined as the set $\decode \pa(e) =\{ w \mid x \in L(\pa) , I(x) =w, I\in\semof \paf, e = I \cup \parikhof{x} \}$. We lift the decoding function $\decode \pa$ to set of word encodings $E$ by defining  $\encode \pa(E) = \bigcup_{e\in E} \decode \pa(e)$.
-	
 
-	When $\pa$ is flat, Lemma~\ref{lemma:decoding} implies that such $\pa$-encoding can be uniquely decoded. The following corollary of Lemma~\ref{lemma:decoding} states that words in $\semof{\pa}$ are decodings of the Parikh image of parametric words in $L(A)$ paired with character variables interpretations satisfying $\paf$:
-	
-
-}
 \yfc{Plan to remove this one and use the orange one.
 	
 Observe that every word $w \in \semof{\pa}$ is uniquely determined by a parametric word $x\in L(A)$ and an interpretation $I\in\semof{\paf}$ such that $w = I(x)$. 
@@ -954,7 +942,7 @@ For a PFA $\pa = (A,\paf)$,
 
 %
 In this section, we describe formally how to restrict the domain of string variables to patterns defined by PFA. 
-We start the description of the algorithm that converts a string constraint $\insc$ to a linear formula, called the \emph{flattening} of $\insc$, representing the restricted set of solutions.  
+We start the description of the algorithm that converts a string constraint $\insc$ to a linear formula representing the set of solutions under the domain restriction.  
 %
 
 The domain restriction is formally defined by restricting the domain of each string variable by a chosen PFA. 
@@ -966,7 +954,7 @@ We require that these PFA operate over pairwise disjoint sets of character varia
 The particular choice of a PFA 
 for each variable depends on the strategy used in the implementation, and will be discussed in Section~\ref{section:evaluation}.
 %
-The flattening $\underf \dr {\insc}$ (of the input string constraint $\insc$) will be built inductively following the structure of $\insc$.
+The \emph{flattening} of the input string constraint $\insc$, denoted $\underf \dr {\insc}$, will be built inductively following the structure of $\insc$.
 For a conjunction of string constraints, we let $\underf \dr {\phi \land \phi'} \defeq \underf \dr {\phi} \land \underf \dr {\phi'}$. We do such decomposition until reached atomic string constraints. We show how to build a flattening $\underf \dr {\phi}$ for every atomic string constraint $\phi$ in the following sections.
 
 %The semantics of a string constraint $\phi$ restricted by $\dr$ is then defined as 
@@ -978,9 +966,15 @@ $\semof{\phi}^\dr = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{\dr(x)}\
 
 
 The correctness of the entire construction of $\underf \dr {\insc}$ is expressed by  Theorem~\ref{theorem:correct}. 
-It uses the decoding function $\decode \dr$ parameterized by the domain restriction $\dr$. 
+\changed{
+It uses the decoding function $\decode \dr$ parameterized by the domain restriction $\dr$. The $\decode \dr$ function maps a word encoding $I_e: V_\dr\cup\#V_\dr\rightarrow \nat$ paired with an interpretation of integer variables $I_z$ to a model $I_s \cup I_z$ of a string constraint. Formally, $\dr (I_e\cup I_z) = I_s \cup I_z$, where $x\in X$,
+$I(x) = \decode {\dr(x)} (e_{V_{\dr(x)}\cup \#V_{\dr(x)}})$. 
+	
+}
+
+\yfc{It uses the decoding function $\decode \dr$ parameterized by the domain restriction $\dr$. 
 For an interpretation $e \cup I'$ consisting of an interpretation $e$ of $V_\dr$ and $\#V_\dr$ and an interpretation of integer variables $I'$, we let $\decode \dr (e\cup I') = I \cup I'$ where $I$ is the interpretation of string variables such that for each $x\in X$,
-$I(x) = \decode {\dr(x)} (e_{V_{\dr(x)}\cup \#V_{\dr(x)}})$. That is, $\decode \dr (e\cup I')$ returns the original integer interpretation $I'$ together with each string variable $x$ interpreted as the ${\dr(x)}$-decoding of the values of $V_{\dr(x)}$ and $\#V_{\dr(x)}$. 
+$I(x) = \decode {\dr(x)} (e_{V_{\dr(x)}\cup \#V_{\dr(x)}})$. That is, $\decode \dr (e\cup I')$ returns the original integer interpretation $I'$ together with each string variable $x$ interpreted as the ${\dr(x)}$-decoding of the values of $V_{\dr(x)}$ and $\#V_{\dr(x)}$. }
 We lift $\decode \dr$ to sets of interpretations in the standard manner.
 \begin{theorem}\label{theorem:correct}
 $\decode \dr (\semof {\underf \dr {\insc}}) = \semof{\insc}^\dr$ 
