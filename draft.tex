@@ -882,7 +882,7 @@ the same word encoding may be shared by multiple words, as formalized in the def
 
 If $\pa$ is a PFA, then by Lemma~\ref{lemma:decoding}, each word encoding $I_e\in \encode \pa( w )$ can be decoded uniquely to the word $w$, i.e.
 $$
-\{w\} = \decode \pa (\encode \pa (w))
+w = \decode \pa (\encode \pa (w))
 $$
 Consequently, as stated by the following corollary of Lemma~\ref{lemma:decoding}, 
 Parikh image of parametric words in $L(A)$ paired with character variable interpretations satisfying $\paf$ encode precisely the words in $\semof{\pa}$.
@@ -979,16 +979,17 @@ $\semof{\phi}^\dr = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{\dr(x)}\
 
 
 The correctness of the entire construction of $\underf \dr {\insc}$ is expressed by  Theorem~\ref{theorem:correct}. 
-\changed{
-It uses the decoding function $\decode \dr$ parameterized by the domain restriction $\dr$. The $\decode \dr$ function maps a word encoding $I_e: V_\dr\cup\#V_\dr\rightarrow \nat$ paired with an interpretation of integer variables $I_z$ to a model $I_s \cup I_z$ of a string constraint. Formally, $\decode  \dr (I_e\cup I_z) = I_s \cup I_z$, where $x\in X$,
-$I_s(x) = \decode {\dr(x)} ((I_e)_{V_{\dr(x)}\cup \#V_{\dr(x)}})$. 
-	
-}
-
-\yfc{It uses the decoding function $\decode \dr$ parameterized by the domain restriction $\dr$. 
-For an interpretation $e \cup I'$ consisting of an interpretation $e$ of $V_\dr$ and $\#V_\dr$ and an interpretation of integer variables $I'$, we let $\decode \dr (e\cup I') = I \cup I'$ where $I$ is the interpretation of string variables such that for each $x\in X$,
-$I(x) = \decode {\dr(x)} (e_{V_{\dr(x)}\cup \#V_{\dr(x)}})$. That is, $\decode \dr (e\cup I')$ returns the original integer interpretation $I'$ together with each string variable $x$ interpreted as the ${\dr(x)}$-decoding of the values of $V_{\dr(x)}$ and $\#V_{\dr(x)}$. }
-We lift $\decode \dr$ to sets of interpretations in the standard manner.
+It uses the decoding function $\decode \dr$ parameterized by the domain restriction $\dr$. 
+The $\decode \dr$ function maps a word encoding $I_e: V_\dr\cup\#V_\dr\rightarrow \nat$ paired with an interpretation of integer variables $I_z$ to a model $I_s \cup I_z$ of a string constraint. 
+Formally, 
+$\decode  \dr (I_e\cup I_z) = \{I_s \cup I_z \mid \forall x\in X: I_s(x) = \decode {\dr(x)} ((I_e)_{V_{\dr(x)}\cup \#V_{\dr(x)}})\}$.
+The condition says each string variable $x$ is interpreted as the ${\dr(x)}$-decoding of the word encoding $(I_e)_{V_{\dr(x)}\cup \#V_{\dr(x)}}$.
+We define the output of $\decode  \dr (I_e\cup I_z)$ as a set so that \emph{invalid word encodings}, i.e. those do not corresponds to possible word encodings from PFAs, are mapped to empty sets and valid ones are mapped to singleton sets.
+We define the $\dr$-encoding function as the counterpart of $\dr$-decoding,  
+%
+namely, for a model $I_s \cup I_z$ of a string constraint,  
+we let $\encode \dr (I_s \cup I_z) \defeq \{I_e\cup I_z\mid \decode \dr (I_e\cup I_z) = I_s \cup I_z \}$.
+We lift $\decode \dr$ and $\encode \dr$ to sets of interpretations in the standard manner.
 \begin{theorem}\label{theorem:correct}
 $\decode \dr (\semof {\underf \dr {\insc}}) = \semof{\insc}^\dr$ 
 \end{theorem}
@@ -998,17 +999,11 @@ However, for the induction step to go through, we will need to guarantee a stron
 Particularly, we will need to
  ensure that $\underf \dr \phi$ captures exactly all $\dr$-encodings of $\semof \phi^\dr$
 (indeed, notice that if it would be allowed to capture only some of the encodings, then for instance $\underf \dr {\phi} \land \underf \dr {\phi'}$ could only underapproximate $\semof{\phi\land\phi'}^\dr$).
-
 %To formalize this correctness argument, we need the notion of 
 %%
 %an \emph{$\dr$-encoding} of an interpretation $I \cup I'$ of a general string constraint, consisting of an interpretation $I$ of string variables and an interpretation $I'$ of integer variables:
 %%
 %An $\dr$-encoding of $I \cup I'$ is a union $e \cup I'$ of the original integer interpretation $I'$ and an interpretation $e : V_\dr \cup \#V_\dr \rightarrow \nat$ that encodes $I$, that is, it satisfies that for each string variable $x$ of $I$, $\decode {\dr(x)} (e_{V_x\cup\#V_x}) = I(x)$.  
-
-To formalize this correctness argument, we define the $\dr$-encoding function as the counterpart of $\dr$-decoding,  
-%
-namely, for a set $J$ of string/integer variables interpretations,  
-we let $\encode \dr (J) \defeq \{e\mid \decode \dr (e) \in J\}$.
 %\yfc{need a serious rewrite :-) Maybe I need to know why you define so many encodings...}
 %
 %Further, if $I \cup I'$ is an interpretation of a general string constraint, that is, an interpretation $I$ of string variables $X$ united with an interpretation $I'$ of integer variables $N$,
@@ -1044,7 +1039,7 @@ that specifies how each word in the semantic intersection $\semof \pa \cap \semo
 %
 More precisely, the models of $\syncfof \pa {\pa'}$ represent pairs of word
 encodings 
-$e$ and $e'$ such that $e\in\encode \pa(w)$ and $e'\in\encode {\pa'} (w)$ (hence $w\in\semof{\pa}\cap\semof{\pa'}$).
+$I_e$ and $I_e'$ such that $I_e\in\encode \pa(w)$ and $I_e'\in\encode {\pa'} (w)$ (hence $w\in\semof{\pa}\cap\semof{\pa'}$).
 
 
 Particularly, the synchronization formula is built for two PAs  
@@ -1102,7 +1097,7 @@ The correctness of the construction of under-approximations of equality constrai
 \begin{lemma}\label{lemma:synccorrect}
 $
 \semof {\syncfof \pa {\pa'}}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} =
-\{e\cup e'\mid e \in \encode \pa (w), e'\in\encode {\pa'} (w), w\in\semof \pa \cap \semof {\pa'}\} 
+\{I_e\cup I_e'\mid I_e \in \encode \pa (w), I_e'\in\encode {\pa'} (w), w\in\semof \pa \cap \semof {\pa'}\} 
 $
 \end{lemma}
 
@@ -1124,9 +1119,9 @@ their concatenation is the PFA $\pa\cdot \pa' = (Q\cup Q',T\cup T'\cup \{(q_f,v_
 
 \begin{lemma}
 For PFA $\pa$ and $\pa'$,  
-$\semof{\pa\cdot \pa'} = \semof{\pa}\cdot\semof{\pa'}$ and 
+%$\semof{\pa\cdot \pa'} = \semof{\pa}\cdot\semof{\pa'}$ and 
 $\encode{\pa\cdot \pa'}{(\semof{\pa\cdot \pa})}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} =
-\{e \cup e'\mid e \in \encode \pa (\semof{\pa}) \wedge e' \in\encode {\pa'} (\semof{\pa'})\}$.
+\{I_e \cup I_e'\mid I_e \in \encode \pa (\semof{\pa}) \wedge I_e' \in\encode {\pa'} (\semof{\pa'})\}$.
 \end{lemma}
 
 With synchronization and concatenation of PA, we are ready to describe flattening of the basic string constraints.
