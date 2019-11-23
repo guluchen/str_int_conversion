@@ -12,7 +12,7 @@ The way our theory solver and Z3 interacts is almost standard. Every time when Z
 
 
 
-We compare {\tool} with other state-of-the-art string solvers, namely, CVC4~(45bcf28a)~\cite{cvc4Tool}, and Z3~(\texttt{d95b549ff})~\cite{z3}, \textsf{Z3-str3}~(\texttt{d95b549ff})~\cite{zheng2013z3}. We use the GitHub version stated in the parenthesis, and because their performance are in general better than the corresponding release version. 
+We compare {\tool} with other state-of-the-art string solvers, namely, CVC4~(45bcf28a)~\cite{cvc4Tool}, and Z3~(\texttt{d95b549ff})~\cite{z3}, \textsf{Z3-str3}~(\texttt{d95b549ff})~\cite{zheng2013z3}. For these tools, we use the GitHub version stated in the parenthesis because their performance are in general better than the corresponding release version. 
 We do not compare with Sloth \cite{sloth} since it does not support length constraints, which occurs in most of our benchmarks. We also do not compare with ABC~\cite{aydin2018parameterized} (a model counter for string constraints), Ostrich~\cite{chen2019decision} and \textsf{Trau+}~\cite{abdulla2019chain}, because they do not support all string functions in our benchmarks, especially string-number conversion.
 
 We perform two sets of experiments. In the first set of experiments, we compare {\tool} with other tools on existing benchmarks over basic string constraints. Those benchmarks do not involve string-number conversion function. In the second set of experiments, we compare {\tool} with other tools on new suites focusing on string-number conversion. Our goals of experiments are the following:
@@ -72,9 +72,9 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 \begin{tabular}{|l r | r r r r |}
 \hline
 \multicolumn{2}{|c}{}                  & {\tool} & CVC4  &Z3 & Z3-str3 \\ \hline
-\multirow{3}{*}{PyEx}		& SAT      &  21410  & 19763 & 16528 &  3030 \\ 
-							& UNSAT    &   3883  &  3834 &  3831 &  3836 \\
-							& $\times$ &    128  &  1824 &  5062 & 18555 \\ \hline
+\multirow{3}{*}{PyEx}		& SAT      &  19468  & 19763 & 16528 &  3030 \\ 
+							& UNSAT    &   3854  &  3834 &  3831 &  3836 \\
+							& $\times$ &   2099  &  1824 &  5062 & 18555 \\ \hline
 \multirow{3}{*}{APLAS}		& SAT      &    131  &   205 &    12 &    37 \\
 							& UNSAT    &    288  &   221 &   100 &   111 \\
 							& $\times$ &    181  &   174 &   488 &   452 \\ \hline
@@ -90,12 +90,13 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 \multirow{3}{*}{cvc4\textsubscript{term}} & SAT & 13 & 8 &     5 &    17 \\
 							& UNSAT    &   1031  &   936 &  1021 &   958 \\
 							& $\times$ &      1  &   101 &    19 &    70 \\ \hline \hline
-\multirow{3}{*}{Total} 		& SAT      &  22943  & 21517 & 17702 &  4253 \\
-							& UNSAT    &   8127  &  7834 &  7731 &  7649 \\
-							& $\times$ &    562  &  2281 &  6199 & 19730 \\\hline	
+\multirow{3}{*}{Total} 		& SAT      &  21002  & 21517 & 17702 &  4253 \\
+							& UNSAT    &   8097  &  7834 &  7731 &  7649 \\
+							& $\times$ &   2533  &  2281 &  6199 & 19730 \\\hline	
 \end{tabular}}
 \label{table:base_benchmark}
 \end{table}
+
 
 
 % latest backup of table 2
