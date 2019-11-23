@@ -604,8 +604,8 @@ integers. For a set $A$, we use $|A|$ to denote its size.
 For $n,m\in\nat$, we write $[n,m]$ for the set of natural numbers 
 %(or symbols in $\Sigma$) 
 $\{k\mid n\leq k \leq m\}$. 
-The function $f$ with the domain restricted to $D$ is denoted by $\restrict f D$,
-and a set of functions $F$ restricted to $D$ is $\restrict F D = \{\restrict f D \mid f \in F\}$.
+The function $f$ with the domain restricted to a set $D$ is denoted by $\restrict f D$,
+and a set of functions $F$ restricted to a set $D$ is $\restrict F D = \{\restrict f D \mid f \in F\}$.
 An \emph{alphabet} is a finite set $\Sigma$ of \emph{characters} and a \emph{word} over $\Sigma$ is a sequence $w = a_1\ldots a_n$ of characters from $\Sigma$, with $\epsilon$ denoting the \emph{empty word}. 
 We use $w_1\cdot w_2$ to denote the \emph{concatenation} of words $w_1$ and $w_2$.
 $\Sigma^*$ is the set of all words over $\Sigma$, $\Sigma^+ = \Sigma^*\setminus \{\epsilon\}$ and $\Sigma_\epsilon = \Sigma\cup\{\epsilon\}$.
@@ -645,8 +645,7 @@ It is well known that the Parikh image of a regular language  can be  characteri
 
 
 \begin{lemma}[\cite{SeidlSMH04}]
-Let $A$ be a FA over the alphabet $\Sigma$. Then, we can compute, in linear time,  a linear formula $\parikhfof{A}$, over $\pvarsof \Sigma$, such that $\modelsof{\parikhfof A} = \parikhof{L(A)}$.
-
+Let $A$ be a FA over the alphabet $\Sigma$. Then, we can compute, in linear time,  a linear formula $\parikhfof{A}$, over $\pvarsof \Sigma$, such that $\modelsof{\parikhfof A}_{\#\Sigma} = \parikhof{L(A)}$.
 \end{lemma}
 
 
