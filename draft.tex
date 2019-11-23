@@ -1078,7 +1078,13 @@ Formally, the asynchronous product automaton is a tuple $\syncof \pa {\pa'} = (Q
 %
 \begin{itemize}
 \item If $(q_1,v,q_2) \in T$ and $(q_1',v',q_2') \in T'$, then we have $((q_1,q_1'),(v,v'),(q_2,q_2'))\in \syncT$.
+
+\smallskip
+
 \item If $(q_1,v,q_2) \in T$, then for all states $q'\in Q'$, we have $((q_1,q'),(v,\epsilon),(q_2,q'))\in \syncT$.
+
+\smallskip
+
 \item If $(q_1',v',q_2') \in T'$, then for all states $q\in Q$, we have $((q,q_1'),(\epsilon,v'),(q,q_2'))\in \syncT$.
 \end{itemize}	
 %
@@ -1659,7 +1665,9 @@ algorithms, in particular, IC3/PDR, for more efficient checking of the emptiness
 
 \section{Conclusion and Future Works}
 \label{section:conclusion}
-In this paper, we report a novel approach for solving string constraints with string-number conversion and implemented it as an open-source tool {\tool}. For now, it support basic string constraints, string-number conversion, and also operations that can be encoded to them (e.g., \textsc{contains}, \textsc{prefixOf}). Since {\tool} is built inside the SMT solver Z3, we also get the power of processing formulae in the combination of different theories (e.g., array) and hence can support the encoding of a wide range of program expressions. There are several avenues for future works. We are planning to integrate it with the JavaScript symbolic executor \textsc{cosette}, such as the one in~\cite{santos2018symbolic}. We have discussed this possibility of such integration with some of its team members, and we believe it is feasible. We are also planning to merge it to the main branch of the Z3 solver, to increase the visibility of {\tool}. For technical development, we think it would be interesting to consider the flattening of an even larger set of string operations, such as \textsc{replaceALL} and \textsc{split}. 
+In this paper, we report a novel approach for solving string constraints with string-number conversion and implemented it as an open-source tool {\tool}. For now, it support basic string constraints, string-number conversion, and also operations that can be encoded to them (e.g., \textsc{contains}, \textsc{prefixOf}). Since {\tool} is built inside the SMT solver Z3, we also get the power of processing formulae in the combination of different theories (e.g., array). Hence our tool can support the encoding of a wide range of program expressions. There are several avenues for future works. First, we are planning to integrate it with the JavaScript symbolic executor \textsc{cosette}~\cite{santos2018symbolic}. We  believe such integration  is feasible. 
+%have discussed this possibility of such integration with some of its team members, and 
+We are also planning to merge  {\tool}  with the main branch of the Z3 solver. For technical development, we think it would be interesting to consider the (symbolic) flattening of an even larger set of string operations, such as the one containing  \textsc{replaceAll} and \textsc{split}. 
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{refs}
