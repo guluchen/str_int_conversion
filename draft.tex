@@ -22,7 +22,7 @@
 \begin{abstract}
 String-number conversion is an important class of constraints needed for the symbolic execution of string-manipulating programs. In particular solving string constraints with string-number conversion  is necessary  for the analysis of scripting languages such as JavaScript and Python, where string-number conversion is a part of the definition of the core semantics of these languages. However, the state-of-the-art constraint solvers have only very limited support to this type of constraint. We propose to overcome these limitations with an approach that can efficiently support both string-number conversion and other common types of string constraints. Experimental results show that it significantly outperforms other state-of-the-art tools on benchmarks that involves string-number conversion.
 \end{abstract}
- \setcopyright{none} 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -543,8 +543,8 @@ Section \ref{section:sfa} introduces  the class of parametric flat automata.
 Section \ref{section:under_approximate} describes how to use PFA to restrict the searching domain of string variables.
 Section \ref{sec:flattening} shows how to construct the linear formula for  basic string constraints (i.e., 
 regular, equality, and integer constraints). 
- Section \ref{section:s2i} presents the construction of the linear formula for string-number conversion operations. Finally, Section \ref{section:evaluation} presents the details of our implementation and our experimental results.
- 
+ Section \ref{section:s2i} presents the construction of the linear formula for string-number conversion operations. Section \ref{section:evaluation} presents the details of our implementation and our experimental results.
+ Related works are discussed in Section \ref{section:related}. Finally, Section~\ref{section:conclusion} concludes the paper with a discussion of future works.
 
 
 \hide{
@@ -1637,6 +1637,7 @@ $
 
 
 \section{Related works} 
+\label{section:related}
 To the best of our knowledge, the study of solving string constraint traces back to 1946, when Quine \cite{quine1946concatenation} showed that the first-order theory of string equality constraints (a.k.a. word equations) is undecidable. Makanin achieves a milestone \cite{makanin1977problem} by showing that the class of quantifier-free string equality constraints is decidable.
 Since then, several works, e.g., \cite{plandowski1999satisfiability,plandowski2006efficient,matiyasevich2008computation,robson1999quadratic,schulz1990makanin,ganesh2012word,ganesh2016undecidability}, consider the decidability and complexity of different subclasses of string equality constraints. 
 
@@ -1657,6 +1658,7 @@ algorithms, in particular, IC3/PDR, for more efficient checking of the emptiness
 
 
 \section{Conclusion and Future Works}
+\label{section:conclusion}
 In this paper, we report a novel approach for solving string constraints with string-number conversion and implemented it as an open-source tool {\tool}. For now, it support basic string constraints, string-number conversion, and also operations that can be encoded to them (e.g., \textsc{contains}, \textsc{prefixOf}). Since {\tool} is built inside the SMT solver Z3, we also get the power of processing formulae in the combination of different theories (e.g., array) and hence can support the encoding of a wide range of program expressions. There are several avenues for future works. We are planning to integrate it with the JavaScript symbolic executor \textsc{cosette}, such as the one in~\cite{santos2018symbolic}. We have discussed this possibility of such integration with some of its team members, and we believe it is feasible. We are also planning to merge it to the main branch of the Z3 solver, to increase the visibility of {\tool}. For technical development, we think it would be interesting to consider the flattening of an even larger set of string operations, such as \textsc{replaceALL} and \textsc{split}. 
 
 \bibliographystyle{ACM-Reference-Format}
