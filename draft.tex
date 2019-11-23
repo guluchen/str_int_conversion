@@ -983,7 +983,7 @@ $\semof{\phi}^\dr = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{\dr(x)}\
 \changed{
 The correctness of the entire construction of $\underf \dr {\insc}$ is expressed by  Theorem~\ref{theorem:correct}. 
 It uses the decoding function $\decode \dr$ parameterized by the domain restriction $\dr$. 
-The function takes as an argument an $\dr$-encoding of a string constraint, an interpretation $I_e \cup I_z$ consisting of a \emph{many-word encoding} $I_e: V_\dr\cup\#V_\dr\rightarrow \nat$ and an integer variables $I_z$. 
+The function takes as an argument an $\dr$-encoding of a string constraint, an interpretation $I_e \cup I_z$ consisting of a \emph{many-word encoding} $I_e: V_\dr\cup\#V_\dr\rightarrow \nat$ and an integer variable interpretation $I_z$. 
 Intuitively, the many-word encoding $I_e$ contains for each $x\in X$ a $\dr(x)$-encoding of its value. 
 The function then returns the set of string constraint interpretations 
 $\decode  \dr (I_e\cup I_z) \defeq \{I_s \cup I_z \mid \forall x\in X: I_s(x) = \decode {\dr(x)} ((I_e)_{V_{\dr(x)}\cup \#V_{\dr(x)}})\}$.
