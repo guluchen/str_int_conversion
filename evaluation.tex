@@ -18,11 +18,13 @@ We perform two sets of experiments. In the first set of experiments, we compare 
 	
 		\smallskip
 
-	\item {\tool} performs significantly better than other tools in solving satisfiability of basic string constraints, shows the efficiency of PFA in general and \emph{numeric} PFA in particular.
+	\item {\tool} performs significantly better than other tools in solving the satisfiability problems on string-number conversion benchmark, and this shows  the efficiency of PFA in general and \emph{numeric} PFA in particular.
 \end{itemize}
+		\smallskip
 
-In the second experiment, we use the following benchmark examples:
+In the first set of experiments, we use the following benchmark examples:
 
+		\smallskip
 
 
 \begin{itemize}
@@ -53,9 +55,9 @@ In the second experiment, we use the following benchmark examples:
 In the second experiment, we compare with tools supporting string-number conversion on the benchmarks collected from the symbolic executor \texttt{Py-Conbyte}\footnote{\url{https://github.com/spencerwuwu/py-conbyte}}, which has the supports of string-number conversion. We ran it on several examples collected from the LeetCode platform and from Python core libraries, which involve diverse usages of string-number conversion in Python such as parsing date-time, verifying and restoring IP addresses from strings, etc. We also have examples that encode execution paths of some JavaScript programs (the Luhn algorithm and some array manipulation).
 
 All experiments were executed on a machine with 4-core CPU, 8 GiB RAM. The timeout was set to 10s for each test.
-We use the results from {\tool}, CVC4, and Z3 as the reference answer for the validation of the correctness of the results. Occasionally, two of them report inconsistent (one SAT and one UNSAT) answers to the same test. To decide which solver reports the incorrect answer, we developed a validator, which takes the model $I$ returned from the solver who reported SAT, assigns $I(x)$ to all variables $x$ in the test to obtained a modified test, and re-evaluates the modified test by multiple solvers. If the results from all solvers are consistent, we mark the test SAT or UNSAT according to the results. Otherwise, we manually simplify and inspect the test until we get a conclusive result. 
+We use the results from {\tool}, CVC4, and Z3 as the reference answer for the validation of the correctness of the results. Occasionally, two of them report inconsistent (one SAT and one UNSAT) answers to the same test. To decide which solver reports the incorrect answer, we developed a validator, which takes the model $I$ returned from the solver who reported SAT, assigns $I(x)$ to all variables $x$ in the test to obtain a modified test, and re-evaluates the modified test by multiple solvers. If the results from all solvers are consistent, we mark the test SAT or UNSAT according to the results. Otherwise, we manually simplify and inspect the test until we get a conclusive result. 
 
-The results of the experiments are summarized in Table~\ref{table:base_benchmark} and Table~\ref{table:str_int_benchmark}, respectively. Rows with heading \texttt{SAT}/\texttt{UNSAT} show numbers of solved formulae. Rows with heading $\times$ indicate the number of instances the solver fails (including timeout, report unknown, report incorrect result, or crash).
+The results of the experiments are summarized in Table~\ref{table:base_benchmark} and Table~\ref{table:str_int_benchmark}. Rows with heading \texttt{SAT}/\texttt{UNSAT} show numbers of solved formulae. Rows with heading $\times$ indicate the number of instances the solver fails (including timeout, report unknown, report incorrect result, or crash).
 
 \begin{table}[h]
 \centering
@@ -115,9 +117,9 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 \end{table}
 
 
-From Table~\ref{table:base_benchmark}, we can see that the performance of {\tool} is as good as the most competitive tools such as CVC4 and Z3 on basic string constraints. In all of the benchmarks, {\tool} ranked either the 1st or the 2nd on the number of solved (SAT+UNSAT) cases. If we look into scrutiny, for the APLAS and StringFuzz benchmarks, there is a significant distance between {\tool} and the top-ranked tool on the SAT cases. But we believe this is not very important because both these two benchmarks are artificial, either hand-crafted or randomly generated. The more critical ones are those come from program analysis, in which {\tool} has comparable performance to the best tool.
+From Table~\ref{table:base_benchmark}, we can see that the performance of {\tool} is as good as the most competitive tools such as CVC4 and Z3 on basic string constraints. In all of the benchmarks, {\tool} ranked either the 1st or the 2nd on the number of solved (SAT+UNSAT) cases. If we look into scrutiny, for the APLAS and StringFuzz benchmarks, there is a significant difference between {\tool} and the top-ranked tool on the SAT cases. But we believe this is not very important because both these two benchmarks are artificial, either hand-crafted or randomly generated. The more critical ones are those come from program analysis, in which {\tool} has comparable performance to the best tool.
 
-From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all other tools. The total number of failed cases is only a half to Z3, which is ranked the 2nd. In fact, most of the failed tests come from the analysis of one Python core library function that converts an IPv6 address to a number. We generated 2028 tests from this function, and among them around 1000 cases that are too difficult for all solvers.  If we exclude results on this function, then {\tool} has only $218$ failed cases in total. This is significantly better than the 2nd place tool Z3, which fails $942$ cases in total.
+From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all other tools. The total number of failed cases is only a half to Z3, which is ranked the 2nd. In fact, most of the failed tests come from the analysis of one Python core library function that converts an IPv6 address to a number. We generated 2028 tests from this function, and among them around 1000 cases  are too difficult for all solvers.  If we exclude results on this function, then {\tool} has only $218$ failed cases in total. This is significantly better than the 2nd place tool Z3, which fails $942$ cases in total.
 
 To address the effectiveness of our PFA strategy, we also ran experiments on the String-Number Conversion benchmark with the timeout set to 30s. Provided more time for solving, {\tool} managed to obtain more results and the timeout number is reduced to 539, while CVC4 and Z3-str3 got almost the same number of timeouts with the results of timeout set to 10s. Z3 also managed to reduce the number of timeouts to 821. If we exclude results on the Python core function that converts an IPv6 address to a number mentioned above, {\tool} has only $53$ timeouts in total while z3 has $809$ in total.
 
