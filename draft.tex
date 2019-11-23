@@ -885,9 +885,11 @@ and $\decode \pa (I_e)$ to denote all $\pa$-decodings of a word encoding $I_e$. 
 Since a word encoding $I_e$ only records the numbers of occurrences of character variables (Parikh image), 
 the same word encoding may be shared by multiple words, as formalized in the definition of $\decode \pa(I_e)$. 
 
-If we consider ${\pa_x}=(A_x,\true)$ from Figure~\ref{fig:sfa}~(a) and let $Y{=}(v_1,v_2,\#v_1,\#v_2)$, we have\\
+\begin{example}
+If we consider the PFA ${\pa_x}=(A_x,\true)$ from Figure~\ref{fig:sfa}~(a) and let $Y{=}(v_1,v_2,\#v_1,\#v_2)$, we have\\
 $\encode {\pa_x}( ``aaa" ) =\{ (Y{\rightarrow}(\semof{a},\semof{\epsilon},3,3), Y{\rightarrow}(\semof{\epsilon},\semof{a},3,3)  \}$ and
 $\decode {\pa_x}((Y{\rightarrow}(\semof{a},\semof{\epsilon},3,3))=\{``aaa"\} $.
+\end{example}
 
 If $\pa$ is a PFA, then by Lemma~\ref{lemma:decoding}, every word encoding $I_e\in \encode \pa( w )$ can be decoded uniquely to the word $w$, i.e.
 $$
