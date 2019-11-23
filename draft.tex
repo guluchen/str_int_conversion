@@ -1002,7 +1002,11 @@ namely, for a interpretation $I$ of the string constraint $\insc$,
 we let $\encode \dr (I) =\{I_e\mid \decode \dr (I_e) = \{I\} \}$.
 We lift $\decode \dr$ and $\encode \dr$ to sets of interpretations in the standard manner.
 \begin{example}
-We consider the domain restriction $\dr$ such that $\dr(x)	 =(A_x,\true)$ from Figure~\ref{fig:sfa}~(a) and $\dr(y) = (A_y,\true)$ from Figure~\ref{fig:sfa}~(b). We assume that the set of integer variables $Z=\{v_z\}$ and $V_{\dr(x)} =\{v_0, v_1,v_2,v_3\}$. For the interpretation $I_e =(v_z,v_0,v_1,v_2,v_3,\#v_0,\#v_1,\#v_2,\#v_3) \rightarrow (3,\semof{a}, \semof{b}, \semof{c},\semof{\epsilon},3,3,2,2)$, we have $\decode \dr (I_e) = \{(z,x,y) \rightarrow(3, ``ababab",``cc") \}$. In the other direction, for $I=(z,x,y) \rightarrow(3, ``ababab",``cc")$ and $Y=(v_z,v_0,v_1,v_2,v_3,\#v_0,\#v_1,\#v_2,\#v_3)$, we have\\ $\encode \dr (I) =\left\{ 
+We consider the domain restriction $\dr$ such that $\dr(x)	 =(A_x,\true)$ from Figure~\ref{fig:sfa}~(a) and $\dr(y) = (A_y,\true)$ from Figure~\ref{fig:sfa}~(b). 
+%We assume that the set of integer variables is $Z=\{v_z\}$ and $V_{\dr(x)} =\{v_0, v_1,v_2,v_3\}$. 
+Let the set of integer variables be $Z=\{v_z\}$ and let $V_{\dr(x)} =\{v_0, v_1,v_2,v_3\}$. 
+For the interpretation $I_e =(v_z,v_0,v_1,v_2,v_3,\#v_0,\#v_1,\#v_2,\#v_3) \rightarrow (3,\semof{a}, \semof{b}, \semof{c},\semof{\epsilon},3,3,2,2)$, we have $\decode \dr (I_e) = \{(z,x,y) \rightarrow(3, ``ababab",``cc") \}$.\\ 
+Conversely, for $I=(z,x,y) \rightarrow(3, ``ababab",``cc")$ and $Y=(v_z,v_0,v_1,v_2,v_3,\#v_0,\#v_1,\#v_2,\#v_3)$, we have $\encode \dr (I) =\left\{ 
 \begin{array}{l}
 Y \rightarrow (3,\semof{a}, \semof{b}, \semof{c},\semof{\epsilon},3,3,2,2), \\
 Y \rightarrow (3,\semof{a}, \semof{b},\semof{\epsilon}, \semof{c},3,3,2,2), \\
