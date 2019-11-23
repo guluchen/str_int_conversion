@@ -32,27 +32,27 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 \begin{tabular}{|l r | r r r r r|}
 \hline
 \multicolumn{2}{|c}{}                  & {\tool} & CVC4  &Z3 & Z3-str3 & Trau+  \\ \hline
-\multirow{3}{*}{PyEx}		& SAT      &  21205  & 19763 & 16528 &  3030 & 19149 \\ 
-							& UNSAT    &   3963  &  3834 &  3831 &  3836 & 3828 \\
-							& $\times$ &    253  &  1824 &  5062 & 18555 & 2444 \\ \hline
-\multirow{3}{*}{APLAS}		& SAT      &    135  &   205 &    12 &    37 & 132 \\
-							& UNSAT    &    343  &   221 &   100 &   111 & 82 \\
-							& $\times$ &    122  &   174 &   488 &   452 & 386 \\ \hline
-\multirow{3}{*}{LeetCode}	& SAT      &    842  &   859 &   881 &   670 & 778 \\
-							& UNSAT    &   1824  &  1785 &  1785 &  1780 & 1827 \\
+\multirow{3}{*}{PyEx}		& SAT      &  21410  & 19763 & 16528 &  3030 & 19149 \\ 
+							& UNSAT    &   3883  &  3834 &  3831 &  3836 & 3828 \\
+							& $\times$ &    128  &  1824 &  5062 & 18555 & 2444 \\ \hline
+\multirow{3}{*}{APLAS}		& SAT      &    131  &   205 &    12 &    37 & 132 \\
+							& UNSAT    &    288  &   221 &   100 &   111 & 82 \\
+							& $\times$ &    181  &   174 &   488 &   452 & 386 \\ \hline
+\multirow{3}{*}{LeetCode}	& SAT      &    880  &   859 &   881 &   670 & 778 \\
+							& UNSAT    &   1786  &  1785 &  1785 &  1780 & 1827 \\
 							& $\times$ &      0  &    22 &     0 &   216 & 61 \\ \hline
-\multirow{3}{*}{StringFuzz}	& SAT      &    528  &   671 &   264 &   491 & 688 \\
-							& UNSAT    &    320  &   240 &   186 &   192 & 339 \\
-							& $\times$ &    217  &   154 &   615 &   382 & 38 \\\hline
-\multirow{3}{*}{cvc4\textsubscript{pred}} & SAT & 13 & 11 &   12 &     8 & 247 \\
+\multirow{3}{*}{StringFuzz}	& SAT      &    498  &   671 &   264 &   491 & 688 \\
+							& UNSAT    &    319  &   240 &   186 &   192 & 339 \\
+							& $\times$ &    248  &   154 &   615 &   382 & 38 \\\hline
+\multirow{3}{*}{cvc4\textsubscript{pred}} & SAT & 11 & 11 &   12 &     8 & 247 \\
 							& UNSAT    &    820  &   818 &   808 &   772 & 500 \\
-							& $\times$ &      2  &     6 &    15 &    55 & 88 \\ \hline
+							& $\times$ &      4  &     6 &    15 &    55 & 88 \\ \hline
 \multirow{3}{*}{cvc4\textsubscript{term}} & SAT & 13 & 8 &     5 &    17 & 311 \\
 							& UNSAT    &   1031  &   936 &  1021 &   958 & 596 \\
 							& $\times$ &      1  &   101 &    19 &    70 & 138 \\ \hline
-\multirow{3}{*}{Total} 		& SAT      &  22736  & 21517 & 17702 &  4253 & 21305  \\
-							& UNSAT    &   8301  &  7834 &  7731 &  7649 & 7172  \\
-							& $\times$ &    595  &  2281 &  6199 & 19730 & 3155  \\\hline	
+\multirow{3}{*}{Total} 		& SAT      &  22943  & 21517 & 17702 &  4253 & 21305  \\
+							& UNSAT    &   8127  &  7834 &  7731 &  7649 & 7172  \\
+							& $\times$ &    562  &  2281 &  6199 & 19730 & 3155  \\\hline	
 \end{tabular}}
 \label{table:base_benchmark}
 \end{table}
@@ -66,18 +66,18 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 \begin{tabular}{|l r | r r r r|| r r r r|}
 \hline
 \multicolumn{2}{|c}{}          			   & {\tool} & CVC4  &    Z3  & Z3-str3 & {\tool} & CVC4  &    Z3  & Z3-str3 \\ \hline
-\multirow{3}{*}{Leetcode}		& SAT      &   2413  &  1543 &  1892  &   217 \\ 
-								& UNSAT    &  16511  & 15676 & 16105  & 15374 \\
-								& $\times$ &      3  &  1708 &   930  &  3336 \\ \hline 
-\multirow{3}{*}{PythonLib}		& SAT      &    424  &   408 &   797  &   201 \\ 
-								& UNSAT    &   2056  &   660 &   724  &   644 \\
-								& $\times$ &    166  &  1578 &  1125  &  1801 \\ \hline
+\multirow{3}{*}{Leetcode}		& SAT      &   2349  &  1543 &  1892  &   217 \\ 
+								& UNSAT    &  16368  & 15676 & 16105  & 15374 \\
+								& $\times$ &    210  &  1708 &   930  &  3336 \\ \hline 
+\multirow{3}{*}{PythonLib}		& SAT      &    886  &   408 &   797  &   201 \\ 
+								& UNSAT    &    720  &   660 &   724  &   644 \\
+								& $\times$ &   1040  &  1578 &  1125  &  1801 \\ \hline
 \multirow{3}{*}{JavaScript}		& SAT      &     20  &     6 &    16  &     4 \\ 
 								& UNSAT    &      0  &     0 &     0  &     0 \\
 								& $\times$ &      0  &    14 &     4  &    16 \\ \hline \hline
-\multirow{3}{*}{Total}			& SAT      &   2857  &  1957 &  2705  &   422 \\ 
-								& UNSAT    &  18567  & 16336 & 16829  & 16018 \\
-								& $\times$ &    169  &  3300 &  2059  &  5153 \\ \hline
+\multirow{3}{*}{Total}			& SAT      &   3255  &  1957 &  2705  &   422 \\ 
+								& UNSAT    &  17088  & 16336 & 16829  & 16018 \\
+								& $\times$ &   1250  &  3300 &  2059  &  5153 \\ \hline
 \end{tabular}}
 \label{table:str_int_benchmark}
 \end{table}
@@ -91,18 +91,18 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 \begin{tabular}{|l r | r r r r|}
 \hline
 \multicolumn{2}{|c}{}          			   & {\tool} & CVC4  &    Z3  & Z3-str3 \\ \hline
-\multirow{3}{*}{Leetcode}		& SAT      &   2413  &  1543 &  1892  &   217 \\ 
-								& UNSAT    &  16511  & 15676 & 16105  & 15374 \\
-								& $\times$ &      3  &  1708 &   930  &  3336 \\ \hline 
-\multirow{3}{*}{PythonLib}		& SAT      &    424  &   408 &   797  &   201 \\ 
-								& UNSAT    &   2056  &   660 &   724  &   644 \\
-								& $\times$ &    166  &  1578 &  1125  &  1801 \\ \hline
+\multirow{3}{*}{Leetcode}		& SAT      &   2349  &  1543 &  1892  &   217 \\ 
+								& UNSAT    &  16368  & 15676 & 16105  & 15374 \\
+								& $\times$ &    210  &  1708 &   930  &  3336 \\ \hline 
+\multirow{3}{*}{PythonLib}		& SAT      &    886  &   408 &   797  &   201 \\ 
+								& UNSAT    &    720  &   660 &   724  &   644 \\
+								& $\times$ &   1040  &  1578 &  1125  &  1801 \\ \hline
 \multirow{3}{*}{JavaScript}		& SAT      &     20  &     6 &    16  &     4 \\ 
 								& UNSAT    &      0  &     0 &     0  &     0 \\
 								& $\times$ &      0  &    14 &     4  &    16 \\ \hline \hline
-\multirow{3}{*}{Total}			& SAT      &   2857  &  1957 &  2705  &   422 \\ 
-								& UNSAT    &  18567  & 16336 & 16829  & 16018 \\
-								& $\times$ &    169  &  3300 &  2059  &  5153 \\ \hline
+\multirow{3}{*}{Total}			& SAT      &   3255  &  1957 &  2705  &   422 \\ 
+								& UNSAT    &  17088  & 16336 & 16829  & 16018 \\
+								& $\times$ &   1250  &  3300 &  2059  &  5153 \\ \hline
 \end{tabular}}
 \label{table:str_int_benchmark}
 \end{table}
@@ -110,7 +110,7 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 
 From Table~\ref{table:base_benchmark}, we can see that the performance of {\tool} is as good as the most competitive tools such as CVC4 and Z3 on basic string constraints. In all of the benchmarks, {\tool} ranked either the 1st or the 2nd on the number of solved (SAT+UNSAT) cases. If we look into scrutiny, for the APLAS and StringFuzz benchmarks, there is a significant distance between {\tool} and the top-ranked tool on the SAT cases. But we believe this is not very important because both these two benchmarks are artificial, either hand-crafted or randomly generated. The more critical ones are those come from program analysis, in which {\tool} has comparable performance to the best tool.
 
-From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all other tools. The total number of failed cases is only a half to Z3, which is ranked the 2nd. In fact, most of the failed tests come from the analysis of one Python core library function that converts an IPv6 address to a number. We generated 2028 tests from this function, and among them around 1000 cases that are too difficult for all solvers.  If we exclude results on this function, then {\tool} has only $185$ failed cases in total. This is significantly better than the 2nd place tool Z3, which fails $893$ cases in total. \todo{Check and revise the numbers after table updated.}
+From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all other tools. The total number of failed cases is only a half to Z3, which is ranked the 2nd. In fact, most of the failed tests come from the analysis of one Python core library function that converts an IPv6 address to a number. We generated 2028 tests from this function, and among them around 1000 cases that are too difficult for all solvers.  If we exclude results on this function, then {\tool} has only $218$ failed cases in total. This is significantly better than the 2nd place tool Z3, which fails $942$ cases in total.
 
 To address the effectiveness of our PFA strategy, we also ran experiments on the String-Number Conversion benchmark with the the timeout set to 30s. Provided more time for solving, {\tool} managed to obtain more results and the timeout number is reduced to about 100, while other tools got almost the same number of timouts with the results of timeout set to 10s. Also, we have encoded the checkLuhn algorithm in SMT-lib for cases of 2 to 12 loops (digits). These problems ask for a model of a valid credit card number as a string of length 2 to 12 each case. We ran these tests additionally to the experiments above with the timeout set to 120s. In these tests, {\tool} can solve all 11 problems within 1s while CVC4 only returns a model for cases of 2 to 5 loops and Z3-str3 could not solve these problems (either timeout or UNKNOWN). However, Z3 can still solve 7 out of the 11 problems and the problems got timeout are cases for 4, 5, 7, and 9 loops. It seems that Z3 has some strategies that can solve problems of even loops efficiently. \todo{Update table with data of timeout=30s}
 
