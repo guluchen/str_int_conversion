@@ -687,7 +687,7 @@ $\bullet$ A \emph{regular constraint} $\phi_r$ is of the form $x \in L(A)$ where
 I(x) \in L(A) \}$. 
 \smallskip
 
-$\bullet$ A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $s \cdot a \in [0,9]^+$, $\sti{s\cdot a} = 10\times \sti{s}+a$. For $s\notin [0,9]^+$, $\sti{s}=-1$. We define $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$. The \emph{number-string} conversion constraint $x=\its{n}$ is treated as a syntactic sugar for $n=\sti{x}$.
+$\bullet$ A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $w \cdot a \in [0,9]^+$, $\sti{w\cdot a} = 10\times \sti{w}+a$. For $w\notin [0,9]^+$, $\sti{w}=-1$. We define $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$. The \emph{number-string} conversion constraint $x=\its{n}$ is treated as a syntactic sugar for $n=\sti{x}$.
 \smallskip
 
 A \emph{string constraint} is then a conjunction of atomic string constraints, with the semantics defined in the standard manner. It is \emph{satisfiable} if there is an interpretation which evaluates the  constraint to $\true$. Often we refer to the first three types of atomic string constraints the \emph{basic string constraints}.
