@@ -7,6 +7,9 @@ In {\tool}, we use the following PFA selection strategy. First, we use \emph{num
 
 The way our theory solver and Z3 interacts is almost standard. Every time when Z3 asks our theory solver a string constraint satisfiability problem, our solver tries to prove it is SAT or UNSAT using the aforementioned procedure. For under-approximation, every time when a corresponding linear formula is created, we attach the current value of $m$, $p$, $q$ with the formula, and then push it to Z3 core. If our theory solver reports UNKNOWN, Z3 remembers it in a global flag \textsf{incomplete} and either tries another solution branch, or the same solution branch with different value of $m$, $p$, $q$. If Z3 completes the search of all solution branches, it reports UNSAT if the flag \textsf{incomplete} is down, and UNKNOWN otherwise.
 
+Our over-approximation module uses also some heuristics to derive the constant value of any side of the constraint $n=\sti{x}$ to refine the over-approximation. For instance, assume in some case, we could derive that the value of $n=12$ from some integer constraints.  Then, we could further derive the value of $x$ is in the regular language $(0^*12)$. 
+
+
 We compare {\tool} with other state-of-the-art string solvers, namely CVC4~(45bcf28a)~\cite{cvc4Tool}, and Z3~(\texttt{d95b549ff})~\cite{z3}, \textsf{Z3-str3}~(\texttt{d95b549ff})~\cite{zheng2013z3}. We do not compare with Sloth \cite{sloth} since it does not support length constraints, which occurs in most of our benchmarks. We also do not compare with ABC~\cite{aydin2018parameterized} (a model counter for string constraints), Ostrich~\cite{chen2019decision} and \textsf{Trau+}~\cite{abdulla2019chain}, because they do not support all string functions in our benchmarks, especially string-number conversion.
 
 We perform two sets of experiments. In the first set of experiments, we compare {\tool} with other tools on existing benchmarks over basic string constraints. Those benchmarks do not involve string-number conversion function. In the second set of experiments, we compare {\tool} with other tools on new suites focusing on string-number conversion. Our goals of experiments are the following:
@@ -130,7 +133,7 @@ In these tests, {\tool} can solve all problems within 1s while CVC4 only returns
 
 \begin{table}[h]
 \centering
-\caption{Comparison of {\tool}, CVC4, and Z3/Z3str3 with checkLuhn problems of 2 to 12 loops.}
+\caption{Comparison of {\tool}, CVC4, Z3, and Z3str3 with checkLuhn problems of 2 to 12 loops.}
 \scalebox{0.9}{
 \begin{tabular}{| c | c c c c|}
 \hline
