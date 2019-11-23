@@ -407,55 +407,64 @@ Then, we show that given such restriction, one can  reduce the string constraint
 %Such reduction based on PFA is the key to handle string-number conversion efficiently. When we restrict the solution space to those defined by PFAs, the original undecidable problem (i.e., string constraint with string-number conversion) is reduced to linear formulae and can be solved efficiently. We can step-wisely enrich the PFAs and hence solve the satisfiability problem of string constraints in a systematic manner.
 
 
+In the following, we explain the construction of the linear formula using $\Phi$ as an example. Assume that we project the domains of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. Thus, $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from  $ y \in (12)^+$, we may derive $v_2=1$ and $v_3=2$. 
+
+The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$, as well as the number of occurrences of each character variable $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12"$ and $y=``1212"$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4)= (1,2,1,2,1,1,2,2)$. The assignment says, for example, that $x$ is the \emph{parametric word} obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12"$.
+
+If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables. If not, our procedure changes the PFAs to a more expressive one (by adding more states and transitions) and repeat the analysis.  We report unknown after failing to prove SAT using a certain number of PFAs.
+
+
+
+
 \begin{figure}
 	\tikzset{state/.style={circle,draw=blue!50,fill=blue!20,
 			thick,inner sep=0pt,minimum size=6mm}, initial text=$ $}
 	
 	\begin{minipage}[t]{0.1\textwidth} 
-			\scalebox{0.7}{
-		\begin{tikzpicture}
-		\node[state,initial,accepting] (q0) {$q_0$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
-		\end{tikzpicture} }
+		\scalebox{0.7}{
+			\begin{tikzpicture}
+			\node[state,initial,accepting] (q0) {$q_0$};
+			
+			\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
+			
+			\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
+			\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
+			\end{tikzpicture} }
 		
 		\centering
 		(a) $A_x$
 	\end{minipage}
 	\begin{minipage}[t]{0.1\textwidth} 
-			\scalebox{0.7}{
-		\begin{tikzpicture} 
-		\node[state,initial,accepting] (q0) {$q_2$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$q_3$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_2$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_3$} (q0) ;
-		\end{tikzpicture} }
+		\scalebox{0.7}{
+			\begin{tikzpicture} 
+			\node[state,initial,accepting] (q0) {$q_2$};
+			
+			\node[state] (q01) [above = 0.5cm of q0] {$q_3$};
+			
+			\draw[->] (q0) edge [bend left] node [left]{$v_2$} (q01) ;
+			\draw[->] (q01) edge [bend left] node [right]{$v_3$} (q0) ;
+			\end{tikzpicture} }
 		
 		\centering
 		(b) $A_y$
 	\end{minipage}
 	\begin{minipage}[t]{0.2\textwidth}
-			\scalebox{0.7}{
-		\begin{tikzpicture} 
-		\node[state,initial] (q0) {$q_0$};
-		\node[state,accepting] (q1) [right = 1.3cm of q0] {$q_2$};
-		
-		\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
-		
-		\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
-		\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
-		
-		\node[state] (q11) [above = 0.5cm of q1] {$q_3$};
-		
-		\draw[->] (q1) edge [bend left] node [left]{$v_3$} (q11) ;
-		\draw[->] (q11) edge [bend left] node [right]{$v_4$} (q1) ;
-		\draw[->] (q0) edge node [below]{$v_2$} (q1) ;
-		\end{tikzpicture}}
+		\scalebox{0.7}{
+			\begin{tikzpicture} 
+			\node[state,initial] (q0) {$q_0$};
+			\node[state,accepting] (q1) [right = 1.3cm of q0] {$q_2$};
+			
+			\node[state] (q01) [above = 0.5cm of q0] {$q_1$};
+			
+			\draw[->] (q0) edge [bend left] node [left]{$v_0$} (q01) ;
+			\draw[->] (q01) edge [bend left] node [right]{$v_1$} (q0) ;
+			
+			\node[state] (q11) [above = 0.5cm of q1] {$q_3$};
+			
+			\draw[->] (q1) edge [bend left] node [left]{$v_3$} (q11) ;
+			\draw[->] (q11) edge [bend left] node [right]{$v_4$} (q1) ;
+			\draw[->] (q0) edge node [below]{$v_2$} (q1) ;
+			\end{tikzpicture}}
 		
 		\centering
 		(c) $A'_{x}$
@@ -464,15 +473,6 @@ Then, we show that given such restriction, one can  reduce the string constraint
 	\caption{Parametric flat automata of $x$ and $y$}
 	\label{fig:sfa}
 \end{figure}
-
-
-In the following, we explain the construction of the linear formula using $\Phi$ as an example. Assume that we project the domains of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. Thus, $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from  $ y \in (12)^+$, we may derive $v_2=1$ and $v_3=2$. 
-
-The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$, as well as the number of occurrences of each character variable $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12"$ and $y=``1212"$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4)= (1,2,1,2,1,1,2,2)$. The assignment says, for example, that $x$ is the \emph{parametric word} obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12"$.
-
-If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables. If not, our procedure changes the PFAs to a more expressive one (by adding more states and transitions) and repeat the analysis.  We report unknown after failing to prove SAT using a certain number of PFAs.
-
-
 
 %For over-approximation, there are a few existing algorithms~\cite{abdulla2019chain,z3,chen2019decision}, our framework does not set any restriction on which algorithm to be used. In our experiences, the UNSAT instances in all available benchmarks are not that difficult, and the differences between the major algorithms are very small. In our tool \tool, we use a version that is a simple adaption of the algorithm in~\cite{abdulla2019chain}.
 
@@ -751,7 +751,7 @@ Our procedure iteratively searches for such dependency chains in the equality co
 
 
 
-The second step of our decision procedure is only enabled if the over-approximation step returns SAT. In this case, our decision procedure  under-approximates the string constraints by restricting the search domain of each string variable to the language defined by some PFA that will be introduced in the next section. This approach based on PFA allows very efficient manipulation. We will show that given such restriction, one can reduce the string constraint solving problem to a linear formula satisfiability problem. The rest of the paper will be mainly dedicated to the explanation of the under-approximation technique (which is our main contribution).
+The second step of our decision procedure is only enabled if the over-approximation step returns SAT. In this case, our decision procedure  under-approximates the string constraints by restricting the search domain of each string variable to the language defined by some PFA. This approach based on PFA allows very efficient manipulation. We will show that given such restriction, one can reduce the string constraint solving problem to a linear formula satisfiability problem. The rest of the paper will be mainly dedicated to the explanation of the under-approximation technique (which is our main contribution).
 
 
 
