@@ -12,7 +12,7 @@ The way our theory solver and Z3 interacts is almost standard. Every time when Z
 
 
 
-We compare {\tool} with other state-of-the-art string solvers, namely, CVC4~(45bcf28a)~\cite{cvc4Tool}, and Z3~(\texttt{d95b549ff})~\cite{z3}, \textsf{Z3-str3}~(\texttt{d95b549ff})~\cite{zheng2013z3}. Foe these tools, we use the GitHub version stated in the parenthesis because their performance are in general better than the corresponding release version. 
+We compare {\tool} with other state-of-the-art string solvers, namely, CVC4~(45bcf28a)~\cite{cvc4Tool}, and Z3~(\texttt{d95b549ff})~\cite{z3}, \textsf{Z3-str3}~(\texttt{d95b549ff})~\cite{zheng2013z3}. For these tools, we use the GitHub version stated in the parenthesis because their performance are in general better than the corresponding release version. 
 We do not compare with Sloth \cite{sloth} since it does not support length constraints, which occurs in most of our benchmarks. We also do not compare with ABC~\cite{aydin2018parameterized} (a model counter for string constraints), Ostrich~\cite{chen2019decision} and \textsf{Trau+}~\cite{abdulla2019chain}, because they do not support all string functions in our benchmarks, especially string-number conversion.
 
 We perform two sets of experiments. In the first set of experiments, we compare {\tool} with other tools on existing benchmarks over basic string constraints. Those benchmarks do not involve string-number conversion function. In the second set of experiments, we compare {\tool} with other tools on new suites focusing on string-number conversion. Our goals of experiments are the following:
