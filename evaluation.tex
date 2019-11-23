@@ -23,11 +23,11 @@ In the second experiment, we compare with tools supporting string-number convers
 All experiments were executed on a machine with 4-core CPU, 8 GiB RAM. The timeout was set to 10s for each test.
 We use the results from {\tool}, CVC4, and Z3 as the reference answer for the validation of the correctness of the results. Occasionally, two of them report inconsistent (one SAT and one UNSAT) answers to the same test. To decide which solver reports the incorrect answer, we developed a validator, which takes the model $I$ returned from the solver who reported SAT, assigns $I(x)$ to all variables $x$ in the test to obtained a modified test, and re-evaluates the modified test by multiple solvers. If the results from all solvers are consistent, we mark the test SAT or UNSAT according to the results. Otherwise, we manually simplify and inspect the test until we get a conclusive result. 
 
-The results of the experiments are summarized in Table~\ref{table:base_benchmark} and Table~\ref{table:str_int_benchmark}, respectively. Columns with heading \texttt{SAT}/\texttt{UNSAT} show numbers of solved formulae. Rows with heading $\times$ indicate the number of instances the solver fails (including timeout, report unknown, report incorrect result, or crash).
+The results of the experiments are summarized in Table~\ref{table:base_benchmark} and Table~\ref{table:str_int_benchmark}, respectively. Rows with heading \texttt{SAT}/\texttt{UNSAT} show numbers of solved formulae. Rows with heading $\times$ indicate the number of instances the solver fails (including timeout, report unknown, report incorrect result, or crash).
 
 \begin{table}[h]
 \centering
-\caption{Results of {\tool}, CVC4, Z3, Z3-str3 and Trau+ on Basic String Constraint benchmarks.}
+\caption{Results of {\tool}, CVC4, Z3, and Z3-str3 on Basic String Constraint benchmarks.}
 \scalebox{0.85}{
 \begin{tabular}{|l r | r r r r |}
 \hline
@@ -49,7 +49,7 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 							& $\times$ &      4  &     6 &    15 &    55 \\ \hline
 \multirow{3}{*}{cvc4\textsubscript{term}} & SAT & 13 & 8 &     5 &    17 \\
 							& UNSAT    &   1031  &   936 &  1021 &   958 \\
-							& $\times$ &      1  &   101 &    19 &    70 \\ \hline
+							& $\times$ &      1  &   101 &    19 &    70 \\ \hline \hline
 \multirow{3}{*}{Total} 		& SAT      &  22943  & 21517 & 17702 &  4253 \\
 							& UNSAT    &   8127  &  7834 &  7731 &  7649 \\
 							& $\times$ &    562  &  2281 &  6199 & 19730 \\\hline	
@@ -57,31 +57,6 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 \label{table:base_benchmark}
 \end{table}
 
-\hide{
-% wider table for 30s timeout data
-\begin{table}[h]
-\centering
-\caption{Results of {\tool}, CVC4, Z3, and Z3-str3 on String-Number Conversion benchmark.}
-\scalebox{0.8}{
-\begin{tabular}{|l r | r r r r|| r r r r|}
-\hline
-\multicolumn{2}{|c}{}          			   & {\tool} & CVC4  &    Z3  & Z3-str3 & {\tool} & CVC4  &    Z3  & Z3-str3 \\ \hline
-\multirow{3}{*}{Leetcode}		& SAT      &   2349  &  1543 &  1892  &   217 \\ 
-								& UNSAT    &  16368  & 15676 & 16105  & 15374 \\
-								& $\times$ &    210  &  1708 &   930  &  3336 \\ \hline 
-\multirow{3}{*}{PythonLib}		& SAT      &    886  &   408 &   797  &   201 \\ 
-								& UNSAT    &    720  &   660 &   724  &   644 \\
-								& $\times$ &   1040  &  1578 &  1125  &  1801 \\ \hline
-\multirow{3}{*}{JavaScript}		& SAT      &     20  &     6 &    16  &     4 \\ 
-								& UNSAT    &      0  &     0 &     0  &     0 \\
-								& $\times$ &      0  &    14 &     4  &    16 \\ \hline \hline
-\multirow{3}{*}{Total}			& SAT      &   3255  &  1957 &  2705  &   422 \\ 
-								& UNSAT    &  17088  & 16336 & 16829  & 16018 \\
-								& $\times$ &   1250  &  3300 &  2059  &  5153 \\ \hline
-\end{tabular}}
-\label{table:str_int_benchmark}
-\end{table}
-}
 
 % latest backup of table 2
 \begin{table}[h]
@@ -112,7 +87,11 @@ From Table~\ref{table:base_benchmark}, we can see that the performance of {\tool
 
 From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all other tools. The total number of failed cases is only a half to Z3, which is ranked the 2nd. In fact, most of the failed tests come from the analysis of one Python core library function that converts an IPv6 address to a number. We generated 2028 tests from this function, and among them around 1000 cases that are too difficult for all solvers.  If we exclude results on this function, then {\tool} has only $218$ failed cases in total. This is significantly better than the 2nd place tool Z3, which fails $942$ cases in total.
 
-To address the effectiveness of our PFA strategy, we also ran experiments on the String-Number Conversion benchmark with the the timeout set to 30s. Provided more time for solving, {\tool} managed to obtain more results and the timeout number is reduced to about 100, while other tools got almost the same number of timouts with the results of timeout set to 10s. Also, we have encoded the checkLuhn algorithm in SMT-lib for cases of 2 to 12 loops (digits). These problems ask for a model of a valid credit card number as a string of length 2 to 12 each case. We ran these tests additionally to the experiments above with the timeout set to 120s. In these tests, {\tool} can solve all 11 problems within 1s while CVC4 only returns a model for cases of 2 to 5 loops and Z3-str3 could not solve these problems (either timeout or UNKNOWN). However, Z3 can still solve 7 out of the 11 problems and the problems got timeout are cases for 4, 5, 7, and 9 loops. It seems that Z3 has some strategies that can solve problems of even loops efficiently. \todo{Update table with data of timeout=30s}
+To address the effectiveness of our PFA strategy, we also ran experiments on the String-Number Conversion benchmark with the timeout set to 30s. Provided more time for solving, {\tool} managed to obtain more results and the timeout number is reduced to 539, while CVC4 and Z3-str3 got almost the same number of timeouts with the results of timeout set to 10s. Z3 also managed to reduce the number of timeouts to 821. If we exclude results on the Python core function that converts an IPv6 address to a number mentioned above, {\tool} has only $53$ timeouts in total while z3 has $809$ in total.
+
+Also, we have encoded the checkLuhn algorithm in SMT-lib for cases of 2 to 12 loops (digits). These problems ask for a model of a valid credit card number as a string of length 2 to 12  each case. We ran these tests additionally to the experiments above with the timeout set to 120s. In these tests, {\tool} can solve all 11 problems within 1s while CVC4 only returns a model for cases of 2 to 5 loops and Z3-str3 could not solve these problems (either timeout or UNKNOWN). However, Z3 can still solve 7 out of the 11 problems and the problems got timeout are cases for 4, 5, 7, and 9 loops. It seems that Z3 has some strategies that can solve problems of even loops efficiently.
+
+% \todo{Update table with data of timeout=30s}
 
 \hide{
 \begin{table}[h]
@@ -409,5 +388,30 @@ filtered\_str\_int	& 3281 & 2912 & 1203/0 & 2210 & 2211 & 2975/0 & 2729 & 2655 &
 \end{table*}
 }
 
+\hide{
+% wider table for 30s timeout data
+\begin{table}[h]
+\centering
+\caption{Results of {\tool}, CVC4, Z3, and Z3-str3 on String-Number Conversion benchmark.}
+\scalebox{0.8}{
+\begin{tabular}{|l r | r r r r|| r r r r|}
+\hline
+\multicolumn{2}{|c}{}          			   & {\tool} & CVC4  &    Z3  & Z3-str3 & {\tool} & CVC4  &    Z3  & Z3-str3 \\ \hline
+\multirow{3}{*}{Leetcode}		& SAT      &   2349  &  1543 &  1892  &   217 \\ 
+								& UNSAT    &  16368  & 15676 & 16105  & 15374 \\
+								& $\times$ &    210  &  1708 &   930  &  3336 \\ \hline 
+\multirow{3}{*}{PythonLib}		& SAT      &    886  &   408 &   797  &   201 \\ 
+								& UNSAT    &    720  &   660 &   724  &   644 \\
+								& $\times$ &   1040  &  1578 &  1125  &  1801 \\ \hline
+\multirow{3}{*}{JavaScript}		& SAT      &     20  &     6 &    16  &     4 \\ 
+								& UNSAT    &      0  &     0 &     0  &     0 \\
+								& $\times$ &      0  &    14 &     4  &    16 \\ \hline \hline
+\multirow{3}{*}{Total}			& SAT      &   3255  &  1957 &  2705  &   422 \\ 
+								& UNSAT    &  17088  & 16336 & 16829  & 16018 \\
+								& $\times$ &   1250  &  3300 &  2059  &  5153 \\ \hline
+\end{tabular}}
+\label{table:str_int_benchmark}
+\end{table}
+}
 
 
