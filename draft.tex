@@ -40,7 +40,7 @@ String-number conversion is an important class of constraints needed for the sym
 \newcommand{\ite}[3]{\mbox{\textsf{ite}($#1$, $#2$, $#3$)}}
 \newcommand{\sti}[1]{\mbox{\textsf{toNum}($#1$)}}
 \newcommand{\its}[1]{\mbox{\textsf{toStr}($#1$)}}
-\newcommand{\varn}{\mbox{$V$}}
+\newcommand{\varn}{\mbox{$Z$}}
 \newcommand{\vars}{\mbox{$X$}}
 \newcommand{\cvars}{\mbox{$\mathbb{V}_{\Sigma_\epsilon}$}}
 \newcommand{\pvars}{\mbox{$\mathbb{V}_{\sharp}$}}
@@ -872,7 +872,7 @@ For a parametric word $x= v_1v_2\cdots v_k$ over $\cvar$, its interpretation $I(
 We then define the semantics of the PA $P$ as the set of strings   
 $\semof {\pa} = \{I(x) \mid x\in L(A),I\in\semof \paf\}$ of all interpretations satisfying $\paf$ of all parametric strings in the language of $A$. 
 
-We say that a mapping $I_e:\cvar\cup\#\cvar \rightarrow \nat$ is a \emph{word encoding} a word $w$  (or a $\pa$-encoding of $w$) if $w$ is an instantiation of some parametric word $x \in L(\pa)$ whose Parikh image and interpretation of character variables are defined by $I_e$.  
+We say that a mapping $I_e:\cvar\cup\#\cvar \rightarrow \nat$ is a \emph{word encoding} of a word $w$  (or a $\pa$-encoding of $w$) if $w$ is an instantiation of some parametric word $x \in L(\pa)$ whose Parikh image and interpretation of character variables are defined by $I_e$.  
 %
 Conversely, $w$ is a \emph{$\pa$-decoding} of $I_e$.
 %
@@ -988,34 +988,18 @@ For a conjunction of string constraints, we let $\underf \dr {\phi \land \phi'} 
 The semantics of a string constraint $\phi$ restricted by $\dr$ is then defined as 
 $\semof{\phi}^\dr = \{I\in\semof \phi \mid \forall x\in X:I(x)\in\semof{\dr(x)}\}$.
 
-\changed{
 The correctness of the entire construction of $\underf \dr {\insc}$ is expressed by  Theorem~\ref{theorem:correct}. 
 It uses the decoding function $\decode \dr$ parameterized by the domain restriction $\dr$. 
-The function takes as an argument an $\dr$-encoding of a string constraint, an interpretation $I_e \cup I_z$ consisting of a \emph{many-word encoding} $I_e: V_\dr\cup\#V_\dr\rightarrow \nat$ and an integer variable interpretation $I_z$. 
-Intuitively, the many-word encoding $I_e$ contains for each $x\in X$ a $\dr(x)$-encoding of its value. 
-The function then returns the set of string constraint interpretations 
-$\decode  \dr (I_e\cup I_z) \defeq \{I_s \cup I_z \mid \forall x\in X: I_s(x) = \decode {\dr(x)} ((I_e)_{V_{\dr(x)}\cup \#V_{\dr(x)}})\}$.
-The condition says that each string variable $x$ is interpreted as the ${\dr(x)}$-decoding of the word encoding $(I_e)_{V_{\dr(x)}\cup \#V_{\dr(x)}}$.
+Let $Z$ be the set of integer variables in $\insc$.
+The function maps an interpretations $I_e$ over $Z\cup V_\dr\cup\#V_\dr$
+to an interpretation over $Z \cup X$, if exists. Informally, it ``decodes" an interpretation of integer variables $Z\cup V_\dr\cup\#V_\dr$ to an interpretation of variables in the string constraint $\insc$. Formally,
+we define $\decode  \dr (I_e) \defeq \{I \mid \forall z\in Z: I(z) = I_e(z) \wedge\forall x\in X: \{I(x)\} = \decode {\dr(x)} ((I_e)_{V_{\dr(x)}\cup \#V_{\dr(x)}})\}$.
+The condition says that (1) $I$ and $I_e$ are consistent over the $Z$ and (2) $(I_e)_{V_{\dr(x)}\cup \#V_{\dr(x)}}$ is a word encoding that $\dr(x)$-encodes $I(x)$.
 %We define the output of $\decode  \dr (I_e\cup I_z)$ as a set so that \emph{invalid word encodings}, i.e. those do not corresponds to possible word encodings from PFAs, are mapped to empty sets and valid ones are mapped to singleton sets.
 We also define the $\dr$-encoding function as the counterpart of $\dr$-decoding,  
 %
-namely, for a model $I_s \cup I_z$ of a string constraint,  
-we let $\encode \dr (I_s \cup I_z) =\{I_e\cup I_z\mid \decode \dr (I_e\cup I_z) = I_s \cup I_z \}$.
-We lift $\decode \dr$ and $\encode \dr$ to sets of interpretations in the standard manner.
-}
-
-
-The correctness of the entire construction of $\underf \dr {\insc}$ is expressed by  Theorem~\ref{theorem:correct}. 
-It uses the decoding function $\decode \dr$ parameterized by the domain restriction $\dr$. 
-The $\decode \dr$ function maps a \emph{ many-words encoding} $I_e: V_\dr\cup\#V_\dr\rightarrow \nat$ paired with an interpretation of integer variables $I_z$ to a model $I_s \cup I_z$ of a string constraint. Note that the many-words encoding $I_e$ is a union of ${\dr(x)}$-encodings for all $x$ in $X$.
-Formally, 
-$\decode  \dr (I_e\cup I_z) = \{I_s \cup I_z \mid \forall x\in X: I_s(x) = \decode {\dr(x)} ((I_e)_{V_{\dr(x)}\cup \#V_{\dr(x)}})\}$.
-The condition says each string variable $x$ is interpreted as the ${\dr(x)}$-decoding of the word encoding $(I_e)_{V_{\dr(x)}\cup \#V_{\dr(x)}}$.
-%We define the output of $\decode  \dr (I_e\cup I_z)$ as a set so that \emph{invalid word encodings}, i.e. those do not corresponds to possible word encodings from PFAs, are mapped to empty sets and valid ones are mapped to singleton sets.
-We define the $\dr$-encoding function as the counterpart of $\dr$-decoding,  
-%
-namely, for a model $I_s \cup I_z$ of a string constraint,  
-we let $\encode \dr (I_s \cup I_z) =\{I_e\cup I_z\mid \decode \dr (I_e\cup I_z) = I_s \cup I_z \}$.
+namely, for a interpretation $I$ of the string constraint $\insc$,  
+we let $\encode \dr (I) =\{I_e\mid \decode \dr (I_e) = I \}$.
 We lift $\decode \dr$ and $\encode \dr$ to sets of interpretations in the standard manner.
 \begin{theorem}\label{theorem:correct}
 $\decode \dr (\semof {\underf \dr {\insc}}) = \semof{\insc}^\dr$ 
