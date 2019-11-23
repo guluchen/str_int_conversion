@@ -63,7 +63,7 @@ In the second experiment, we compare with tools supporting string-number convers
 All experiments were executed on a machine with 4-core CPU, 8 GiB RAM. The timeout was set to 10s for each test.
 We use the results from {\tool}, CVC4, and Z3 as the reference answer for the validation of the correctness of the results. Occasionally, two of them report inconsistent (one SAT and one UNSAT) answers to the same test. To decide which solver reports the incorrect answer, we developed a validator, which takes the model $I$ returned from the solver who reported SAT, assigns $I(x)$ to all variables $x$ in the test to obtain a modified test, and re-evaluates the modified test by multiple solvers. If the results from all solvers are consistent, we mark the test SAT or UNSAT according to the results. Otherwise, we manually simplify and inspect the test until we get a conclusive result. 
 
-The results of the experiments are summarized in Table~\ref{table:base_benchmark} and Table~\ref{table:str_int_benchmark}. Rows with heading \texttt{SAT}/\texttt{UNSAT} show numbers of solved formulae. Rows with heading $\times$ indicate the number of instances the solver fails (including timeout, report unknown, report incorrect result, or crash).
+The results of the experiments are summarized in Table~\ref{table:base_benchmark}, Table~\ref{table:str_int_benchmark}, and Table~\ref{table:checkLuhn}. Rows with heading \texttt{SAT}/\texttt{UNSAT} show numbers of solved formulae. Rows with heading $\times$ indicate the number of instances the solver fails (including timeout, report unknown, report incorrect result, or crash).
 
 \begin{table}[h]
 \centering
