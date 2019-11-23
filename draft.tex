@@ -132,7 +132,11 @@ Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular
 
 An important class of string operations is  the string-number conversions.  While string length operations are sometimes well supported, converting a string $x$ to an integer $n$ (e.g., using the operation $n = \sti{x}$) or turning an integer value $n$ into its string form $x$ (e.g., using the operation $x = \its{n}$)  suffer from extremely limited support by the state-of-the-art string constraint solvers. 
 
-For many languages such as Java, string-number conversions are core operations, and much symbolic execution can not been done without supporting it. In fact,  a code that receives input tends to need to convert at least some of that input into numbers,  which makes the handling of string-integer conversions of the utmost importance. For example, the program fragment below is a variant of the Luhn test algorithm that is often used in credit card or personal ID validation.
+%For many languages such as Java, string-number conversion is not a core operation, and much symbolic execution can be done without supporting it; however, this is not true of scripting languages, of which JavaScript is the most notable.
+%For many languages such as JavaScript, string-number conversions are core operations, and symbolic execution cannot be done without supporting it.
+In fact, a code that receives string input tends to need to convert at least some of that input into numbers.
+%,  which makes the handling of string-integer conversions of the utmost importance.  \yfc{maybe this is a too strong argument using this example}
+For example, the program fragment below is a variant of the Luhn test algorithm that is often used in credit card or ID validation.
 
 
 
@@ -176,9 +180,9 @@ function checkLuhn(value) {
 \end{Verbatim}
 
 
-The input \verb|value| of the Luhn test algorithm is a sequence of digits. The algorithm processes the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) subtracts its value by $9$ if the doubled-value is larger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the string value of \verb|sum| ends by an $0$ (i.e., \verb| sum mod 10=0|).
+The input \verb|value| of the Luhn test algorithm is a sequence of digits. The algorithm processes the digits in the reversed order. The value of every odd digit (e.g., 1st, 3rd, etc.) is added to \verb|sum| directly. For the value of every even digit, the algorithm (1) doubles its value, (2) subtracts its value by $9$ if the doubled-value is larger than $9$, and (3) adds the final result to \verb|sum|. At the end, the input is validated if the last digit of \verb|sum| is $0$ (i.e., \verb| sum mod 10=0|).
 
-To check whether the program path that traverses both loops exactly once, which corresponds to the case when $| \verb|value||=2$, and finally passes this test has a valid input, we create the following (string) constraint:
+To check whether the program path that traverses both loops exactly once and finally passes this test has a valid input, we create the following (string) constraint:
 
 $$\begin{array}{lc}
 1&	{\it value_0} \in [1,9]^+ \wedge 	{\it sum_0} = 0 \wedge \\
@@ -210,7 +214,7 @@ Most of the state-of-the-art string constraint solvers provide only very limited
 %Currently, even for the above constraint, which is from a simple program, most of the-state-of-the art solvers fail to provide a correct answer. 
 
 
-Even, more crucially, in many programming languages, string-number conversion is a part of the definition of the core semantics of the language. 
+Even, more crucially, in many programming languages, string-number conversion is a part of the definition of their core semantics. 
  JavaScript, which powers most interactive content on the Web and increasingly server-side code with Node.js, is one of such languages. Other scripting languages do too, but we focus on JavaScript due to its prominence. To see how string-integer conversion pervades semantics, consider the following program:
 
 
@@ -250,7 +254,7 @@ A casual glance at the above code reveals no use of strings at all, but the sema
 
 Here \texttt{x[3]} in line 2, \texttt{x[03]} in line 3, and \texttt{x["3"]} in line 4 all denote the same array element of \texttt{x["3"]} (due to the implicit conversion of numeric indices to strings in JavaScript), but \texttt{x["03"]} denotes a completely different element (which is stored at the index \texttt{"03"} of the array). So na\"ive modeling of array indices with integers will not work -- it cannot distinguish the indices \texttt{"3"} and \texttt{"03"}. 
 
-But if array indices are modeled as strings, we must handle arithmetic somehow. Let us look at the case of line 6, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather basic   array operation in JavaScript, and not  handling string-number conversion operations will cripple any analysis of non-trivial JavaScript code. Thus, we need stronger solvers that are  able to handle string-number conversion operations in order to be able to analyse  real code. 
+But if array indices are modeled as strings, we must handle arithmetic somehow. Let us look at the case of line 6, we need to update the value of \texttt{x["03"-1]}. The evaluation of the expression \texttt{"03"-1} involves an implicit type conversion from the string \texttt{"03"} to an integer value $3$ due to the \texttt{-} (minus) operation. The result of the evaluation of \texttt{"03"-1} is the integer $2$, which is then converted back to string \texttt{"2"} and used as the array index. Hence \texttt{x["03"-1]} means the array element of \texttt{x["2"]}. Even for a simple example like this, the conversion between string and number is unavoidable. This is a rather basic   array operation in JavaScript, and not  handling string-number conversion operations will cripple any analysis of non-trivial JavaScript code. Thus, we need stronger solvers that are  able to handle string-number conversion operations in order to be able to analyze  real code. 
 
 
 
