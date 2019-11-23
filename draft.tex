@@ -889,7 +889,7 @@ the same word encoding may be shared by multiple words, as formalized in the def
 Let use consider the PFA ${\pa_x}=(A_x,\true)$ from Figure~\ref{fig:sfa}~(a) and let $Y{=}(v_1,v_2,\#v_1,\#v_2)$. Then we have\\
 $\encode {\pa_x}( ``aaa" ) =\{ (Y{\rightarrow}(\semof{a},\semof{\epsilon},3,3), Y{\rightarrow}(\semof{\epsilon},\semof{a},3,3)  \}$ and
 $\decode {\pa_x}((Y{\rightarrow}(\semof{a},\semof{\epsilon},3,3))=\{``aaa"\} $.
-\footnote{In these examples, we use the shorthand $(x_1,\ldots,x_k)\rightarrow(n_1,\ldots,n_k)$ denote the function $\{x_1 \rightarrow n_1,\ldots, x_k\rightarrow n_k\}$.}
+\footnote{In these examples, we use the shorthand $(x_1,\ldots,x_k)\rightarrow(n_1,\ldots,n_k)$ to denote the function $\{x_1 \rightarrow n_1,\ldots, x_k\rightarrow n_k\}$.}
 \end{example}
 
 If $\pa$ is a PFA, then by Lemma~\ref{lemma:decoding}, every word encoding $I_e\in \encode \pa( w )$ can be decoded uniquely to the word $w$, i.e.
@@ -1152,7 +1152,7 @@ their concatenation is the PFA $\pa\cdot \pa' = (Q\cup Q',T\cup T'\cup \{(q_f,v_
 \begin{lemma}
 %$\semof{\pa\cdot \pa'} = \semof{\pa}\cdot\semof{\pa'}$ and 
 $\encode{\pa \cdot\pa'}{(\semof{\pa \cdot \pa})}_{\cvarone\cup \cvartwo \cup \pvarone\cup\pvartwo} =
-\{I_e \cup I_e'\mid I_e \in \encode \pa (\semof{\pa}) \wedge I_e' \in\encode {\pa'} (\semof{\pa'})\}$, for PFAs $\pa$ and $\pa'$.
+\{I_e \cup I_e'\mid I_e \in \encode \pa (\semof{\pa}) \wedge I_e' \in\encode {\pa'} (\semof{\pa'})\}$, \mbox{for PFAs $\pa$ and $\pa'$.}
 \end{lemma}
 
 With synchronization and concatenation of PA, we are ready to describe flattening of the basic string constraints.
