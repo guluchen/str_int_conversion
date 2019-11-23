@@ -1078,7 +1078,13 @@ Formally, the asynchronous product automaton is a tuple $\syncof \pa {\pa'} = (Q
 %
 \begin{itemize}
 \item If $(q_1,v,q_2) \in T$ and $(q_1',v',q_2') \in T'$, then we have $((q_1,q_1'),(v,v'),(q_2,q_2'))\in \syncT$.
+
+\smallskip
+
 \item If $(q_1,v,q_2) \in T$, then for all states $q'\in Q'$, we have $((q_1,q'),(v,\epsilon),(q_2,q'))\in \syncT$.
+
+\smallskip
+
 \item If $(q_1',v',q_2') \in T'$, then for all states $q\in Q$, we have $((q,q_1'),(\epsilon,v'),(q,q_2'))\in \syncT$.
 \end{itemize}	
 %
