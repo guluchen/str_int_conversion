@@ -40,8 +40,8 @@ String-number conversion is an important class of constraints needed for the sym
 \newcommand{\ite}[3]{\mbox{\textsf{ite}($#1$, $#2$, $#3$)}}
 \newcommand{\sti}[1]{\mbox{\textsf{toNum}($#1$)}}
 \newcommand{\its}[1]{\mbox{\textsf{toStr}($#1$)}}
-\newcommand{\varn}{\mbox{$\mathbb{V}_{\mathbb{Z}}$}}
-\newcommand{\vars}{\mbox{$\mathbb{V}_{\Sigma^*}$}}
+\newcommand{\varn}{\mbox{$V$}}
+\newcommand{\vars}{\mbox{$X$}}
 \newcommand{\cvars}{\mbox{$\mathbb{V}_{\Sigma_\epsilon}$}}
 \newcommand{\pvars}{\mbox{$\mathbb{V}_{\sharp}$}}
 %\newcommand{\cvar}{\mbox{$V_{\Sigma_\epsilon}$}}
@@ -663,21 +663,22 @@ In this section, we formally define string constraints. To begin with, we fix a 
 
 A minor technical difficulty is that sometimes  we may need to treat  $\epsilon$ as a  number. Therefore, we encode $\epsilon$ as some fixed number $\noepsilon\in\nat\setminus\Sigma$.
 
-We call $\vars$ the set of \emph{string variables} ranging over $\Sigma^*$ and $\varn$ the set of \emph{integer variables} ranging over $\mathbb{Z}$.
-For a variable $x$, we call its primed version (e.g., $x'$) or indexed versions (e.g., $x_1$) its \emph{variants}.
-In this paper, we use $x,y$ (or their variants) to denote string variables and $n$ (or its variants) to denote integer variables. An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I$ from $\vars\cup \varn$ to $\Sigma^* \cup \mathbb{Z}$. A \emph{term} is an element in $(\vars\cup \Sigma)^*$. We lift the interpretation $I$ to terms and linear constraints in the standard manner. 
+Assume that $\vars$ ia a set of \emph{string variables} ranging over $\Sigma^*$ and $\varn$ a set of \emph{integer variables} ranging over $\mathbb{Z}$.
+%For a variable $x$, we call its primed version (e.g., $x'$) or indexed versions (e.g., $x_1$) its \emph{variants}.
+%In this paper, we use $x,y$ (or their variants) to denote string variables and $n$ (or its variants) to denote integer variables. 
+An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I:\vars\cup \varn\rightarrow\Sigma^* \cup \mathbb{Z}$. A \emph{word term} is an element in $\vars^*$. We lift the interpretation $I$ to word terms and linear constraints in the standard manner. 
 
 We will use four types of \emph{atomic string constraint}: 
 \smallskip
 
 
 $\bullet$ An \emph{equality constraint} $\phi_e$ is of the form $t_1 = t_2$ where $t_1, 
-t_2$ are terms. The \emph{model} of $\phi_e$ is the set of interpretations $\modelsof{\phi_e}=\{I\mid 
+t_2$ are word terms. The \emph{model} of $\phi_e$ is the set of interpretations $\modelsof{\phi_e}=\{I\mid 
 I(t_1)=I(t_2)\}$. A \emph{disequality constraint} $\phi_d$ is of the form $t_1 \neq 
 t_2$ and is interpreted analogously.
 
 \smallskip
-$\bullet$ An \emph{integer constraint} $\phi_i$ is a linear constraint over the variables in $\varn$ and values of $|x|$ for all $x \in \vars$, where $|\cdot|:\vars \rightarrow \nat$ is the string length function defined in the standard way.
+$\bullet$ An \emph{integer constraint} $\phi_i$ is a linear constraint over the integer variables in $\varn$ and values of $|x|$ for all $x \in \vars$, where $|\cdot|:\vars \rightarrow \nat$ is the string length function defined in the standard way.
 %Formally, assume that $\vars=\{x_i,\ldots,x_n\}$ and $\varn=\{y_i,\ldots,y_m\}$, a length constraint is of the form $(\sum_{i\in[1,n]}(j_i \times \sti{x_i}+k_i\times |x_i|)+ \sum_{i\in[1,m]}(l_i \times y_i)) \odot k$, where $\odot \in \{>,\geq, =, \leq, <\}$, and $j_i,k_i,l_i,k\in \mathbb{Z}$. We define $\modelsof{\phi}= \{I \mid (\sum_{i\in[1,n]}(j_i \times \sti{I(x_i)}+k_i\times |I(x_i)|)+ \sum_{i\in[1,m]}(l_i \times I(y_i))) \odot k \}$.
 We define $\modelsof{\phi_i}= \{I \mid I(\phi_i)= \true \}$. 
 \smallskip
