@@ -31,14 +31,19 @@ Response: the difference between PFA and FA is that (1) PFA handles the transiti
 
 Response: 
 
-3. How significant is it to introduce the string-number conversion? With that said, the current paper does not give any constructive argument to discuss the hardness of the problem. I think perhaps a better way is to show that the popular solvers based on FA could not handle the string-number conversion. That gives a strong motivation for PFA as well as this work in general.
+3. How significant is it to introduce the string-number conversion?
+
+Response: JavaScript makes far more use of such conversions than other languages to which SMT solvers have traditionally been applied, such as C.  Every access to the state of any modeled object relies on it, since array indices get turned into strings.  Since JavaScript is pervasive, such checking is very significant.
+
+
+4. With that said, the current paper does not give any constructive argument to discuss the hardness of the problem. I think perhaps a better way is to show that the popular solvers based on FA could not handle the string-number conversion. That gives a strong motivation for PFA as well as this work in general.
 Response: FA-based approach can in theory be turned to support str-int conversion, but would be more expensive than using PFA. See the 2nd item of response 1. In practice, str-int conversion is not implemented in the existing FA-based tool Trau. (should we add more empirical suuport? saying that we tried FA+str-int conversion and PFA_str-int conversion is much faster?) 
  
-4. In the introduction, the description of the motivating example in Figure 2 is extremely confusing. When discussing the example for the first time (lines 285-300), I don't see why $A_x$ is projected in this way. In the example, we have only $y\in(12)^+$. How exactly do you infer that $A_x$ should have a similar structure?
+5. In the introduction, the description of the motivating example in Figure 2 is extremely confusing. When discussing the example for the first time (lines 285-300), I don't see why $A_x$ is projected in this way. In the example, we have only $y\in(12)^+$. How exactly do you infer that $A_x$ should have a similar structure?
 
 Response: the structure is given by the main loop of the algorithm and is implementation dependent. We describe the PFA selection strategy of Z3-PFA in the 2nd paragraph of the sec 9.
 
-5. In the evaluation, it is a bit unfortunate to see that there is no comparison with Trau [1-5]. This is critical. Lines 1039-1040 mention that it is because Trau does not ``support all string functions in our benchmarks, especially string-number conversion.'' This argument is unconvincing. In the evaluation, you can compare your approach against a vanilla Z3. And Trau is implemented on top of Z3 (see section 1 of [1]). Logically, Trau could be extended to handle the conversion (just by ``enabling'' some features in the vanilla Z3). If there is any principle limitation, it's worthwhile to justify it.
+6. In the evaluation, it is a bit unfortunate to see that there is no comparison with Trau [1-5]. This is critical. Lines 1039-1040 mention that it is because Trau does not ``support all string functions in our benchmarks, especially string-number conversion.'' This argument is unconvincing. In the evaluation, you can compare your approach against a vanilla Z3. And Trau is implemented on top of Z3 (see section 1 of [1]). Logically, Trau could be extended to handle the conversion (just by ``enabling'' some features in the vanilla Z3). If there is any principle limitation, it's worthwhile to justify it.
 
 Response: Z3 is a DPLL(T) based solver, i.e., a DPLL engine + multiple theory solvers. The implementation of Trau is done by substituing the string solver of Z3 with a comepletely new one. Str-int conversion is not implemented in the new string solver of Trau, thus str-int convertion constraints will be internally discarded. If we run the str-int conversion benchmarks on Trau, we will either get exceptions or incorrect answers. 
 
@@ -46,7 +51,7 @@ Reviewer C
 
 1. I performed a very quick experiment in which I converted the function *checkLuhn* into C code, and find out KLEE works fine. This demonstrates that the state-of-the-art solvers are capable of handling the path constraints, which left me some negative feelings in the very beginning. Perhaps change the example program?
 
-Response: use the argument the semantics between C and JS are different?
+Response: Converting checkLuhn into C code will alter its semantics substantially.  The function makes use of array accesses with charAt() calls (lines 4, 8, 12) and, which, in JavaScript, require string-integer conversions to handle since the array state must be indexed with strings (see discussion starting at line 150 of the subnission).  A C translation that did this would be very unnatural.  
 
 2. It would be better if the authors can provide more background to support your claim that string-number conversion is difficult for existing solvers. Is there an empirical study the authors can refer to? or educate the readers why those constraints are hard to solve.
 
