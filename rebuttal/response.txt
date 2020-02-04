@@ -40,7 +40,7 @@ Response: the structure is given by the main loop of the algorithm and is implem
 
 5. In the evaluation, it is a bit unfortunate to see that there is no comparison with Trau [1-5]. This is critical. Lines 1039-1040 mention that it is because Trau does not ``support all string functions in our benchmarks, especially string-number conversion.'' This argument is unconvincing. In the evaluation, you can compare your approach against a vanilla Z3. And Trau is implemented on top of Z3 (see section 1 of [1]). Logically, Trau could be extended to handle the conversion (just by ``enabling'' some features in the vanilla Z3). If there is any principle limitation, it's worthwhile to justify it.
 
-Response: Z3 is a DPLL(T) based solver, i.e., a DPLL engine + multiple theory solvers. The implementation of Trau is done by substituing the string solver of Z3 with a comepletely new one. Str-int conversion is not implemented in the new string solver of Trau. If we run the str-int conversion benchmarks on Trau, we will either get exceptions or incorrect answers because str-int convertion constraints are discarded. 
+Response: Z3 is a DPLL(T) based solver, i.e., a DPLL engine + multiple theory solvers. The implementation of Trau is done by substituing the string solver of Z3 with a comepletely new one. Str-int conversion is not implemented in the new string solver of Trau, thus str-int convertion constraints will be internally discarded. If we run the str-int conversion benchmarks on Trau, we will either get exceptions or incorrect answers. 
 
 Reviewer C
 
@@ -74,13 +74,13 @@ Response:
 
 8. I am a bit struggling to learn the insight of your approach. In essence, why is your approach better than the existing solvers? 
 
-Response:
+Response: 
 
 Reviewer D
 
 1. - Although the solver is incomplete (which is not surprising for an undecidable problem in general), it would be useful to learn what heuristics were used in the iterative process of considering more expressive PFA. Was this process partially or fully automated? Do you prioritize among the PFAs of different variables?
 
-Response: the PFA selection is an implementation. We describe the PFA selection strategy of Z3-PFA in sec 9, 2nd paragraph.
+Response: the PFA selection is an implementation. We describe the PFA selection strategy of Z3-PFA in sec 9, 2nd paragraph. The process is fully automated.
 
 2. - It also seems that there may be some wasted effort when considering larger PFAs iteratively. Is some work re-usable? Could your solver be made incremental over the PFAs?
 
