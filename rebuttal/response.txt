@@ -1,0 +1,74 @@
+
+Reviewer A
+
+1. It is too bad that the experimental evaluation does not include some DPLL-based
+string solvers.
+
+Response: to the best of our knowledge, Z3 and CVC4 are the best DPLL-based string solver that are still well-maintained. 
+
+2. In Section 9, it would be nice to break down the X results further:
+how many "unknown" vs timeouts vs incorrect results vs crashes? For
+the latter two categories, did this work uncover new bugs in some of
+the solvers? Please clarify.
+
+Response: hlin
+
+3. In Section 9, would using a timeout value different from 10 seconds
+change the results significantly? This question is partly answered in
+the text, but a scatter plot showing the solving time for each
+instance and comparing Z3-PFA with other solvers would provide more
+information.
+
+Response: hlin
+
+Reviewer B
+
+1. The concept of flat automata for solving string constraints has already been proposed [1]. The solver framework based on both over- and under-approximation has also been proposed in [1]. I understand that this paper proposes a parametric version of flat automata (PFA). However, I do not see the key insight of the PFA. Why can't FA be applied in the problem domain since PFA is just FA plus recording the loop size/length?
+
+Response: beside the loop size, the transition symbols are also made symbolic in PFA. For example, in the work [1], if unicode (>60000 symbols) is used, one would have >60000 transitions between two states of an FA, but we need only one for PFA. We call this the alphabet explosion problem of [1]. In [1], it uses some heuristics reduce the symbols required for solving. (should we give reason why PFA is good for str-int conversion?)
+
+2. I can't entirely agree with the stated hardness of handling string-number conversion in solvers. In particular, lines 195-197 state that the challenge of dealing with string-number constraint is that the problem is undecidable. Well, undecidability is an over-used term in this context. Recall that the problem of solving string constraints itself is already very hard (see the undecidability discussion in section 2 of [1]). Therefore, the problem with string-number conversion, intuitively, is undecidable.
+
+3. How significant is it to introduce the string-number conversion? With that said, the current paper does not give any constructive argument to discuss the hardness of the problem. I think perhaps a better way is to show that the popular solvers based on FA could not handle the string-number conversion. That gives a strong motivation for PFA as well as this work in general.
+
+4. In the introduction, the description of the motivating example in Figure 2 is extremely confusing. When discussing the example for the first time (lines 285-300), I don't see why $A_x$ is projected in this way. In the example, we have only $y\in(12)^+$. How exactly do you infer that $A_x$ should have a similar structure?
+
+5. In the evaluation, it is a bit unfortunate to see that there is no comparison with Trau [1-5]. This is critical. Lines 1039-1040 mention that it is because Trau does not ``support all string functions in our benchmarks, especially string-number conversion.'' This argument is unconvincing. In the evaluation, you can compare your approach against a vanilla Z3. And Trau is implemented on top of Z3 (see section 1 of [1]). Logically, Trau could be extended to handle the conversion (just by ``enabling'' some features in the vanilla Z3). If there is any principle limitation, it's worthwhile to justify it.
+
+Reviewer C
+
+1. I performed a very quick experiment in which I converted the function *checkLuhn* into C code, and find out KLEE works fine. This demonstrates that the state-of-the-art solvers are capable of handling the path constraints, which left me some negative feelings in the very beginning. Perhaps change the example program?
+
+Response: use the argument the semantics between C and JS are different?
+
+2. It would be better if the authors can provide more background to support your claim that string-number conversion is difficult for existing solvers. Is there an empirical study the authors can refer to? or educate the readers why those constraints are hard to solve.
+
+3. I'm not clear about the "correct answer" (line 137), do you mean these solvers provide a wrong answer (e.g., return SAT for UNSAT constraints) or just return "unknown"? If they provide a wrong answer, why does it happen?
+
+Response: 
+
+4. It is not clear to me how you construct a PFA that is aware of the domain of a constraint. For example, how do you infer that the domain of a constraint to be a binary number, octal number, decimal number or hexadecimal number? For a constraint "var[0] == var[1] && $\forall$ i in [0,len(var)-1], toNum(var[i]) > 9" that is only satisfiable for hexadecimal numbers, how do you know the domain is a hexadecimal number (i.e., [0, f]) as opposed to a decimal number (i.e., [0, 9])? Using PFA will simplify solving the string constraints. However, the performance of the under-approximation depends on the alphabet because the automaton consists of multiple one-way cycles (at line 1002). I can imagine the performance difference in a binary number, octal number, decimal number and hexadecimal number on which the size of each loop in PFA depends(e.g., the size of each loop is 8 for octal numbers). Therefore, would it be beneficial to convert different number systems to binary number systems?
+
+
+5. At line 894, it is not clear to me how each numeric PFA covers a large and practically significant portion of numerals. In my view, each numeric PFA can only cover one number. 
+
+6. In the evaluation, you only give the run-time results for the evaluation on *checkLuhn* algorithm. This is rather strange, why don't you also provide solving time in table 1 or table 2? Additionally, why is its timeout budget (120s) different from the previous experiment (10s).
+
+Response: We need to handle the time required for artifact evalution. For table 1 and table 2, it has too many instances that an 120s might requrie too much time to reproduce the same result. The evaluation of checkLuhn has only one instance so higher time budget is still possible.
+
+7. I think "PASS: String Solving with Parameterized Array and Interval Automaton" is closely related, which I believe you should compare in your evaluation.
+ 
+8. I am a bit struggling to learn the insight of your approach. In essence, why is your approach better than the existing solvers? 
+
+Reviewer D
+
+1. - Although the solver is incomplete (which is not surprising for an undecidable problem in general), it would be useful to learn what heuristics were used in the iterative process of considering more expressive PFA. Was this process partially or fully automated? Do you prioritize among the PFAs of different variables?
+
+2. - It also seems that there may be some wasted effort when considering larger PFAs iteratively. Is some work re-usable? Could your solver be made incremental over the PFAs?
+
+3. - please explain requirement 3 that each character in \Sigma appears on at most one transition. Is it at most one transition in the full automata or in each loop?
+
+Response: it is in the full automata
+
+4.
+
