@@ -1,46 +1,50 @@
 We thank the reviewers for their detailed and constructive feedback and suggestions. Below, we address the main points from the reviews:
 	 
-1. Comparison with DPLL-based solvers (A)
+1)Comparison with DPLL-based solvers.(A)
 
-Response: To the best of our knowledge, Z3 and CVC4 are the best DPLL(T)-based string solvers that are still well-maintained. 
-Most SAT-based string solvers such as Hampi and Kazula are not longer maintained.
+To the best of our knowledge, Z3 and CVC4 are the best DPLL(T)-based string solvers that are still well-maintained. 
+Most SAT-based string solvers such as Hampi and Kazula are no longer maintained.
 
+2)Comparison with the FA-based solvers. More insight into why the PFA-based approach is better.(B,C)
 
-2. Comparison with the FA-based solvers. More insight into why the PFA-based approach is better. (B,C)
+--PFA is labeled by variables, while FA is by concrete symbols. If Unicode (>60000 symbols) is used, one would have >60000 transitions to connect two states of an FA, but we need only one transition for PFA. 
 
-Response: 
-(1) PFA is labeled by variables, while FA is by concrete symbols. If Unicode (>60000 symbols) is used, one would have >60000 transitions to connect two states of an FA, but we need only one transition for PFA. 
-(2) It is also vital in the handling of string-number conversion. In PFA, symbols are also natural numbers and hence can be used directly in the translation between strings and integers. In FA, this would require multiple if-then-else statements (e.g., saying that if a transition labeled '0' is taken, then the corresponding number is 0), which introduces a significant amount of additional predicates that the DPLL engine needs to guess if they are positive or negative. 
-(3) In practice, the string-number conversion is not implemented in the existing FA-based tool Trau (on top of Z3).  Z3 is a DPLL(T) based solver, i.e., a DPLL engine + multiple theory solvers. The implementation of Trau is done by *substituting* the string solver of Z3 with a completely new one. String-number conversion is not implemented in the new string solver of Trau. Thus string-number conversion constraints will be internally discarded. If we run the string-number conversion benchmarks on Trau, we will either get exceptions or incorrect answers. We have compared with the latest version of Trau+ on classic benchmarks, and, in general, Z3-PFA is also better. We will add the results to the experiments section.
+--FA-based approach can, in theory, be turned to support string-number conversion, but would be more expensive than using PFA. In PFA, symbols are also natural numbers that can be used directly in the translation between strings and numbers. In FA, this would require multiple if-then-else statements (e.g., saying that if a transition labeled '0' is taken, then the corresponding number is 0), which introduces a significant amount of additional predicates that the DPLL engine needs to decide their value. 
 
-3. Provide more background to support your claim that string-number conversion is difficult for existing solvers. (B,C)
+--In practice, the string-number conversion is not implemented in the existing FA-based tool Trau (on top of Z3).  Z3 is a DPLL(T) based solver, i.e., a DPLL engine + multiple theory solvers. The implementation of Trau is done by *substituting* the string solver of Z3 with a completely new one. String-number conversion is not implemented in the new string solver of Trau. Thus string-number conversion constraints will be internally discarded. If we run the string-number conversion benchmarks on Trau, we will either get exceptions or incorrect answers. We have compared with the latest version of Trau+ on classic benchmarks, and, in general, Z3-PFA is also better. We will add the results to the experiments section.
 
-Response: We will (1) refer to the fact that the extension of existing FA based techniques boils down to solving the satisfiability problem of integer constraints with a mix of polynomials and exponentials, which is still open (see Section 8), and (2) refer to our experimental results.  
+3)Provide more support to your claim that string-number conversion is difficult for existing solvers.(B,C)
+
+We will (1) refer to the fact that the extension of existing FA based techniques boils down to solving the satisfiability problem of integer constraints with a mix of polynomials and exponentials, which is still open (see Section 8), and (2) refer to our experimental results.  
 	 
-4. How significant is it to introduce the string-number conversion? (B)
+4)How significant it is to introduce the string-number conversion?(B)
 
-Response: JavaScript makes far more use of such conversions than other languages to which SMT solvers have traditionally been applied. Every access to the state of any modeled object relies on it since array indices get turned into strings (see discussion starting at line 150 of the submission). Since JavaScript is pervasive, such checking is very significant.
+JavaScript makes far more use of such conversions than other languages to which SMT solvers have traditionally been applied. Every access to the state of any modeled object relies on it since array indices get turned into strings (see discussion starting at line 150 of the submission). Since JavaScript is pervasive, such checking is very significant.
 	  
-5. How to decide the structure of PFA used by the solvers? (B,D)	 
+5)How to decide the structure of PFA used by the solvers?(B,D)	 
 
-Response: the structure is given by the main loop of the algorithm and is implementation-dependent. We describe the PFA selection strategy of Z3-PFA in the 2nd paragraph of Section 9. The process is fully automated.
+The structure is given by the main loop of the algorithm and is implementation-dependent. We describe the PFA selection strategy of Z3-PFA in the 2nd paragraph of Section 9. The process is fully automated.
 	 
-6. Break down the X results in the experiments further. Did you find uncovered bugs in some of the solvers? If yes, why does it happen? (A,C) 
+6)Break down the X results in the experiments further. Did you find uncovered bugs in some of the solvers? If yes, why does it happen?(A,C) 
 
-Response: We will update it in the next version. We do find some cases where existing solvers provide incorrect answers. There might be several reasons that the answer is wrong. We checked the source code of Z3. One reason it gives the wrong answer is that when both n and x in the constraint n=toNum(x) are variables, it over-approximates the int(x) function with an uninterpreted function (with some additional axioms like toNum(toInt(x))=x). Sometimes Z3 gives a wrong model because of this over-approximation.
+We will update it in the next version. We do find some cases where existing solvers provide incorrect answers. There might be several reasons that the answer is wrong. We checked the source code of Z3. One reason it gave incorrect answer is that when both n and x in the constraint n=toNum(x) are variables, it over-approximates the toNum(x) function with an uninterpreted function (with some additional axioms like toStr(toNum(x))=x). Sometimes Z3 gives a wrong model because of this over-approximation.
 
-7.  Converted the function *checkLuhn* into C code, and find out KLEE works fine. (C)
-Response: Converting checkLuhn into C code will alter its semantics substantially. The function makes use of array accesses with charAt() calls (lines 4, 8, 12) and, which, in JavaScript, require string-integer conversions to handle since the array state must be indexed with *strings*.
+7)Converted the function *checkLuhn* into C, and find out KLEE works fine.(C)
+
+Converting checkLuhn into C code will alter its semantics substantially. The function makes use of array accesses with charAt() calls (lines 4, 8, 12) and, which, in JavaScript, require string-integer conversions to handle since the array state must be indexed with *strings*.
 	 
-8. How you construct a PFA that is aware of the domain of a constraint? (C)
-Response: we assume all numbers are octal following the SMTLIB2 standard.
+8)How you construct a PFA that is aware of the domain of a constraint?(C)
 
-9. In my view, each numeric PFA can only cover one number. (C)
+We assume all numbers are octal following the SMTLIB2 standard.
+
+9)In my view, each numeric PFA can only cover one number.(C)
+
 Response: In PFA, transitions are labeled by variables, c.f., Fig 3. Each assignment of the variables corresponds to a number. E.g., assigning v_0...v_{m-1} to 0 and v_m to 1 corresponds to the integer number 1.
 	 
-10. The selection of timeout for the evaluation. (A,C)	 
-Response: We need to handle the time required for artifact evaluation. For table 1 and table 2, it has too many instances so that a 120s timeout would require too much time to reproduce the same result. The evaluation of checkLuhn has only one instance, so a higher time budget is still possible.
+10)The selection of timeout for the evaluation.(A,C)	 
+
+We need to handle the time required for artifact evaluation. Table 1 and 2 have many instances so that a 120s timeout would require too much time to reproduce the result. The evaluation of checkLuhn has only a few instances, so a higher time budget is still possible. In our evaluation, using different timeout will not alter the overall trend much.
 	 
-11. Compare with "PASS: String Solving with Parameterized Array and Interval Automaton" in your evaluation. (C)
+11)Compare with PASS in your evaluation.(C)
 	 
-Response: We have contacted the authors of PASS, and they say the code is no longer maintained. PASS handles most of Java string operations, including string-to-number conversions. It uses arrays with symbolic length to encode string and then reduce the satisfiability problem to its corresponding one for quantified constraints over arrays. Such quantified constraints are then solved using a dedicated quantifier elimination procedure. 
+We have contacted the authors of PASS, and they say the code is no longer maintained. PASS handles most of Java string operations, including string-to-number conversions. It uses arrays with symbolic length to encode string and then reduce the satisfiability problem to its corresponding one for quantified constraints over arrays. Such quantified constraints are then solved using a dedicated quantifier elimination procedure. 
