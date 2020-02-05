@@ -10,7 +10,7 @@ Why string to int is challenging (REMOVE THIS? THE EXPONENTIAL THING IS NOT CONV
 
 Why are PFA better the FA
  
-In encoding of string-number constraints, PFA could in principle be used too, but PFA are much more efficient.  
+In encoding of string-number constraints, FA could in principle be used too, but PFA are much more efficient.  
 The integer variables that encode digits in the string-to-int conversion can be directly used as symbols on PFA transitions, leading to a simple arithmetic formula after flattening, 
 while going through FA would require multiple if-then-else statements (e.g., saying that if a transition labeled '0' is taken, then the corresponding number is 0, etc.). 
 This would in turn introduce many additional predicates in the flattening, and the DPLL engine would have to decide their truth values. 
