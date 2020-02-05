@@ -1,8 +1,9 @@
+We thank the reviewers for their detailed and constructive feedback and suggestions. Below, we address the main points from the reviews:
 
 Reviewer A
 
-1. It is too bad that the experimental evaluation does not include some DPLL-based
-string solvers.
+1. Comparison with DPLL-based String Solver
+
 
 Response: to the best of our knowledge, Z3 and CVC4 are the best DPLL-based string solver that are still well-maintained. 
 
@@ -23,17 +24,13 @@ Response: hlin
 
 Reviewer B
 
-1. The concept of flat automata for solving string constraints has already been proposed [1]. The solver framework based on both over- and under-approximation has also been proposed in [1]. I understand that this paper proposes a parametric version of flat automata (PFA). However, I do not see the key insight of the PFA. Why can't FA be applied in the problem domain since PFA is just FA plus recording the loop size/length?
+1. Why can't FA be applied in the problem domain since PFA is just FA plus recording the loop size/length?
 
-Response: the difference between PFA and FA is that 
-(1) PFA handle the transition labels symbolically and hence avoid the alphabet explosion problem. For example, if Unicode (>60000 symbols) is used, one PFA transition labeled by a variable might represent >60000 transitions of an FA. 
-(2) In PFA, symbols are also natural numbers and hence can be used directly in the conversion between strings and integers. In FA, this requires multiple if-then-else statements, and these translate to predicates for which a DPLL engine must guess the truth values, which is costly.  
-  As as simple experiment, we encoded the problem of finding an n-digit string whose integer value is larger than 42 using FA and also using PFA. 
-For the case of n=10 digits, the DPLL solver needed to make 90 decisions when run on the integer formula created by the FA-based approach, while with the one from the PFA-approach, no decision at all needed to be made (the actual runtimes were insignificant since in the time limited time given, we only managed to handcode FA encodings of a relatively small formula. However, the difference in the complexity of the SMT queries seems obvious, and the FA formulae that would be generated from our actual benchmark would be much larger). 
+Response: the difference between PFA and FA is that (1) PFA handles the transition labels symbolically and hence avoided the alphabet explosion problem. For example, if Unicode (>60000 symbols) is used, one would have >60000 transitions between two states of an FA, but we need only one transition labelled with a variable for PFA. (2) In PFA, symbols are also natural numbers and hence can be used directly in the translation between strings and integers. In FA, one would need handle the translation using multiple if-then-else statement in the form of ite(#T1 >0, x=1, ite(#T2>0, x=2, ite(...))), which will increase the loading of the DPLL engine of the SMT solver, because now (#T1>0),(#T2>0)... are new predicates and the DPLL engine need to guess if they are positive or negative. 
 
-2. I can't entirely agree with the stated hardness of handling string-number conversion in solvers. In particular, lines 195-197 state that the challenge of dealing with string-number constraint is that the problem is undecidable. Well, undecidability is an over-used term in this context. Recall that the problem of solving string constraints itself is already very hard (see the undecidability discussion in section 2 of [1]). Therefore, the problem with string-number conversion, intuitively, is undecidable.
+2.  The undecidability is an over-used term in this context to justify the stated hardness of handling string-number conversion in solvers.
 
-Response: 
+Response: We agree and will reformulate this sentence by (1) refer the fact that the extension of existing FA based techniques boils down to solving the satisfiability problem of integer constraints with a mixof polynomials and exponentials which  is still open (see Section 8), and (2) refer to our experimental results. 
 
 3. How significant is it to introduce the string-number conversion?
 
@@ -41,15 +38,16 @@ Response: JavaScript makes far more use of such conversions than other languages
 
 
 4. With that said, the current paper does not give any constructive argument to discuss the hardness of the problem. I think perhaps a better way is to show that the popular solvers based on FA could not handle the string-number conversion. That gives a strong motivation for PFA as well as this work in general.
+
 Response: FA-based approach can in theory be turned to support str-int conversion, but would be more expensive than using PFA. See the 2nd item of response 1. In practice, str-int conversion is not implemented in the existing FA-based tool Trau. (should we add more empirical support? saying that we tried FA+str-int conversion and PFA_str-int conversion is much faster?) 
  
 5. In the introduction, the description of the motivating example in Figure 2 is extremely confusing. When discussing the example for the first time (lines 285-300), I don't see why $A_x$ is projected in this way. In the example, we have only $y\in(12)^+$. How exactly do you infer that $A_x$ should have a similar structure?
 
-Response: the structure is given by the main loop of the algorithm and is implementation dependent. We describe the PFA selection strategy of Z3-PFA in the 2nd paragraph of the sec 9.
+Response: the structure is given by the main loop of the algorithm and is implementation dependent. We describe the PFA selection strategy of Z3-PFA in the 2nd paragraph of the sec 9. We will make this more clear.
 
 6. In the evaluation, it is a bit unfortunate to see that there is no comparison with Trau [1-5]. This is critical. Lines 1039-1040 mention that it is because Trau does not ``support all string functions in our benchmarks, especially string-number conversion.'' This argument is unconvincing. In the evaluation, you can compare your approach against a vanilla Z3. And Trau is implemented on top of Z3 (see section 1 of [1]). Logically, Trau could be extended to handle the conversion (just by ``enabling'' some features in the vanilla Z3). If there is any principle limitation, it's worthwhile to justify it.
 
-Response: Z3 is a DPLL(T) based solver, i.e., a DPLL engine + multiple theory solvers. The implementation of Trau is done by substituting the string solver of Z3 with a completely new one. Str-int conversion is not implemented in the new string solver of Trau, thus str-int conversion constraints will be internally discarded. If we run the str-int conversion benchmarks on Trau, we will either get exceptions or incorrect answers. 
+Response: Z3 is a DPLL(T) based solver, i.e., a DPLL engine + multiple theory solvers. The implementation of Trau is done by substituing the string solver of Z3 with a completely new one. Str-int conversion is not implemented in the new string solver of Trau, thus str-int conversion constraints will be internally discarded. If we run the str-int conversion benchmarks on Trau, we will either get exceptions or incorrect answers. 
 
 Reviewer C
 
@@ -75,14 +73,12 @@ Response, in PFA, transition are labelled by variables, c.f., Fig 3. Each assign
 
 6. In the evaluation, you only give the run-time results for the evaluation on *checkLuhn* algorithm. This is rather strange, why don't you also provide solving time in table 1 or table 2? Additionally, why is its timeout budget (120s) different from the previous experiment (10s).
 
-Response: We need to handle the time required for artifact evaluation. For table 1 and table 2, it has too many instances that an 120s timeout would require too much time to reproduce the same result. The evaluation of checkLuhn has only one instance so higher time budget is still possible.
+Response: We need to handle the time required for artifact evaluation. For table 1 and table 2, it has too many instances so that an 120s timeout would require too much time to reproduce the same result. The evaluation of checkLuhn has only one instance so higher time budget is still possible.
 
 7. I think "PASS: String Solving with Parameterized Array and Interval Automaton" is closely related, which I believe you should compare in your evaluation.
+ 
+Response: PASS handles most of  Java string operations including string-to-number conversions. PASS uses arrays with symbolic length to encode string and then reduce the sayisfiability problem to its corresponding one for quantified constraints over arrays.  Such quantified constraints are then solved using a dedicated quantifier elimination procedure. Unfortunately, we were not able to compare our results with PASS since the later one is not available.
 
-Some notes from reading: He might be right. The PASS uses quantified logic over arrays where the array length is a parameter (they have special quant. elim.), and they use automata which they encode to this kind of constraints, it resembles Presburger, and they do int-to-string in a way close to ours perhaps. It is also well cited, although nobody who cites them compares with them, and they do not compare much with anybody themselves, and the tool is nowhere to be found. 
-We can perhaps say that their approach produces quantified formulae that are supposedly much harder to solve, and that our approach is much more flexible since it relates on SMT.
-
-Response:
 
 8. I am a bit struggling to learn the insight of your approach. In essence, why is your approach better than the existing solvers? 
 
