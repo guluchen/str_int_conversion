@@ -77,7 +77,8 @@ Response: We need to handle the time required for artifact evaluation. For table
 
 7. I think "PASS: String Solving with Parameterized Array and Interval Automaton" is closely related, which I believe you should compare in your evaluation.
  
-Response:
+Response: PASS handles most of  Java string operations including string-to-number conversions. PASS uses arrays with symbolic length to encode string and then reduce the sayisfiability problem to its corresponding one for quantified constraints over arrays.  Such quantified constraints are then solved using a dedicated quantifier elimination procedure. Unfortunately, we were not able to compare our results with PASS since the later one is not available.
+
 
 8. I am a bit struggling to learn the insight of your approach. In essence, why is your approach better than the existing solvers? 
 
