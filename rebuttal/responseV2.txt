@@ -11,7 +11,7 @@ We thank the reviewers for their detailed and constructive feedback and suggesti
 2. Comparison with DPLL-based solvers.(ReviewerA)
 
   * To the best of our knowledge, Z3 and CVC4 are the best DPLL(T)-based string solvers that are still well-maintained. 
-Most SAT-based string solvers such as Hampi and Kazula are no longer maintained.
+Most SAT-based string solvers such as Hampi and Kazula are no longer maintained. Please let us know if there is some specific tool we should but did not compare with.
 
 3. Provide more support to your claim that string-number conversion is difficult for existing solvers.(ReviewerB,C)
 
