@@ -4,7 +4,7 @@ We thank the reviewers for their detailed and constructive feedback. First, we a
 
 * **Comparison with FA-based solvers. More insight into why the PFA-based approach is better. (ReviewerB,C)**
 
-Why string to int is challenging (REMOVE THIS? THERE IS A SIMILAR POINT FURTHER BELOW)
+Why string to int is challenging (REMOVE THIS? THE EXPONENTIAL THING IS NOT CONVINCING, AND THERE IS A SIMILAR POINT FURTHER BELOW. OR IS THERE A BETTER ARGUMENT?)
 
 > In theory, a straightforward  extension of existing  FA (even PFA) techniques to support string-number conversion can lead to solving the satisfiability problem of integer constraints with a mix of polynomials and exponentials, which is still open (see Section 8). 
 
