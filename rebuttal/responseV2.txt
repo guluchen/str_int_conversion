@@ -17,7 +17,7 @@ This would in turn introduce many additional predicates in the flattening, and t
 We tried to compared a hand coded flattening of a FA describing a conversion of a 10-digit numeral against the flattening of the corresponding PFA.
 In the case of FA, the DPLL solver had to make 90 decisions to solve the formula, against no decision in the case of PFA.
 
-PFA are also more efficient then FA when solving the other string constraints the string-to-int. 
+PFA are also more efficient then FA when solving the other string constraints then string-to-int. 
 When dealing with large alphabets such as Unicode (>6000 symbols), one PFA transition labeled with variable may correspond to >6000 FA transitions.
 
 Comparison with Trau
