@@ -1,44 +1,34 @@
-We thank the reviewers for their detailed and constructive feedback. First, we address general issues raised by several reviewers. Then, we address some individual comments.
+We thank the reviewers for their detailed and constructive feedback. Below we first address general issues raised by several reviewers and then individual comments.
 
 ### General Comments:
 
 * **Comparison with FA-based solvers. More insight into why the PFA-based approach is better. (ReviewerB,C)**
-
-Why string to int is challenging (REMOVE THIS? THE EXPONENTIAL THING IS NOT CONVINCING, AND THERE IS A SIMILAR POINT FURTHER BELOW. OR IS THERE A BETTER ARGUMENT?)
-
-> In theory, a straightforward  extension of existing  FA (even PFA) techniques to support string-number conversion can lead to solving the satisfiability problem of integer constraints with a mix of polynomials and exponentials, which is still open (see Section 8). 
-
-Why are PFA better the FA
  
-In encoding of string-number constraints, FA could in principle be used too, but PFA are much more efficient.  
-The integer variables that encode digits in the string-to-int conversion can be directly used as symbols on PFA transitions, leading to a simple arithmetic formula after flattening, 
-while going through FA would require multiple if-then-else statements (e.g., saying that if a transition labeled '0' is taken, then the corresponding number is 0, etc.). 
-This would in turn introduce many additional predicates in the flattening, and the DPLL engine would have to decide their truth values. 
-We tried to compared a hand coded flattening of a FA describing a conversion of a 10-digit numeral against the flattening of the corresponding PFA.
-In the case of FA, the DPLL solver had to make 90 decisions to solve the formula, against no decision in the case of PFA.
+> *In principle, we can extend FA to support string-number conversion*, but PFA is much more efficient. PFA is labeled by integer variables that can be used directly in flattening. In FA, this would require multiple if-then-else statements (e.g., saying that if a transition labeled '0' is taken, then the corresponding number is 0), which introduces a significant amount of additional predicates that the DPLL engine needs to decide their value. We have confirmed this in our preliminary experiment.
 
-PFA are also more efficient then FA when solving the other string constraints then string-to-int. 
-When dealing with large alphabets such as Unicode (>6000 symbols), one PFA transition labeled with variable may correspond to >6000 FA transitions.
+> *PFA is also more efficient than FA when solving other string constraints.* 
+When dealing with large alphabets such as Unicode (>6000 symbols), one PFA transition may correspond to >6000 FA transitions.
 
-Comparison with Trau
+> *The existing FA-based tool, Trau, does not support string-number conversion.* The implementation of Trau is done by **substituting** the string solver of Z3 with a completely new one that does not implement the string-number conversion function. Adding such support requires a considerable amount of coding (not just by enabling Z3 features). Z3-PFA is generally better than Trau on basic string constraints benchmarks. 
 
-> Trau does not support string-number conversion. It returns returns incorrect answers when run on string-number conversion benchmarks. 
-We have compared with the latest version of Trau on basic string constraints, and Z3-PFA is generally better. 
-We will include these results into the paper.
-
-* **Provide more support to your claim that string-number conversion is difficult for existing solvers. (ReviewerB,C)**
+* **Provide more support to the hardness of string-number conversion is difficult. (ReviewerB,C)**
 
 > Firstly, it is witnessed by our experimental results. 
-Secondly, the extension of existing FA based techniques boils down to solving the satisfiability problem of integer constraints with a mix of polynomials and exponentials, which is still open (DECIDABILITY OR COMPLEXITY IS OPEN?) (mentioned in Section 8).   
-	 
-* **How to decide the structure of PFA used by the solvers? (ReviewerB,D)**	 
 
-> The structure of PFA is decided iteratively by the main loop of our algorithm. We describe the PFA selection strategy of Z3-PFA in the 2nd paragraph of Section 9. The process is fully automated.
+> The straightforward extension of existing FA based techniques boils down to solving the satisfiability problem of integer polynomial-exponential constraints, whose decidability is still open (Section 8).  The need for using multiple if-then-else statements causes efficiency issues.
+	 
+* **How to decide the structure of PFA (e.g., A_x in Fig2)? (ReviewerB,D)**	 
+
+> We describe the automatic PFA selection strategy of Z3-PFA in the 2nd paragraph of Section 9. 
+
+* **The selection of timeout for the evaluation.(ReviewerA,C)** 
+
+> Tables 1 and 2 have many instances so that a 120s timeout would require days to reproduce results for artifact evaluation. In our evaluation, using different timeout will not alter the overall trend.
+
 
 * **Break down the X results in the experiments further. Did you find uncovered bugs in some of the solvers? If yes, why does it happen? (ReviewerA,C)**
 
-> We did find cases where existing solvers provide incorrect answers, but we can only ques what the reasons are. We have checked the source code of Z3. One possible reason we found is that when both n and x in the constraint n=toNum(x) are variables, Z3 over-approximates the toNum(x) function with an uninterpreted function, with additional axioms like toStr(toNum(x))=x. We usually report directly uncovered bugs to the authors of the tool.
-We will elaborate on this in the paper. 
+> We did find cases where existing solvers provide incorrect answers, but we can only guess what reasons are. We have checked the source code of Z3. One possible reason we found is that when both n and x in the constraint n=toNum(x) are variables, Z3 *over-approximates* the toNum(x) function with an uninterpreted function, with additional axioms like toStr(toNum(x))=x. 
 
 ### Reviewer A:
 
@@ -50,30 +40,27 @@ Most SAT-based string solvers such as Hampi and Kazula are no longer maintained.
 
 ### Reviewer B:
 
-* **How significant it is to introduce the string-number conversion?**
+* **The significance of introducing string-number conversion?**
 
-  * JavaScript makes far more use of such conversions than other languages. Every access to the state of any modeled object relies on it since array indices get converted to strings (see the discussion starting at line 150 of the submission). Since JavaScript is pervasive, handling such kind of constraints is very important.
+> JavaScript makes far more use of such conversions than other languages. Every access to the state of any modeled object relies on it since array indices get converted to strings (see lines 150-200 of the submission). Since JavaScript is pervasive, handling string-number conversion is significant.
 	  
 ### Reviewer C:
 	 
 * **Converted the function *checkLuhn* into C, and find out KLEE works fine**
 
-> Converting *checkLuhn* into C code will alter its semantics substantially. The function makes use of array accesses through calls of charAt() (lines 4, 8, 12) which in JavaScript requires string-integer conversion, because arrays are indexed with *strings*.
+> Converting *checkLuhn* into C code will alter its semantics substantially. The function makes use of array accesses through calls of charAt(), which in JavaScript requires string-number conversion because arrays are indexed with *strings*.
 	 
 * **Compare with PASS in your evaluation**
 	 
-> PASS uses quantified formulae over arrays with symbolic length to encode string constraints, and a specialised quantifier elimination to solve them. 
-Though it differs from our approach significantly and handling the quantification is expensive, 
-PASS is indeed similar in how finite automata and string-to-int constraints are translated to formulae. We will add a discussion on this into the related work. 
-The authors informed us that the code of PASS is no longer maintained and it is not open-source.
+> PASS uses quantified formulae over arrays with symbolic length to encode string constraints, and a specialized quantifier elimination to solve them. Though it differs from our approach significantly and handling the quantification is expensive, PASS is indeed similar in how finite automata and string-number conversion constraints are translated to formulae. We will add a discussion to the related work. The authors informed us that PASS is no longer maintained and is not open-source.
 
 * **How you construct a PFA that is aware of the domain of a constraint?**
 
-> We assume all numbers are octal following the SMTLIB2 standard.
+> We assume all numbers are decimal following the SMTLIB2 standard.
 
 * **Each numeric PFA can only cover one number?**
 
-> PFA transitions are labeled by variables, c.f., Fig 3. Each assignment of the variables corresponds to a number.
+> PFA transitions are labeled by variables. Each assignment of the variables corresponds to a number.
 
 
 ### Reviewer D:
@@ -81,4 +68,3 @@ The authors informed us that the code of PASS is no longer maintained and it is 
 * **Wasting effort when considering larger PFAs iteratively.**
 
 > Indeed, we consider this our future work.
-
