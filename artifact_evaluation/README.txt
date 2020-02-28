@@ -60,7 +60,11 @@ Troubleshooting
 
 
 Part 3: list of claims (with line numbers):
-Please note that 1. Z3-PFA is z3trau, and 2. PyEx in Table 1 and full_str_int in Table 2 (Leetcode and Pythonlib) use only 1/8 of the benchmarks in the artifact evaluation.  
+
+Please note that
+1. Z3-PFA = z3trau, and Z3 = z3seq.
+2. PyEx in Table 1 and full_str_int in Table 2 (Leetcode and Pythonlib) use only 1/8 of the benchmarks in the artifact evaluation.
+3. With a faster host machine, z3seq(Z3) may have better results. In our tests of the VM, z3seq can solve all the checkLuhn (Table 3) problems if provided a fast host. However, z3seq still used more time than z3trau.
 
 Goals of experiments: (line 1047-1055)
 1. Z3-PFA (z3trau) performs as good as, or better than other tools in solving the satisfiability problems of basic string constraints. 
@@ -75,6 +79,3 @@ From Table 2, we can see that Z3-PFA significantly outperforms all other tools. 
 
 Table 3. (line 1175-1184)
 The result is summarized in Table3. In these tests, Z3-PFA can solve all problems within 1s while CVC4 only returns a model for cases of 2 to 5 loops and Z3-str3 could not solve any of these problems (either timeout or UNKNOWN). However, Z3 can still solve 7 out of the 11 problems and the problems got timeout are cases for 4,5,7, and 9 loops. The behavior of Z3 is not unexpected, since all the problems are satisfiable and sometimes the solver is lucky and went into a branch with a correct model very quickly. 
-
-
-
