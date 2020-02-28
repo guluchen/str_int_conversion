@@ -14,7 +14,9 @@ Hardware:
 Import VM and start:
 
 1. download tgz file and untar to get .ova file
-2. import the .ova file to VirtualBox (with VirtualBox extension package installed)
+2. import the .ova file to VirtualBox
+    a. VM should start with VirtualBox extension package installed
+    b. without the Extension Pack, disable USB (Settings->Ports->USB) in the VM
 3. when power on, log in with username/password: ubuntu (no GUI)
 
 Run a short test:
