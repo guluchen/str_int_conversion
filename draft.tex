@@ -27,7 +27,7 @@ String-number conversion is an important class of constraints needed for the sym
 \begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\hide}[1]{}
-\newcommand{\tool}{{\textsf{Z3-PFA}}}
+\newcommand{\tool}{{\textsf{Z3-Trau}}}
 \newcommand{\dr}{\mathcal{R}}
 \newcommand{\nat}{\mathbb{N}}
 \newcommand{\integers}{\mathbb{Z}}
@@ -208,7 +208,8 @@ Here ${\it value_0}$ and ${\it last_0}$ are string variables and the others are 
 \end{itemize}
 
 
-Most of the state-of-the-art string constraint solvers provide only very limited support to the combination of above constraints. Even for a simple constraint like the above one, most solvers already fail to provide a correct answer. Therefore, there is an urgent  need for developing efficient techniques for solving such combinations of constraints. 
+Most of the state-of-the-art string constraint solvers provide only very limited support to the combination of above constraints. Even for simple constraints like the above one, most solvers already fail to provide a correct answer. \yfc{In Table~\ref{table:checkLuhn} of our evaluation (Section~\ref{section:evaluation}), CVC4 fails to solve constraints corresponding to checkLuhn of more than 6 loop iterations in 2 minutes, Z3 fails to solve the cases corresponding to 4,5,7, and 9 loop iterations, and Z3Str3 fails to solve even the case of 2 loop iterations.}
+Therefore, there is an urgent  need for developing efficient techniques for solving such combinations of constraints. 
 
 
 %Currently, even for the above constraint, which is from a simple program, most of the-state-of-the art solvers fail to provide a correct answer. 

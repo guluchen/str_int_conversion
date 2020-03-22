@@ -12,7 +12,7 @@ The way our theory solver and Z3 interacts is almost standard. Every time when Z
 
 
 
-We compare {\tool} with other state-of-the-art string solvers, namely, CVC4~(45bcf28a)~\cite{cvc4Tool}, and Z3~(\texttt{d95b549ff})~\cite{z3}, \textsf{Z3-str3}~(\texttt{d95b549ff})~\cite{zheng2013z3}. For these tools, we use the GitHub version stated in the parenthesis because their performance are in general better than the corresponding release version. 
+We compare {\tool} with other state-of-the-art string solvers, namely, CVC4~(45bcf28a)~\cite{cvc4Tool}, and Z3~(\texttt{d95b549ff})~\cite{z3}, \textsf{Z3Str3}~(\texttt{d95b549ff})~\cite{zheng2013z3}. For these tools, we use the GitHub version stated in the parenthesis because their performance are in general better than the corresponding release version. 
 We do not compare with Sloth \cite{sloth} since it does not support length constraints, which occurs in most of our benchmarks. We also do not compare with ABC~\cite{aydin2018parameterized} (a model counter for string constraints), Ostrich~\cite{chen2019decision} and \textsf{Trau+}~\cite{abdulla2019chain}, because they do not support all string functions in our benchmarks, especially string-number conversion.
 
 We perform two sets of experiments. In the first set of experiments, we compare {\tool} with other tools on existing benchmarks over basic string constraints. Those benchmarks do not involve string-number conversion function. In the second set of experiments, we compare {\tool} with other tools on new suites focusing on string-number conversion. Our goals of experiments are the following:
@@ -45,11 +45,9 @@ In the first set of experiments, we use the following benchmark examples:
 		\smallskip
 
 
-	\item LeetCode is from running PyEx over some sample code collected from the LeetCode~\cite{LeetCode} website.
+	\item \yfc{ LeetCode is from running PyEx over some sample code collected from the LeetCode~\cite{LeetCode} website, including functions that check if a string is a valid IPv4 or IPv6 address, sum up two binary numbers, check if an input string is an abbreviation of another input string, and decode a sequence of digits to strings according to a given mapping.}
 	
 		\smallskip
-
-
 
 	\item StringFuzz~\cite{blotsky2018stringfuzz}  is generated from the fuzz testing tool of the same name.
 	
@@ -67,11 +65,11 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 
 \begin{table}[h]
 \centering
-\caption{Results of {\tool}, CVC4, Z3, and Z3-str3 on Basic String Constraint benchmarks.}
+\caption{Results of {\tool}, CVC4, Z3, and Z3Str3 on Basic String Constraint benchmarks.}
 \scalebox{0.85}{
 \begin{tabular}{|l r | r r r r |}
 \hline
-\multicolumn{2}{|c}{}                  & {\tool} & CVC4  &Z3 & Z3-str3 \\ \hline
+\multicolumn{2}{|c}{}                  & {\tool} & CVC4  &Z3 & Z3Str3 \\ \hline
 \multirow{3}{*}{PyEx}		& SAT      &  19468  & 19763 & 16528 &  3030 \\ 
 							& UNSAT    &   3854  &  3834 &  3831 &  3836 \\
 							& $\times$ &   2099  &  1824 &  5062 & 18555 \\ \hline
@@ -102,11 +100,11 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 % latest backup of table 2
 \begin{table}[h]
 \centering
-\caption{Results of {\tool}, CVC4, Z3, and Z3-str3 on String-Number Conversion benchmark.}
+\caption{Results of {\tool}, CVC4, Z3, and Z3Str3 on String-Number Conversion benchmark.}
 \scalebox{0.8}{
 \begin{tabular}{|l r | r r r r|}
 \hline
-\multicolumn{2}{|c}{}          			   & {\tool} & CVC4  &    Z3  & Z3-str3 \\ \hline
+\multicolumn{2}{|c}{}          			   & {\tool} & CVC4  &    Z3  & Z3Str3 \\ \hline
 \multirow{3}{*}{Leetcode}		& SAT      &   2349  &  1543 &  1892  &   217 \\ 
 								& UNSAT    &  16368  & 15676 & 16105  & 15374 \\
 								& $\times$ &    210  &  1708 &   930  &  3336 \\ \hline 
@@ -128,10 +126,10 @@ From Table~\ref{table:base_benchmark}, we can see that the performance of {\tool
 
 From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all other tools. The total number of failed cases is only a half to Z3, which is ranked the 2nd. In fact, most of the failed tests come from the analysis of one Python core library function that converts an IPv6 address to a number. We generated 2028 tests from this function, and among them around 1000 cases  are too difficult for all solvers.  If we exclude results on this function, then {\tool} has only $218$ failed cases in total. This is significantly better than the 2nd place tool Z3, which fails $942$ cases in total.
 
-We also ran experiments on the String-Number Conversion benchmark with the timeout set to 30s. Provided more time for solving, {\tool} managed to obtain more results and the number of failed cases is reduced to 539, while CVC4 and Z3-str3 got almost the same number of failed cases. Z3 also managed to reduce the number of failed cases to 821. %If we exclude results on the Python core function that converts an IPv6 address to a number mentioned above, {\tool} has only $53$ timeouts in total while z3 has $809$ in total.
+We also ran experiments on the String-Number Conversion benchmark with the timeout set to 30s. Provided more time for solving, {\tool} managed to obtain more results and the number of failed cases is reduced to 539, while CVC4 and Z3Str3 got almost the same number of failed cases. Z3 also managed to reduce the number of failed cases to 821. %If we exclude results on the Python core function that converts an IPv6 address to a number mentioned above, {\tool} has only $53$ timeouts in total while z3 has $809$ in total.
 
 For further details of the experiment, we have encoded the checkLuhn algorithm introduced in Section~\ref{section:introduction} for cases of 2 to 12 loops (digits). We ran these tests additionally to the experiments above with the timeout set to 120s. The result is summarized in Table~\ref{table:checkLuhn}.
-In these tests, {\tool} can solve all problems within 1s while CVC4 only returns a model for cases of 2 to 5 loops and Z3-str3 could not solve any of these problems (either timeout or UNKNOWN). However, Z3 can still solve 7 out of the 11 problems and the problems got timeout are cases for 4, 5, 7, and 9 loops. The behavior of Z3 is not unexpected, since all the problems are satisfiable and sometimes the solver are lucky and went into a branch with a correct model very quickly.
+In these tests, {\tool} can solve all problems within 1s while CVC4 only returns a model for cases of 2 to 5 loops and Z3Str3 could not solve any of these problems (either timeout or UNKNOWN). However, Z3 can still solve 7 out of the 11 problems and the problems got timeout are cases for 4, 5, 7, and 9 loops. The behavior of Z3 is not unexpected, since all the problems are satisfiable and sometimes the solver are lucky and went into a branch with a correct model very quickly.
 
 % \todo{Update table with data of timeout=30s}
 
@@ -141,7 +139,7 @@ In these tests, {\tool} can solve all problems within 1s while CVC4 only returns
 \scalebox{0.9}{
 \begin{tabular}{| c | c c c c|}
 \hline
-\# of Loops & {\tool} 			   &  CVC4    	 		  &       Z3   			& Z3-str3 \\ \hline
+\# of Loops & {\tool} 			   &  CVC4    	 		  &       Z3   			& Z3Str3 \\ \hline
 2 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(0.66s) & \textbf{SAT}(0.23s) & $\times$ \\
 3  			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(1.78s) & \textbf{SAT}(0.13s) & $\times$ \\
 4 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(6.96s) &   $\times$  		& $\times$ \\
@@ -168,7 +166,7 @@ The second benchmark is called APLAS that was created by authors of \textsf{$Kep
 
 The next benchmark is called LeetCode~\cite{LeetCode} that was obtained by extracting constraints from Python's testing solutions provided by LeetCode platform. They provide many programming examples and their solutions gathered from technical interviews for companies. Leetcode consists of 881 satisfiable and 1785 unsatisfiable tests that, like PyEx, contain diverse string constraints.
 
-StringFuzz is our next bechmark that is named after a fuzzer~\cite{StringFuzz} for automatically generating SMT-LIB string constraints. We used StringFuzz to generate 1065 tests including word (dis)equalities, regular membership and arithmetic constraints. 
+StringFuzz is our next benchmark that is named after a fuzzer~\cite{StringFuzz} for automatically generating SMT-LIB string constraints. We used StringFuzz to generate 1065 tests including word (dis)equalities, regular membership and arithmetic constraints. 
 
 The last two benchmarks, called $\text{cvc4}_{\text{pred}}$ and $\text{cvc4}_{\text{term}}$, are obtained from cvc4 group~\cite{termEQ}. This set of benchmarks consists of the verification of term equivalences over strings and includes various string constraints including string-number and number-string conversion constraints.
 
