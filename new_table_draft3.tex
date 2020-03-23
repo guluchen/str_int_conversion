@@ -1,0 +1,125 @@
+\documentclass[12pt]{article}
+
+\usepackage{fancyvrb}
+\usepackage{xcolor}
+\usepackage{amssymb} 
+\usepackage{tikz}
+\usepackage[autostyle]{csquotes}
+\usepackage{listings}
+\usepackage{multirow}
+\synctex=1
+\usepackage{pgfplots}
+
+\usetikzlibrary{positioning}
+\usetikzlibrary{arrows,automata}
+% \sloppy
+
+
+\begin{document}
+\newcommand{\tool}{{\textsf{Z3-PFA}}}
+
+Use the commit that z3 returns 20 wrong cases on {\bf full\_str\_int\_unsat}
+
+However, z3-trau's commit has 9 wrong answers on {\bf full\_str\_int\_sat)
+
+Commits of each tool:
+\begin{itemize}
+\item
+z3-trau: {\bf 2af4f1138}
+\item
+cvc4: {\bf 45bcf28a}
+\item
+z3(seq \& str3): {\bf 6ad261e24}
+\end{itemize}
+
+Experiment date: Mar. 21, 2020
+
+
+\begin{table}[h]
+\centering
+\caption{Results of {\tool}, CVC4, Z3, and Z3-str3 on Basic String Constraint benchmarks.}
+\scalebox{0.85}{
+\begin{tabular}{|l r | r r r r |}
+\hline
+\multicolumn{2}{|c}{}                  & {\tool} & CVC4  &Z3 & Z3-str3 \\ \hline
+\multirow{6}{*}{PyEx}		& SAT      & 19023& 19869&  4881&  5265 \\ 
+							& UNSAT    &  3862&  3848&  3551&  3815 \\
+							& UNKNOWN  &     0&     0&     0&     8 \\
+							& TIMEOUT  &  2536&  1704& 16989& 16169 \\
+							& ERROR    &     0&     0&     0&   164 \\
+							& $\times$ &     1&     0&     0&     0 \\ \hline
+\multirow{6}{*}{APLAS}		& SAT      &   123&    51&    27&    83 \\
+							& UNSAT    &   285&   214&   100&   124 \\
+							& UNKNOWN  &     0&     0&     0&   107 \\
+							& TIMEOUT  &   192&   335&   473&   283 \\
+							& ERROR    &     0&     0&     0&     3 \\
+							& $\times$ &     0&     0&     0&     0 \\ \hline
+\multirow{6}{*}{LeetCode}	& SAT      &   826&   865&   839&   626 \\
+							& UNSAT    &  1784&  1785&  1785&  1785 \\
+							& UNKNOWN  &     0&     0&     0&   126 \\
+							& TIMEOUT  &    56&    16&    42&   129 \\
+							& ERROR    &     0&     0&     0&     0 \\
+							& $\times$ &     0&     0&     0&     0 \\ \hline
+\multirow{6}{*}{StringFuzz}	& SAT      &   478&   704&   289&   551 \\
+							& UNSAT    &   283&   245&   176&   183 \\
+							& UNKNOWN  &     0&     0&     0&     4 \\
+							& TIMEOUT  &   304&   116&   600&   327 \\
+							& ERROR    &     0&     0&     0&     0 \\
+							& $\times$ &     0&     0&     0&     0 \\\hline
+\multirow{6}{*}{cvc4\textsubscript{pred}} & SAT &    13&    11&    12&    11 \\
+							& UNSAT    &   820&   818&   795&   771 \\
+							& UNKNOWN  &     0&     0&     0&     6 \\
+							& TIMEOUT  &     2&     6&    28&    40 \\
+							& ERROR    &     0&     0&     0&     6 \\
+							& $\times$ &     0&     0&     0&     0 \\ \hline
+\multirow{6}{*}{cvc4\textsubscript{term}} & SAT &    11&     8&     9&     9 \\
+							& UNSAT    &  1029&  1025&   984&   977 \\
+							& UNKNOWN  &     0&     0&     0&     1 \\
+							& TIMEOUT  &     5&    12&    52&    51 \\
+							& ERROR    &     0&     0&     0&     4 \\
+							& $\times$ &     0&     0&     0&     2 \\ \hline \hline
+\multirow{6}{*}{Total} 		& SAT      & 20474& 21508&  6057&  6545 \\
+							& UNSAT    &  8063&  7935&  7391&  7655 \\
+							& UNKNOWN  &     0&     0&     0&   252 \\
+							& TIMEOUT  &  3095&  2189& 18184& 16999 \\
+							& ERROR    &     0&     0&     0&   177 \\
+							& $\times$ &     1&     0&     0&     2 \\\hline	
+\end{tabular}}
+\label{table:base_benchmark}
+\end{table}
+
+
+
+\begin{table}[h]
+\centering
+\caption{Results of {\tool}, CVC4, Z3, and Z3-str3 on String-Number Conversion benchmark.}
+\scalebox{0.8}{
+\begin{tabular}{|l r | r r r r|}
+\hline
+\multicolumn{2}{|c}{}          			   & {\tool} &  CVC4 &    Z3 & Z3-str3 \\ \hline
+\multirow{6}{*}{Leetcode}		& SAT      &  2383&  1734&  1928&   505 \\ 
+								& UNSAT    & 16392& 15728& 16073& 15361 \\
+								& UNKNOWN  &     0&     0&     0&   717 \\
+								& TIMEOUT  &   152&  1465&   926&  2251 \\
+								& ERROR    &     0&     0&     0&    93 \\
+								& $\times$ &     5&     0&    16&   193 \\ \hline 
+\multirow{6}{*}{PythonLib}		& SAT      &   619&   570&   334&   202 \\ 
+								& UNSAT    &   724&   667&   720&   686 \\
+								& UNKNOWN  &     0&     0&     0&    28 \\
+								& TIMEOUT  &  1303&  1409&  1592&  1730 \\
+								& ERROR    &     0&     0&     0&     0 \\
+								& $\times$ &     4&     0&     4&     9 \\ \hline
+\multirow{3}{*}{JavaScript}		& SAT      &     20  &     6 &    16 &     4 \\ 
+								& UNSAT    &      0  &     0 &     0 &     0 \\
+								& TIMEOUT  &      0  &    14 &     4 &    16 \\ \hline \hline
+\multirow{6}{*}{Total}			& SAT      &  3022&  2310&  2278&   711 \\ 
+								& UNSAT    & 17116& 16395& 16793& 16047 \\
+								& UNKNOWN  &     0&     0&     0&   745 \\
+								& TIMEOUT  &  1455&  2902&  2522&  3997 \\
+								& ERROR    &     0&     0&     0&    93 \\
+								& $\times$ &     9&     0&    20&   202 \\ \hline
+\end{tabular}}
+\label{table:str_int_benchmark}
+\end{table}
+
+\end{document}
