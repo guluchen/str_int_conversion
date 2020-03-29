@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.11.4)  30 MAR 2020 00:29
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.11.4)  30 MAR 2020 00:44
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -2006,7 +2006,7 @@ corol-lary of
  []
 
 [6.6]
-Underfull \hbox (badness 4328) in paragraph at lines 928--939
+Underfull \hbox (badness 4328) in paragraph at lines 881--891
 \LMS/ntxsy/m/n/10 ¹\OT1/LinuxLibertineT-TLF/m/n/10 (+20) 3\OML/nxlmi/m/it/10 ; 
 \LMS/ntxsy/m/n/10 » »\OML/nxlmi/m/it/10 a\LMS/ntxsy/m/n/10 ¼ ¼\OML/nxlmi/m/it/1
 0 ; \LMS/ntxsy/m/n/10 » »\OML/nxlmi/m/it/10 b\LMS/ntxsy/m/n/10 ¼ ¼\OML/nxlmi/m/
@@ -2019,16 +2019,8 @@ OT1/LinuxLibertineT-TLF/m/n/10 (+20) 3\OML/nxlmi/m/it/10 ; \OT1/LinuxLibertineT
 y/m/n/10 ¹\OML/nxlmi/m/it/10 I[]\LMS/ntxsy/m/n/10 º \U/ntxmia/m/it/10 =
  []
 
-
-Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 1019.
-
-
-Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 1023.
-
 [7.7]
-Underfull \hbox (badness 2253) in paragraph at lines 1047--1050
+Underfull \hbox (badness 2253) in paragraph at lines 980--983
 \T1/LinuxLibertineT-TLF/m/n/10 (+20) be-low. The cor-rect-ness of the con-struc
 -tion of under-
  []
@@ -2038,12 +2030,12 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 
-Class acmart Warning: A possible image without description on input line 1415.
+Class acmart Warning: A possible image without description on input line 1185.
 
 
 Package amsmath Warning: Foreign command \atopwithdelims;
 (amsmath)                \frac or \genfrac should be used instead
-(amsmath)                 on input line 1424.
+(amsmath)                 on input line 1194.
 
 [9.9] (./evaluation.tex
 Underfull \hbox (badness 10000) in paragraph at lines 15--17
@@ -2139,11 +2131,11 @@ Package balance Warning: You have called \balance in second column
 (balance)                Columns might not be balanced.
 
 [14.14]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1620.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1620.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1390.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1390.
  (./main.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1620.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1620.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1390.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1390.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 0BCEDC928A8F88AEAA390C2C5B9D0318;3072.
@@ -2193,7 +2185,7 @@ st/fonts/type1/public/txfonts/txsyc.pfb></usr/local/texlive/2019/texmf-dist/fon
 ts/type1/public/newtx/txsys.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1
 /public/newtx/zxlr.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/n
 ewtx/zxlri.pfb>
-Output written on main.pdf (14 pages, 764091 bytes).
+Output written on main.pdf (14 pages, 760259 bytes).
 PDF statistics:
  491 PDF objects out of 1000 (max. 8388607)
  425 compressed objects within 5 object streams

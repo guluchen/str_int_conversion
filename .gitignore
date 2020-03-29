@@ -11,3 +11,5 @@ final-version/main.blg
 final-version/main.bbl
 final-version/main.log
 final-version/main.pdf
+*.log
+final-version/main.pdf
