@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.11.4)  29 MAR 2020 21:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.11.4)  30 MAR 2020 00:29
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1904,243 +1904,109 @@ LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/n' will be
 (Font)              scaled to size 9.0pt on input line 271.
 
-Package natbib Warning: Citation `cvc4Tool' on page 1 undefined on input line 3
-03.
-
-
-Package natbib Warning: Citation `chen2019decision' on page 1 undefined on inpu
-t line 303.
-
-
-Package natbib Warning: Citation `sloth' on page 1 undefined on input line 303.
-
-
-
-Package natbib Warning: Citation `abdulla2018trau' on page 1 undefined on input
- line 303.
-
-
-Package natbib Warning: Citation `abdulla2019chain' on page 1 undefined on inpu
-t line 303.
-
-
-Package natbib Warning: Citation `abdulla2017flatten' on page 1 undefined on in
-put line 303.
-
-
-Package natbib Warning: Citation `z3' on page 1 undefined on input line 303.
-
-
-Package natbib Warning: Citation `berzish2017z3str3' on page 1 undefined on inp
-ut line 303.
-
-
 Underfull \vbox (badness 1584) has occurred while \output is active []
 
  [1.1{/usr/local/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 ]
-LaTeX Font Info:    Try loading font information for T1+zi4 on input line 337.
+LaTeX Font Info:    Try loading font information for T1+zi4 on input line 313.
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/inconsolata/t1zi4.fd
 File: t1zi4.fd 2018/01/14 T1/zi4 (Inconsolata)
 )
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 9.0pt on input line 337.
+(Font)              scaled to size 9.0pt on input line 313.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `zi4' (encoding: T1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-LaTeX Font Info:    Try loading font information for TS1+zi4 on input line 350.
+LaTeX Font Info:    Try loading font information for TS1+zi4 on input line 326.
 
 
 (/usr/local/texlive/2019/texmf-dist/tex/latex/inconsolata/ts1zi4.fd
 File: ts1zi4.fd 2018/01/14 TS1/zi4 (Inconsolata)
 )
 LaTeX Font Info:    Font shape `TS1/zi4/m/n' will be
-(Font)              scaled to size 9.0pt on input line 350.
+(Font)              scaled to size 9.0pt on input line 326.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `zi4' (encoding: TS1).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 LaTeX Font Info:    Font shape `T1/zi4/m/n' will be
-(Font)              scaled to size 10.0pt on input line 355.
+(Font)              scaled to size 10.0pt on input line 331.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 10.0pt on input line 360.
+(Font)              scaled to size 10.0pt on input line 336.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 7.3pt on input line 360.
+(Font)              scaled to size 7.3pt on input line 336.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 5.5pt on input line 360.
-
-Overfull \hbox (1.69533pt too wide) in paragraph at lines 409--409
-[]    \T1/zi4/m/n/10 for(var i = 0; i < 10; i++) {[] 
- []
-
-
-Package natbib Warning: Citation `ecmascript2019ecmascript' on page 2 undefined
- on input line 415.
-
-
-Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 417.
-
-
-Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 426.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 418--427
-[] []
- []
-
-[2.2]
-
-Package natbib Warning: Citation `day2018satisfiability' on page 3 undefined on
- input line 500.
-
-
-Package natbib Warning: Citation `abdulla2019chain' on page 3 undefined on inpu
-t line 514.
-
-
-Package natbib Warning: Citation `abdulla2014string' on page 3 undefined on inp
-ut line 514.
-
-
-Package natbib Warning: Citation `chen2019decision' on page 3 undefined on inpu
-t line 514.
-
-
-Package natbib Warning: Citation `abdulla2019chain' on page 3 undefined on inpu
-t line 514.
-
-
-Class acmart Warning: A possible image without description on input line 562.
-
-
-Package natbib Warning: Citation `abdulla2017flatten' on page 3 undefined on in
-put line 569.
-
+(Font)              scaled to size 5.5pt on input line 336.
+ [2.2]
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 7.3pt on input line 586.
+(Font)              scaled to size 7.3pt on input line 490.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 8.0pt on input line 586.
+(Font)              scaled to size 8.0pt on input line 490.
 LaTeX Font Info:    Font shape `OT1/LinuxLibertineT-TLF/m/it' will be
-(Font)              scaled to size 6.2pt on input line 586.
+(Font)              scaled to size 6.2pt on input line 490.
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
-(Font)              scaled to size 6.2pt on input line 586.
+(Font)              scaled to size 6.2pt on input line 490.
 
-Underfull \vbox (badness 1509) has occurred while \output is active []
+Underfull \vbox (badness 6268) has occurred while \output is active []
 
  [3.3]
-
-Class acmart Warning: A possible image without description on input line 650.
-
-
-Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 692.
-
-
-Package natbib Warning: Citation `SeidlSMH04' on page 4 undefined on input line
- 822.
-
 [4.4]
-
-Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 847.
-
-
-Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 855.
-
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 7.3pt on input line 858.
+(Font)              scaled to size 7.3pt on input line 668.
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
-(Font)              scaled to size 5.5pt on input line 858.
+(Font)              scaled to size 5.5pt on input line 668.
 
-Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 859.
-
-
-Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 863.
+Underfull \vbox (badness 2359) has occurred while \output is active []
 
 
-Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 866.
-
-
-Package natbib Warning: Citation `abdulla2019chain' on page 5 undefined on inpu
-t line 920.
-
-
-Package natbib Warning: Citation `abdulla2019chain' on page 5 undefined on inpu
-t line 922.
-
-
-Underfull \hbox (badness 4144) in paragraph at lines 946--996
+Underfull \hbox (badness 4144) in paragraph at lines 707--757
 \T1/LinuxLibertineT-TLF/m/n/10 (+20) to de-fine pat-terns used by the under-app
 roximation
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 946--996
+Underfull \hbox (badness 10000) in paragraph at lines 707--757
 \T1/LinuxLibertineT-TLF/m/n/10 (+20) mod-ule to re-strict the do-main of string
  vari-ables.
  []
 
 
-Overfull \hbox (8.72139pt too wide) in paragraph at lines 946--996
-[] 
+Underfull \hbox (badness 10000) in paragraph at lines 760--762
+ []\T1/LinuxLibertineT-TLF/b/n/10 Flat au-tomata. \T1/LinuxLibertineT-TLF/m/n/1
+0 (+20) A fi-nite state au-toma-ton $\OML/nxlmi/m/it/10 A \U/ntxmia/m/it/10 =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 997--999
- []\T1/LinuxLibertineT-TLF/b/it/10 Flat au-tomata.[] \T1/LinuxLibertineT-TLF/m/
-n/10 (+20) A fi-nite state au-toma-ton
+Underfull \hbox (badness 1024) in paragraph at lines 760--762
+\LMS/ntxsy/m/n/10 ¹\OML/nxlmi/m/it/10 Q; T; \U/ntxmia/m/it/10 ^^F\OML/nxlmi/m/i
+t/10 ; q[]; q[]\LMS/ntxsy/m/n/10 º$ \T1/LinuxLibertineT-TLF/m/n/10 (+20) is sai
+d to be \T1/LinuxLibertineT-TLF/m/it/10 (+20) flat \T1/LinuxLibertineT-TLF/m/n/
+10 (+20) if it sat-is-fies the fol-
  []
 
 
-Underfull \hbox (badness 1199) in paragraph at lines 1000--1002
+Underfull \hbox (badness 1199) in paragraph at lines 763--765
 \OML/nxlmi/m/it/10 q[]$ \T1/LinuxLibertineT-TLF/m/n/10 (+20) through a straight
  path of $\OML/nxlmi/m/it/10 m \LMS/ntxsy/m/n/10 ^^@ \OT1/LinuxLibertineT-TLF/m
 /n/10 (+20) 1$ \T1/LinuxLibertineT-TLF/m/n/10 (+20) tran-si-tions
  []
 
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/sc' will be
-(Font)              scaled to size 10.0pt on input line 1007.
-[5.5]
-Overfull \hbox (6.24356pt too wide) detected at line 1057
-[][]\LMS/ntxsy/m/n/10 ¹\OML/nxlmi/m/it/10 w\LMS/ntxsy/m/n/10 º \OT1/LinuxLibert
-ineT-TLF/m/n/10 ::\U/ntxmia/m/it/10 = \LMS/ntxsy/m/n/10 f\OML/nxlmi/m/it/10 I[]
- \LMS/ntxsy/m/n/10 j \OML/nxlmi/m/it/10 x \LMS/ntxsy/m/n/10 2 \OML/nxlmi/m/it/1
-0 L\LMS/ntxsy/m/n/10 ¹\OML/nxlmi/m/it/10 P\LMS/ntxsy/m/n/10 º\OML/nxlmi/m/it/10
- ; I\LMS/ntxsy/m/n/10 ¹\OML/nxlmi/m/it/10 x\LMS/ntxsy/m/n/10 º \U/ntxmia/m/it/1
-0 = \OML/nxlmi/m/it/10 w; I \LMS/ntxsy/m/n/10 2 » »\OML/nxlmi/m/it/10  \LMS/ntx
-sy/m/n/10 ¼ ¼\OML/nxlmi/m/it/10 ; I[] \U/ntxmia/m/it/10 = \OML/nxlmi/m/it/10 I 
-\LMS/ntxsy/m/n/10 [ \U/ntxsym/m/n/10 P[]\LMS/ntxsy/m/n/10 g
- []
+(Font)              scaled to size 10.0pt on input line 770.
 
+Underfull \vbox (badness 4441) has occurred while \output is active []
 
-Overfull \hbox (5.09274pt too wide) detected at line 1058
-[]\LMS/ntxsy/m/n/10 ¹\OML/nxlmi/m/it/10 I[]\LMS/ntxsy/m/n/10 º \OT1/LinuxLibert
-ineT-TLF/m/n/10 ::\U/ntxmia/m/it/10 = \LMS/ntxsy/m/n/10 f\OML/nxlmi/m/it/10 w \
-LMS/ntxsy/m/n/10 j \OML/nxlmi/m/it/10 x \LMS/ntxsy/m/n/10 2 \OML/nxlmi/m/it/10 
-L\LMS/ntxsy/m/n/10 ¹\OML/nxlmi/m/it/10 P\LMS/ntxsy/m/n/10 º\OML/nxlmi/m/it/10 ;
- I\LMS/ntxsy/m/n/10 ¹\OML/nxlmi/m/it/10 x\LMS/ntxsy/m/n/10 º \U/ntxmia/m/it/10 
-= \OML/nxlmi/m/it/10 w; I \LMS/ntxsy/m/n/10 2 » »\OML/nxlmi/m/it/10  \LMS/ntxsy
-/m/n/10 ¼ ¼\OML/nxlmi/m/it/10 ; I[] \U/ntxmia/m/it/10 = \OML/nxlmi/m/it/10 I \L
-MS/ntxsy/m/n/10 [ \U/ntxsym/m/n/10 P[]\LMS/ntxsy/m/n/10 g
- []
-
-
-Underfull \hbox (badness 4621) in paragraph at lines 1074--1077
+ [5.5]
+Underfull \hbox (badness 4621) in paragraph at lines 831--833
 []\T1/LinuxLibertineT-TLF/m/n/10 (+20) Similarly, as stated by the fol-low-ing 
 corol-lary of
  []
 
 [6.6]
-Underfull \hbox (badness 4328) in paragraph at lines 1180--1191
+Underfull \hbox (badness 4328) in paragraph at lines 928--939
 \LMS/ntxsy/m/n/10 ¹\OT1/LinuxLibertineT-TLF/m/n/10 (+20) 3\OML/nxlmi/m/it/10 ; 
 \LMS/ntxsy/m/n/10 » »\OML/nxlmi/m/it/10 a\LMS/ntxsy/m/n/10 ¼ ¼\OML/nxlmi/m/it/1
 0 ; \LMS/ntxsy/m/n/10 » »\OML/nxlmi/m/it/10 b\LMS/ntxsy/m/n/10 ¼ ¼\OML/nxlmi/m/
@@ -2155,72 +2021,31 @@ y/m/n/10 ¹\OML/nxlmi/m/it/10 I[]\LMS/ntxsy/m/n/10 º \U/ntxmia/m/it/10 =
 
 
 Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 1271.
+surrounding objects on input line 1019.
 
 
 Class acmart Warning: \vspace should only be used to provide space above/below 
-surrounding objects on input line 1275.
+surrounding objects on input line 1023.
 
-
-Underfull \hbox (badness 2253) in paragraph at lines 1299--1302
+[7.7]
+Underfull \hbox (badness 2253) in paragraph at lines 1047--1050
 \T1/LinuxLibertineT-TLF/m/n/10 (+20) be-low. The cor-rect-ness of the con-struc
 -tion of under-
  []
 
-[7.7]
-
-Package natbib Warning: Citation `abdulla2015norn' on page 8 undefined on input
- line 1357.
-
 [8.8]
-
-Package natbib Warning: Citation `kincaid2019closed' on page 9 undefined on inp
-ut line 1593.
-
-
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 
-Class acmart Warning: A possible image without description on input line 1667.
+Class acmart Warning: A possible image without description on input line 1415.
 
 
 Package amsmath Warning: Foreign command \atopwithdelims;
 (amsmath)                \frac or \genfrac should be used instead
-(amsmath)                 on input line 1676.
+(amsmath)                 on input line 1424.
 
 [9.9] (./evaluation.tex
-
-Package natbib Warning: Citation `z3' on page 10 undefined on input line 4.
-
-
-Package natbib Warning: Citation `cvc4Tool' on page 10 undefined on input line 
-15.
-
-
-Package natbib Warning: Citation `z3' on page 10 undefined on input line 15.
-
-
-Package natbib Warning: Citation `zheng2013z3' on page 10 undefined on input li
-ne 15.
-
-
-Package natbib Warning: Citation `sloth' on page 10 undefined on input line 16.
-
-
-
-Package natbib Warning: Citation `aydin2018parameterized' on page 10 undefined 
-on input line 16.
-
-
-Package natbib Warning: Citation `chen2019decision' on page 10 undefined on inp
-ut line 16.
-
-
-Package natbib Warning: Citation `abdulla2019chain' on page 10 undefined on inp
-ut line 16.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 15--17
 []\T1/LinuxLibertineT-TLF/m/n/10 (+20) We com-pare \T1/LinuxBiolinumT-TLF/m/n/1
 0 (+20) Z3-Trau \T1/LinuxLibertineT-TLF/m/n/10 (+20) with other state-of-the-ar
@@ -2228,9 +2053,9 @@ t
  []
 
 
-Underfull \hbox (badness 6094) in paragraph at lines 15--17
+Underfull \hbox (badness 10000) in paragraph at lines 15--17
 \T1/LinuxLibertineT-TLF/m/n/10 (+20) string solvers, namely, CVC4 (45bcf28ab) [
-\T1/LinuxLibertineT-TLF/b/n/10 ? \T1/LinuxLibertineT-TLF/m/n/10 (+20) ], and
+[]], and
  []
 
 
@@ -2241,6 +2066,7 @@ surrounding objects on input line 19.
 Class acmart Warning: \vspace should only be used to provide space above/below 
 surrounding objects on input line 25.
 
+[10.10]
 
 Class acmart Warning: \vspace should only be used to provide space above/below 
 surrounding objects on input line 29.
@@ -2249,33 +2075,17 @@ surrounding objects on input line 29.
 Class acmart Warning: \vspace should only be used to provide space above/below 
 surrounding objects on input line 33.
 
-[10.10]
-
-Package natbib Warning: Citation `pyex' on page 11 undefined on input line 37.
-
 
 Class acmart Warning: \vspace should only be used to provide space above/below 
 surrounding objects on input line 39.
-
-
-Package natbib Warning: Citation `aplas' on page 11 undefined on input line 42.
-
 
 
 Class acmart Warning: \vspace should only be used to provide space above/below 
 surrounding objects on input line 45.
 
 
-Package natbib Warning: Citation `LeetCode' on page 11 undefined on input line 
-48.
-
-
 Class acmart Warning: \vspace should only be used to provide space above/below 
 surrounding objects on input line 50.
-
-
-Package natbib Warning: Citation `blotsky2018stringfuzz' on page 11 undefined o
-n input line 52.
 
 
 Class acmart Warning: \vspace should only be used to provide space above/below 
@@ -2283,21 +2093,11 @@ surrounding objects on input line 54.
 
 LaTeX Font Info:    Font shape `T1/LinuxLibertineT-TLF/m/n' will be
 (Font)              scaled to size 5.5pt on input line 56.
-
-Package natbib Warning: Citation `termEQ' on page 11 undefined on input line 56
-.
-
 LaTeX Font Info:    Font shape `T1/LinuxBiolinumT-TLF/m/n' will be
 (Font)              scaled to size 6.2pt on input line 59.
 
 LaTeX Warning: Reference `table:base_benchmark' on page 11 undefined on input l
 ine 64.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
 
 
 LaTeX Warning: Reference `table:base_benchmark' on page 11 undefined on input l
@@ -2308,188 +2108,45 @@ Overfull \hbox (19.828pt too wide) in paragraph at lines 217--219
  [][] 
  []
 
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
 )
-
-Package natbib Warning: Citation `quine1946concatenation' on page 12 undefined 
-on input line 1836.
-
-
-Package natbib Warning: Citation `makanin1977problem' on page 12 undefined on i
-nput line 1836.
-
-
-Package natbib Warning: Citation `plandowski1999satisfiability' on page 12 unde
-fined on input line 1837.
-
-
-Package natbib Warning: Citation `plandowski2006efficient' on page 12 undefined
- on input line 1837.
-
-
-Package natbib Warning: Citation `matiyasevich2008computation' on page 12 undef
-ined on input line 1837.
-
-
-Package natbib Warning: Citation `robson1999quadratic' on page 12 undefined on 
-input line 1837.
-
-
-Package natbib Warning: Citation `schulz1990makanin' on page 12 undefined on in
-put line 1837.
-
-
-Package natbib Warning: Citation `ganesh2012word' on page 12 undefined on input
- line 1837.
-
-
-Package natbib Warning: Citation `ganesh2016undecidability' on page 12 undefine
-d on input line 1837.
-
-
-Package natbib Warning: Citation `buchi1990definability' on page 12 undefined o
-n input line 1839.
-
-
-Package natbib Warning: Citation `abdulla2014string' on page 12 undefined on in
-put line 1840.
-
-
-Package natbib Warning: Citation `barcelo2013graph' on page 12 undefined on inp
-ut line 1840.
-
-
-Package natbib Warning: Citation `lin2016string' on page 12 undefined on input 
-line 1840.
-
-
-Package natbib Warning: Citation `chen2017decidable' on page 12 undefined on in
-put line 1840.
-
-
-Package natbib Warning: Citation `chen2019decision' on page 12 undefined on inp
-ut line 1840.
-
-
-Package natbib Warning: Citation `abdulla2019chain' on page 12 undefined on inp
-ut line 1840.
-
-
-Package natbib Warning: Citation `abdulla2019chain' on page 12 undefined on inp
-ut line 1840.
-
-
-Package natbib Warning: Citation `kiezun2009hampi' on page 12 undefined on inpu
-t line 1842.
-
-
-Package natbib Warning: Citation `saxena2010symbolic' on page 12 undefined on i
-nput line 1842.
-
-
-Package natbib Warning: Citation `saxena2010flax' on page 12 undefined on input
- line 1842.
-
-
-Package natbib Warning: Citation `berzish2017z3str3' on page 12 undefined on in
-put line 1844.
-
-
-Package natbib Warning: Citation `zheng2017z3str2' on page 12 undefined on inpu
-t line 1844.
-
-
-Package natbib Warning: Citation `cvc4Tool' on page 12 undefined on input line 
-1844.
-
-
-Package natbib Warning: Citation `trinh2014s3' on page 12 undefined on input li
-ne 1844.
-
-
-Package natbib Warning: Citation `trinh2016progressive' on page 12 undefined on
- input line 1844.
-
-
-Package natbib Warning: Citation `abdulla2015norn' on page 12 undefined on inpu
-t line 1844.
-
-
-Package natbib Warning: Citation `abdulla2018trau' on page 12 undefined on inpu
-t line 1844.
-
-
-Package natbib Warning: Citation `sloth' on page 12 undefined on input line 184
-4.
-
-
-Package natbib Warning: Citation `chen2019decision' on page 12 undefined on inp
-ut line 1844.
-
-
-Package natbib Warning: Citation `abdulla2018trau' on page 12 undefined on inpu
-t line 1848.
-
-
-Package natbib Warning: Citation `abdulla2018trau' on page 12 undefined on inpu
-t line 1848.
-
-
-Package natbib Warning: Citation `aydin2018parameterized' on page 12 undefined 
-on input line 1851.
-
-
-Package natbib Warning: Citation `yu2010stranger' on page 12 undefined on input
- line 1851.
-
-
-Package natbib Warning: Citation `yu2016optimal' on page 12 undefined on input 
-line 1851.
-
-
-Package natbib Warning: Citation `kausler2014evaluation' on page 12 undefined o
-n input line 1851.
-
-
-Package natbib Warning: Citation `wang2016string' on page 12 undefined on input
- line 1852.
-
-
-Package natbib Warning: Citation `sloth' on page 12 undefined on input line 185
-2.
-
-
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
+
+Underfull \vbox (badness 1888) has occurred while \output is active []
+
  [12.12]
-
-Package natbib Warning: Citation `santos2018symbolic' on page 13 undefined on i
-nput line 1857.
-
 Processing 'acks' comment.
 \openout3 = `comment.cut'.
 
  Comment 'acks' writing to comment.cut.
-Straight input of comment.cut. (./comment.cut)
-No file main.bbl.
+Straight input of comment.cut. (./comment.cut) (./main.bbl
+LaTeX Info: Redefining \tempurl on input line 348.
 
-Package natbib Warning: There were undefined citations.
+Underfull \vbox (badness 10000) has occurred while \output is active []
 
+ [13.13]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+)
 
 Class acmart Warning: Some images may lack descriptions.
 
 
-Overfull \vbox (2.16pt too high) has occurred while \output is active []
+Package balance Warning: You have called \balance in second column
+(balance)                Columns might not be balanced.
 
- [13.13]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1872.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1872.
-
-(./main.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1872.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1872.
+[14.14]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1620.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1620.
+ (./main.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1620.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1620.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 83CCC9651EBDC549EC5A44FCD7648676;2976.
+(rerunfilecheck)             Checksum: 0BCEDC928A8F88AEAA390C2C5B9D0318;3072.
 
 
 LaTeX Warning: There were undefined references.
@@ -2499,13 +2156,13 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 41825 strings out of 492609
- 903338 string characters out of 6129048
- 1138700 words of memory out of 5000000
- 44266 multiletter control sequences out of 15000+600000
- 221638 words of font info for 462 fonts, out of 8000000 for 9000
+ 42178 strings out of 492609
+ 911474 string characters out of 6129048
+ 1138698 words of memory out of 5000000
+ 44421 multiletter control sequences out of 15000+600000
+ 237242 words of font info for 561 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
- 62i,14n,96p,1332b,1074s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 62i,14n,96p,1254b,1074s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/newtx/libertinealt.enc}{/
 usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/libertine/lbtn_ncsllp.enc}{/u
 sr/local/texlive/2019/texmf-dist/fonts/enc/dvips/libertine/lbtn_kijugd.enc}{/us
@@ -2536,10 +2193,10 @@ st/fonts/type1/public/txfonts/txsyc.pfb></usr/local/texlive/2019/texmf-dist/fon
 ts/type1/public/newtx/txsys.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1
 /public/newtx/zxlr.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/n
 ewtx/zxlri.pfb>
-Output written on main.pdf (13 pages, 743697 bytes).
+Output written on main.pdf (14 pages, 764091 bytes).
 PDF statistics:
- 351 PDF objects out of 1000 (max. 8388607)
- 288 compressed objects within 3 object streams
- 64 named destinations out of 1000 (max. 500000)
- 67737 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 491 PDF objects out of 1000 (max. 8388607)
+ 425 compressed objects within 5 object streams
+ 113 named destinations out of 1000 (max. 500000)
+ 67745 words of extra memory for PDF output out of 74296 (max. 10000000)
 
