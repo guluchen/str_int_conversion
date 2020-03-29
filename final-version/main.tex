@@ -154,7 +154,7 @@
 \email{wwu@isi.edu} 
 
 
-\renewcommand{\shortauthors}{Abdulla, et al.}
+\renewcommand{\shortauthors}{P.A. Abdulla, M.F. Atig, Y-F. Chen, B.P. Diep, P. Janků, H-H. Lin, L. Holík and H-H. Lin}
 
 
 \begin{abstract}
@@ -188,8 +188,12 @@ We propose to overcome these limitations with an approach that can efficiently s
 %% comma separated list
 \keywords{String Solver, Formal Verification, Automata}  %% \keywords are mandatory in final camera-ready submission
 
-
-
+ \clubpenalty = 10000
+          \widowpenalty = 10000
+          \displaywidowpenalty = 10000
+          
+          
+\usepackage{flushend} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1853,6 +1857,14 @@ algorithms, in particular, IC3/PDR, for more efficient checking of the emptiness
 In this paper, we report a novel approach for solving string constraints with string-number conversion and implemented it as an open-source tool {\tool}. For now, it support basic string constraints, string-number conversion, and also operations that can be encoded to them (e.g., \textsc{contains}, \textsc{prefixOf}). Since {\tool} is built inside the SMT solver Z3, we also get the power of processing formulae in the combination of different theories (e.g., array). Hence our tool can support the encoding of a wide range of program expressions. There are several avenues for future works. First, we are planning to integrate it with the JavaScript symbolic executor \textsc{cosette}~\cite{santos2018symbolic}. We  believe such integration  is feasible. 
 %have discussed this possibility of such integration with some of its team members, and 
 We are also planning to merge  {\tool}  with the main branch of the Z3 solver. For technical development, we think it would be interesting to consider the (symbolic) flattening of an even larger set of string operations, such as the one containing  \textsc{replaceAll} and \textsc{split}. 
+
+
+
+
+\begin{acks}
+This research was  partially supported by the  Swedish Foundation for Strategic Research.
+\end{acks}
+
 
 \bibliographystyle{ACM-Reference-Format}
 \bibliography{refs}
