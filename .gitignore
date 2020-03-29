@@ -13,3 +13,6 @@ final-version/main.log
 final-version/main.pdf
 *.log
 final-version/main.pdf
+final-version/comment.cut
+final-version/main.aux
+final-version/main.synctex.gz
