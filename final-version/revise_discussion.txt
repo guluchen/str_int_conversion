@@ -1,0 +1,19 @@
+*Required Changes.
+- Please explicitly state the limitations of the current solvers (i.e., clarify the "limited support" mentioned by Reviewer B).
+- Reviewer B tried Z3 on the running example, and Z3 works fine. Please give an example that cannot be handled by Z3 (as well as any other tools considered in this paper).
+
+
+
+*Recommended Changes.
+- Please clarify a bit more about the diversity of the Leetcode programs used in the evaluation.
+* validWordAbbreviation
+* validIPAddress
+* restoreIpAddresses
+* numDecodings
+* add_binary 
+* addStrings (sum)
+
+- One reviewer actually ran the z3-trau tool on the motivating example. It returns an incorrect result. It would be beneficial to compare against z3-trau in the experiment (and mark all the "incorrect" results).
+
+*Suggested Changes
+- Suggestions mentioned in the review comments.
