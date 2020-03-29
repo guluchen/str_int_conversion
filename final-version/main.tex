@@ -1148,7 +1148,7 @@ Our first attempt is a PFA without loop, i.e., a straight line structure
 	\end{tikzpicture}
 	} should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable, because the length of $x$ cannot be $5$  under this domain restriction.
 
-However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$. The key is that even for a bounded integer, the corresponding numeral can be of an unbounded length with arbitrarily many trailing `$0$'s at the front. All numbers with up to $m$-digits can be however still handled without having to solve exponential constraints. It is enough to equip the initial state of the PFA with a  $0$-self-loop.
+However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$ \changed{since PFAs accept  numeric words with least significant bit first}. The key is that even for a bounded integer, the corresponding numeral can be of an unbounded length with arbitrarily many trailing `$0$'s at the front. All numbers with up to $m$-digits can be however still handled without having to solve exponential constraints. It is enough to equip the initial state of the PFA with a  $0$-self-loop.
 
 Consequently, the automaton $A^m$ of our number PFA will have the following form illustrated in Figure~\ref{fig:sfa_its}. 
 It has a self-loop on the initial state labeled by the character variable $v_0$, 
@@ -1182,9 +1182,10 @@ Although it still has a loop, it will not create any exponential component defin
 	
 	\caption{PFA for string-number conversion constraints}
 	\label{fig:sfa_its}
+	\Description{Parametric flat automata  for string-number conversion constraints}
 \end{figure}
 
-%Such PFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
+
 Numeric PFA with these restrictions would satisfy our primary objective, that is, they would induce linear formulae and would ``easily" and completely cover all numerals.
 %
 A last problem still needs to be solved before they can be efficient in practice. 
@@ -1241,110 +1242,6 @@ $
 
 
 
-%
-%
-%$$
-%\mathsf{toNumber(k)}\defeq (n = v_1\times 10^{k-1} + v_2\times 10^{k-2} + \ldots + v_{k})
-%$$
-%
-%
-%
-%
-%$$\Psi_{\mathsf{NaN}} \defeq  \bigvee_{i\in [1,m]} v_i>9$$
-%where $ $
-%To explain this encoding, we first define two macro function:
-%
-%$$\begin{array}{rl}
-%\mathsf{epsilonAfter(k)}\defeq& (0\leq v_1,\ldots, v_k\leq 9) \wedge\\
-%&v_{k+1}=\ldots =v_m = -1\\
-%\mathsf{toNumber(k)}\defeq& (n = v_1\times 10^{k-1} + v_2\times 10^{k-2} + \ldots + v_{k})
-%\end{array}
-%$$
-
-%The function $\mathsf{epsilonAfter(k)}$ forces the first $k$ variables to be assigned some number and those after $k$ be assigned $\epsilon$. Recall that we use $-1$ to represent $\epsilon$. The function $\mathsf{toNumber(k)}$ converts the first $k$ variables to the corresponding number in $n$. \yfc{say shifting $\epsilon$ to the right will not change the language}
-
-%The condition that when $x$ is ``not a number" is specified by the following formula.
-%
-%$$
-%\Psi_{\mathit{NaN}} \defeq  \bigvee_{i\in [1,m]} v_i>9$$
-%
-%Then we can specify the relation between $n$ and the character variables as follows:
-%$$\Psi_n\defeq  (n=-1 \wedge \Psi_{\mathit{NaN}})\vee \bigvee_{k\in [0,m]} (\mathsf{epsAfter(k)} \wedge \mathsf{toNumber(k)} )$$
-%It says either $x$ is not a number and so $n=-1$ or the first $k$ variables represent the value of $n$, for some $k\in [0,m]$. 
-%$$
-%\underf R {\psi_s} \defeq \Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {R(x)} 
-%$$
-%To formulate the correctness lemma similar to Lemmas~\ref{lemma:memcorrect} and \ref{lemma:eqcorrect}, we need to consider a modified semantics of $R(x)$.
-%Namely, we assume that $\semof{R(x)}$ is returns $\decode A(\parikhof{R(x)} \land )$  
-
-
-
-%We add $\Psi_n$ to $\Phi_O$.
-%
-%
-%
-%The correctness of this procedure is expressed in Lemma~\ref{lemma:sticorrect} below. We separate the lemmas to cases where $n\neq -1$ and $n=-1$. 
-%
-%
-%\newcommand\restrict[1]{\raisebox{-.5ex}{$\big|$}_{#1}}
-
-
-%\begin{lemma}\label{lemma:sticorrect}
-%	
-%	The interpretation $(I\cup\pim \cup I_n)  \in \semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} $ if and only if 
-%	\begin{center}
-%	 $\left(\begin{array}{c} 
-%	 I_n(n)= \sti{\decode {A_x}(I\cup\pim)} \ \wedge \\
-%	 I(v_i)=-1 \wedge i<j \Longrightarrow  I(v_j)=-1
-%	 \end{array}\right)$\\ or\\
-%	 $\left(\begin{array}{c} 
-%	 I_n(n)= -1\ \wedge \decode {A_x}(I\cup\pim) \not\in [0,9]^+
-%	 \end{array}\right)$
-%	\end{center}
-%
-%\end{lemma}
-%\yfc{sorry still ugly, the shifting of epsilon makes it a mess here}
-%(An alternative description)
-%\begin{lemma}\label{lemma:sticorrect}
-%	For all $w \in \semof{A_{x}}$ and $c \in \mathbb{Z}$, we have 
-%	\begin{center}
-%		$\exists (I\cup\pim \cup I_n)  \in \semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}}$ s.t. $w=\decode {A_x}(I\cup\pim)$ and $I_n(n)=c$\\
-%		iff\\
-%		$c= \sti{w}$.
-%	\end{center}
-%	
-%\end{lemma}
-%\hide{
-%\begin{lemma}\label{lemma:sticorrect_pos}
-%	$\semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} = \{(I\cup\pim \cup I_n) \mid  I_n(n)= \sti{\decode {A_x}(I\cup\pim)}\} $. 
-%\end{lemma}
-%In this case, $x$ encodes a number. The lemma says when the models we add to $\Phi_O$ represents a word in $\semof{A_x}$ whose integer value is exactly the model for $n$.
-%
-%\begin{lemma}\label{lemma:sticorrect_neg}
-%	$\semof {\Psi_n \wedge \parikhfof {A_x} \wedge (v_0 = 0)\wedge (n = -1) }_{V_x \cup \#V_x \cup \{n\}} = 
-%	\{(I\cup\pim \cup I_n) \mid  I_n(n)= -1 \wedge \decode {A_x}(I\cup\pim) \not\in [0,9]^+  \}$
-%\end{lemma}
-%
-%In this case, $x$ does not encode a number. The lemma says  the models we add to $\Phi_O$ represents words in both $\semof{A_x}$ and $[0,9]^+$, which means not a number, and $n$ is $-1$.}
-%
-%\lh{
-%\begin{lemma}
-%$
-%\semof {\Psi_n \wedge \Psi_{v_0}\wedge \parikhfof {A_x} }_{V_x \cup \#V_x \cup \{n\}} = \encode  R(\semof{\phi_s})
-%$
-%\end{lemma}
-%The $n$ must somehow be handled properly by $\encode  R(\phi_s)$, I did not have time to think about it yet.
-%}
-
-
-
-% \section{Evaluation}
-% \label{section:evaluation}
-% \todo{copy a few tables from our test site to here}
-
-
-
-
 \input{evaluation}
 
 
@@ -1373,7 +1270,6 @@ algorithms, in particular, IC3/PDR, for more efficient checking of the emptiness
 \section{Conclusion and Future Works}
 \label{section:conclusion}
 In this paper, we report a novel approach for solving string constraints with string-number conversion and implemented it as an open-source tool {\tool}. For now, it support basic string constraints, string-number conversion, and also operations that can be encoded to them (e.g., \textsc{contains}, \textsc{prefixOf}). Since {\tool} is built inside the SMT solver Z3, we also get the power of processing formulae in the combination of different theories (e.g., array). Hence our tool can support the encoding of a wide range of program expressions. There are several avenues for future works. First, we are planning to integrate it with the JavaScript symbolic executor \textsc{cosette}~\cite{santos2018symbolic}. We  believe such integration  is feasible. 
-%have discussed this possibility of such integration with some of its team members, and 
 We are also planning to merge  {\tool}  with the main branch of the Z3 solver. For technical development, we think it would be interesting to consider the (symbolic) flattening of an even larger set of string operations, such as the one containing  \textsc{replaceAll} and \textsc{split}. 
 
 

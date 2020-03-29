@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.11.4)  30 MAR 2020 00:44
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.11.4)  30 MAR 2020 01:05
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -2030,12 +2030,9 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 
 
 
-Class acmart Warning: A possible image without description on input line 1185.
-
-
 Package amsmath Warning: Foreign command \atopwithdelims;
 (amsmath)                \frac or \genfrac should be used instead
-(amsmath)                 on input line 1194.
+(amsmath)                 on input line 1195.
 
 [9.9] (./evaluation.tex
 Underfull \hbox (badness 10000) in paragraph at lines 15--17
@@ -2058,7 +2055,10 @@ surrounding objects on input line 19.
 Class acmart Warning: \vspace should only be used to provide space above/below 
 surrounding objects on input line 25.
 
-[10.10]
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [10.10]
 
 Class acmart Warning: \vspace should only be used to provide space above/below 
 surrounding objects on input line 29.
@@ -2092,6 +2092,9 @@ LaTeX Warning: Reference `table:base_benchmark' on page 11 undefined on input l
 ine 64.
 
 
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
 LaTeX Warning: Reference `table:base_benchmark' on page 11 undefined on input l
 ine 190.
 
@@ -2104,9 +2107,6 @@ Overfull \hbox (19.828pt too wide) in paragraph at lines 217--219
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 )
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
-
 Underfull \vbox (badness 1888) has occurred while \output is active []
 
  [12.12]
@@ -2115,27 +2115,24 @@ Processing 'acks' comment.
 
  Comment 'acks' writing to comment.cut.
 Straight input of comment.cut. (./comment.cut) (./main.bbl
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [13.13]
 LaTeX Info: Redefining \tempurl on input line 348.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [13.13]
-Underfull \vbox (badness 10000) has occurred while \output is active []
-
 )
-
-Class acmart Warning: Some images may lack descriptions.
-
 
 Package balance Warning: You have called \balance in second column
 (balance)                Columns might not be balanced.
 
 [14.14]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1390.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1390.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1286.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1286.
  (./main.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1390.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1390.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1286.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1286.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 0BCEDC928A8F88AEAA390C2C5B9D0318;3072.
@@ -2148,11 +2145,11 @@ LaTeX Warning: There were multiply-defined labels.
 
  ) 
 Here is how much of TeX's memory you used:
- 42178 strings out of 492609
- 911474 string characters out of 6129048
- 1138698 words of memory out of 5000000
+ 42181 strings out of 492609
+ 911549 string characters out of 6129048
+ 1138699 words of memory out of 5000000
  44421 multiletter control sequences out of 15000+600000
- 237242 words of font info for 561 fonts, out of 8000000 for 9000
+ 237515 words of font info for 563 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
  62i,14n,96p,1254b,1074s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/local/texlive/2019/texmf-dist/fonts/enc/dvips/newtx/libertinealt.enc}{/
@@ -2185,7 +2182,7 @@ st/fonts/type1/public/txfonts/txsyc.pfb></usr/local/texlive/2019/texmf-dist/fon
 ts/type1/public/newtx/txsys.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1
 /public/newtx/zxlr.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/public/n
 ewtx/zxlri.pfb>
-Output written on main.pdf (14 pages, 760259 bytes).
+Output written on main.pdf (14 pages, 760932 bytes).
 PDF statistics:
  491 PDF objects out of 1000 (max. 8388607)
  425 compressed objects within 5 object streams
