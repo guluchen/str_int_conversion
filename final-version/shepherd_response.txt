@@ -30,6 +30,9 @@ Z3-trau is the official name of Z3-PFA, which was created for the double-blind r
 *Suggested Changes
 - Suggestions mentioned in the review comments.
 
-We have updated the tables of the experiments to unfold the X cases into three categories: incorrect, (system) error, and timeout
+We have updated the tables of the experiments to unfold the X cases into three categories: incorrect, (system) error, and timeout.
+We have addressed a number of minor comments by reviewers 
+(including e.g. a reference to PASS or a note on the assumed decimal encoding of numerals in a reaction to reviewer C) 
+and fixed typos pointed out by them.
 
 

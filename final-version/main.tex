@@ -484,11 +484,11 @@ Then, we show that given such restriction, one can  reduce the string constraint
 
 
 
-In the following, we explain the construction of the linear formula using $\Phi$ as an example. Assume that we project the domains of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_1$, $v_2$, $v_3$, $v_4$ in the figure are \emph{character} variables. Thus, $v_1$, $v_2$, $v_3$, $v_4$ are also integer variables. For example, from  $ y \in (12)^+$, we may derive $v_2=1$ and $v_3=2$. 
+In the following, we explain the construction of the linear formula using $\Phi$ as an example. Assume that we project the domains of $x$ and $y$ to the PFA in Figure~\ref{fig:sfa} (a) and (b), respectively. The variables $v_0$, $v_1$, $v_2$, $v_3$ in the figure are \emph{character} variables. Thus, $v_0$, $v_1$, $v_2$, $v_3$ are also integer variables. For example, from  $ y \in (12)^+$, we may derive $v_1=1$ and $v_2=2$. 
 
-The linear formula produced after the domain restriction will be over variables $v_1$, $v_2$, $v_3$, $v_4$, as well as the number of occurrences of each character variable $\#v_1$, $\#v_2$, $\#v_3$, $\#v_4$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12"$ and $y=``1212"$ is encoded by the assignment $(v_1,v_2,v_3,v_4,\#v_1,\#v_2,\#v_3,\#v_4) \rightarrow (1,2,1,2,1,1,2,2)$.% 
+The linear formula produced after the domain restriction will be over variables $v_0$, $v_1$, $v_2$, $v_3$, as well as the number of occurrences of each character variable $\#v_0$, $\#v_1$, $\#v_2$, $\#v_3$. Each model of the linear formula encodes a model of the string constraint. For example, $x=``12"$ and $y=``1212"$ is encoded by the assignment $(v_0,v_1,v_2,v_3,\#v_0,\#v_1,\#v_2,\#v_3) \rightarrow (1,2,1,2,1,1,2,2)$.% 
 \footnote{In these examples, we use the shorthand $(x_1,\ldots,x_k)\rightarrow(n_1,\ldots,n_k)$ to denote the function $\{x_1 \mapsto n_1,\ldots, x_k\mapsto n_k\}$.}
-The assignment says, for example, that $x$ is the \emph{parametric word} obtained by traversing the loop of $A_x$ once (because $\#v_1 = \#v_2 = 1$), which is $v_1v_2$. Under the assignment $v_1=1$ and $v_2=2$, we obtain $x=``12"$.
+The assignment says, for example, that $x$ is the \emph{parametric word} obtained by traversing the loop of $A_x$ once (because $\#v_0 = \#v_1 = 1$), which is $v_0v_1$. Under the assignment $v_0=1$ and $v_1=2$, we obtain $x=``12"$.
 
 If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables. If not, our procedure changes the PFAs to a more expressive one (by adding more states and transitions) and repeat the analysis.  We report unknown after failing to prove SAT using a certain number of PFAs.
 
@@ -625,9 +625,9 @@ We use $\modelsof \phi$ to denote the set all models of $\phi$.%
 
 
 
-The \emph{Parikh image} of a word $w\in \Sigma^*$ maps each \emph{Parikh variable} $\#a$, with $a \in \Sigma$ is a character, to the number of occurrences of $a$ in $w$.
+The \emph{Parikh image} of a word $w\in \Sigma^*$ maps each \emph{Parikh variable} $\#a$, where $a \in \Sigma$ is a character, to the number of occurrences of $a$ in $w$.
 Formally, given a set $S$, let $\pvarsof S$ denote the set of Parikh variables $\{\#s \mid s\in S\}$. 
-The Parikh image of $w$ is a function $\parikhof w:\pvarsof \Sigma \rightarrow \nat$ such that $\parikhof w (\#a) = |w|_a$. 
+The Parikh image of $w$ is a function $\parikhof w:\pvarsof \Sigma \rightarrow \nat$ such that $\parikhof w (\#a) = |w|_a$ for each $a\in\Sigma$.
 The Parikh image of a language $L$ is defined as follows $\parikhof L = \{\parikhof w \mid w \in L\}$. %and the Parikh image of an FA $A$ is Parikh image of its language, $\parikhof{A} = \parikhof{L(A)}$. 
 %
 It is well known that the Parikh image of a regular language  can be  characterized by a linear formula:
@@ -653,7 +653,7 @@ In this section, we formally define string constraints. To begin with, we fix a 
 
 A minor technical difficulty is that sometimes  we may need to treat  $\epsilon$ as a  number. Therefore, we encode $\epsilon$ as some fixed number $\noepsilon\in\nat\setminus\Sigma$.
 
-Assume that $\vars$ ia a set of \emph{string variables} ranging over $\Sigma^*$ and $\varn$ a set of \emph{integer variables} ranging over $\mathbb{Z}$.
+Assume that $\vars$ is a set of \emph{string variables} ranging over $\Sigma^*$ and $\varn$ a set of \emph{integer variables} ranging over $\mathbb{Z}$.
 An \emph{interpretation over $\vars$ and $\varn$} is a mapping $I:\vars\cup \varn\rightarrow\Sigma^* \cup \mathbb{Z}$. A \emph{word term} is an element in $\vars^*$. We lift the interpretation $I$ to word terms and linear constraints in the standard manner. 
 
 We  use four types of \emph{atomic string constraint}: 
@@ -672,7 +672,7 @@ We define $\modelsof{\phi_i}= \{I \mid I(\phi_i)= \true \}$.
 I(x) \in L(A) \}$. 
 
 
-\item A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $w \cdot a \in [0,9]^+$, $\sti{w\cdot a} = 10\times \sti{w}+a$. For $w\notin [0,9]^+$, $\sti{w}=-1$. We define $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$. The \emph{number-string} conversion constraint $x=\its{n}$ is treated as a syntactic sugar for $n=\sti{x}$.
+\item A \emph{string-number conversion constraint} $\phi_s$ is of the form $n=\sti{x}$, where the function $\sti{x}$ is defined as follows. For $a\in [0,9]$, we have $\sti{a}=a$ and for $w \cdot a \in [0,9]^+$, $\sti{w\cdot a} = 10\times \sti{w}+a$. For $w\notin [0,9]^+$, $\sti{w}=-1$. We define $\modelsof{\phi_s}= \{I \mid I(n)= \sti{I(x)} \}$. The \emph{number-string} conversion constraint $x=\its{n}$ is treated as a syntactic sugar for $n=\sti{x}$. We assume decimal encoding of numbers.
 
 \end{itemize}
 
@@ -774,7 +774,7 @@ More precisely, the Parikh image of a word $w\in L(A)$ can be seen as an encodin
 
 
 \begin{lemma}\label{lemma:decoding}
-For an flat FA $A$, there is a function $\decode A$ such that for each $w\in L(A)$, $\decode A(\parikhof w) = w$. 
+For a flat FA $A$, there is a function $\decode A$ such that for each $w\in L(A)$, $\decode A(\parikhof w) = w$. 
 \end{lemma}
 %
 Observe that the $\parikhof w$ value of any variable appearing within  a cycle of $A$ is equal to the number of repetitions of that cycle in the accepting run. This is an immediate consequence of the fact that 
@@ -1150,7 +1150,7 @@ Our first attempt is a PFA without loop, i.e., a straight line structure
 
 However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$ \changed{since PFAs accept  numerals with the least significant bit first}. The key is that even for a bounded integer, the corresponding numeral can be of an unbounded length with arbitrarily many trailing `$0$'s at the front. All numbers with up to $m$-digits can be however still handled without having to solve exponential constraints. It is enough to equip the initial state of the PFA with a  $0$-self-loop.
 
-Consequently, the automaton $A^m$ of our number PFA will have the following form illustrated in Figure~\ref{fig:sfa_its}. 
+Consequently, the automaton $A^m$ of our numeric PFA will have the following form illustrated in Figure~\ref{fig:sfa_its}. 
 It has a self-loop on the initial state labeled by the character variable $v_0$, 
 forced by the constraint 
 $$
@@ -1211,7 +1211,7 @@ and define the final form of the interpretation restriction used by $A^m$ as
 $$
 \paf^m \defeq  \Psi_{\mathsf{NaN}}^m \lor (\Psi_{v_0} \land \Psi_{\mathsf{shift}}^m)\ .
 $$
-Consequently, we design our domain restrictions $\dr$ so that for string variables $x$ that appear within string-integer constraints,  $\dr(x)$ is a number PFA $(A^m,\paf^m),m\in \nat$. 
+Consequently, we design our domain restrictions $\dr$ so that for string variables $x$ that appear within string-integer constraints,  $\dr(x)$ is a numberic PFA $(A^m,\paf^m),m\in \nat$. 
 
 Assuming that the domain restriction for $x$ is $(A^m,\paf^m)$, 
 the value of the integer $n$ can be extracted from a numeral using the formula
