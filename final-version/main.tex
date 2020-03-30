@@ -1260,7 +1260,19 @@ More recently,  {\it DPLL(T)-based} string solvers~\cite{berzish2017z3str3,zheng
 restriction of strings of bounded length. They usually support a variety of string constraints, including all basic string constraints, and sometimes also regular/rational relations. 
 The typical procedure they used for solving equality constraints is to split them into simpler sub-cases, in combination with powerful techniques for Boolean reasoning to curb the resulting exponential search space. In contrast, our approach uses a completely different search strategy. We restrict the solution space to some predefined pattern and step-wisely enrich the pattern in use.
 
-The most relevant work to ours is~\cite{abdulla2018trau} who proposed to project the solution space of variables to a generalization of flat automata. The main difference is that our approach works fully symbolically, which is enabled by to the ideas of using character variables and hence PFAs. The use of character variables allows our approach to handle string-number constraints efficiently -- the values and number of occurrences of those variables can be directly convert to a number in a linear formula. Moreover, the approach of~\cite{abdulla2018trau} is exponential to the alphabet size (we call this the alphabet-explosion problem in the introduction), and hence in the implementation, usually requires heuristics to prune out unnecessary symbols. 
+\changed{
+The most relevant work to ours is the FA-based approach~\cite{abdulla2018trau} that projects the solution space of variables to a generalization of flat automata. The main difference is that our approach works fully symbolically, which is enabled by to the ideas of using integer variables as characters and hence PFAs. The use of integer variables as characters allows our approach to handle string-number constraints efficiently -- the values and number of occurrences of those variables can be directly convert to a number in a linear formula. 
+
+The straightforward extension of existing FA based techniques boils down to solving the satisfiability problem of integer polynomial-exponential constraints, whose decidability is still open (Section~\ref{section:s2i}). 
+
+In principle, we can also extend FA-based solvers to support string-number conversion, but PFA are much more efficient. Extending FA-based approach to support string-number conversion would require multiple if-then-else statements (e.g., saying that if a transition labeled `0' is taken, then the corresponding number is $0$), which introduces a significant amount of additional predicates that the DPLL engine needs to decide their value. We have confirmed this in our preliminary experiment.}
+
+
+
+\changed{
+PASS\cite{goudong2013pass} uses quantified formulae over arrays with symbolic length to encode string constraints, and a specialized quantifier elimination to solve them. Though it differs from our approach significantly and handling the quantification is expensive, PASS is indeed similar in how finite automata and string-number conversion constraints are translated to formulae. But our translation is in general more efficient because it uses only linear arithmetics. In contrast, PASS translates string constraints to formulae with quantifier and array predicates. We did not compare with PASS empirically. The authors informed us that PASS is no longer maintained and is not open-source.
+}
+
 
 A further direction is {\it automata-based} solvers for analyzing
 string-manipulated programs. ABC~\cite{aydin2018parameterized} and Stranger~\cite{yu2010stranger} soundly over-approximates string constraints using multi-tape automata~\cite{yu2016optimal}, and outperforms DPLL(T)-based solvers when checking single execution traces, according to some evaluations~\cite{kausler2014evaluation}. People also studied the combination of automata-based algorithms with with model checking
@@ -1276,7 +1288,7 @@ We are also planning to merge  {\tool}  with the main branch of the Z3 solver. F
 
 
 \begin{acks}
-This research was  partially supported by the  Swedish Foundation for Strategic Research.
+This research was  partially supported by the  Swedish Foundation for Strategic Research and Ministry of Science and Technology Project,Taiwan (no. 106-2221-E-001 -009 -MY3).
 \end{acks}
 
  \balance
