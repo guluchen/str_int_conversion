@@ -16,3 +16,5 @@ final-version/main.pdf
 final-version/comment.cut
 final-version/main.aux
 final-version/main.synctex.gz
+.DS_Store
+final-version/.DS_Store

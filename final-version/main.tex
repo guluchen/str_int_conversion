@@ -1148,7 +1148,7 @@ Our first attempt is a PFA without loop, i.e., a straight line structure
 	\end{tikzpicture}
 	} should be sufficient for the domain restriction of $x$. If we do so, we will conclude that the formula is unsatisfiable, because the length of $x$ cannot be $5$  under this domain restriction.
 
-However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$ \changed{since PFAs accept  numeric words with least significant bit first}. The key is that even for a bounded integer, the corresponding numeral can be of an unbounded length with arbitrarily many trailing `$0$'s at the front. All numbers with up to $m$-digits can be however still handled without having to solve exponential constraints. It is enough to equip the initial state of the PFA with a  $0$-self-loop.
+However, the formula is satisfiable when $x=``00010"$. Observe that $\sti{``00010"}=10$ \changed{since PFAs accept  numerals with the least significant bit first}. The key is that even for a bounded integer, the corresponding numeral can be of an unbounded length with arbitrarily many trailing `$0$'s at the front. All numbers with up to $m$-digits can be however still handled without having to solve exponential constraints. It is enough to equip the initial state of the PFA with a  $0$-self-loop.
 
 Consequently, the automaton $A^m$ of our number PFA will have the following form illustrated in Figure~\ref{fig:sfa_its}. 
 It has a self-loop on the initial state labeled by the character variable $v_0$, 
@@ -1261,11 +1261,12 @@ restriction of strings of bounded length. They usually support a variety of stri
 The typical procedure they used for solving equality constraints is to split them into simpler sub-cases, in combination with powerful techniques for Boolean reasoning to curb the resulting exponential search space. In contrast, our approach uses a completely different search strategy. We restrict the solution space to some predefined pattern and step-wisely enrich the pattern in use.
 
 \changed{
-The most relevant work to ours is the FA-based approach~\cite{abdulla2018trau} that projects the solution space of variables to a generalization of flat automata. The main difference is that our approach works fully symbolically, which is enabled by to the ideas of using integer variables as characters and hence PFAs. The use of integer variables as characters allows our approach to handle string-number constraints efficiently -- the values and number of occurrences of those variables can be directly convert to a number in a linear formula. 
+The most relevant work to ours is the FA-based approach~\cite{abdulla2018trau} that projects the solution space of variables to a generalization of flat automata. The main difference is that our approach works fully symbolically, which is enabled through using integer variables as characters and hence PFAs. The use of integer variables as characters allows our approach to handle string-number constraints efficiently -- the values and number of occurrences of those variables can be directly converted to numbers in a linear formula. 
 
+%HERE
 The straightforward extension of existing FA based techniques boils down to solving the satisfiability problem of integer polynomial-exponential constraints, whose decidability is still open (Section~\ref{section:s2i}). 
 
-In principle, we can also extend FA-based solvers to support string-number conversion, but PFA are much more efficient. Extending FA-based approach to support string-number conversion would require multiple if-then-else statements (e.g., saying that if a transition labeled `0' is taken, then the corresponding number is $0$), which introduces a significant amount of additional predicates that the DPLL engine needs to decide their value. We have confirmed this in our preliminary experiment.}
+In principle, FA-based solvers can be extended to support string-number conversion too, but PFA are much more efficient. Extending FA-based approach would require multiple if-then-else statements (e.g., saying that if a transition labeled `0' is taken, then the corresponding number is $0$), which introduces a significant amount of additional predicates that the DPLL engine needs to evaluate. We have confirmed this in our preliminary experiment.}
 
 
 
@@ -1288,7 +1289,7 @@ We are also planning to merge  {\tool}  with the main branch of the Z3 solver. F
 
 
 \begin{acks}
-This research was  partially supported by the  Swedish Foundation for Strategic Research and Ministry of Science and Technology Project,Taiwan (no. 106-2221-E-001 -009 -MY3).
+This research was  partially supported by the  Swedish Foundation for Strategic Research and Ministry of Science and Technology Project,Taiwan (no. 106-2221-E-001 -009 -MY3), Ministry of Education, Youth and Sports of Czech Republic (no. LL1908).
 \end{acks}
 
  \balance
