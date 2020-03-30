@@ -1263,15 +1263,15 @@ The typical procedure they used for solving equality constraints is to split the
 \changed{
 The most relevant work to ours is the FA-based approach~\cite{abdulla2018trau} that projects the solution space of variables to a generalization of flat automata. The main difference is that our approach works fully symbolically, which is enabled through using integer variables as characters and hence PFAs. The use of integer variables as characters allows our approach to handle string-number constraints efficiently -- the values and number of occurrences of those variables can be directly converted to numbers in a linear formula. 
 
-%HERE
-The straightforward extension of existing FA based techniques boils down to solving the satisfiability problem of integer polynomial-exponential constraints, whose decidability is still open (Section~\ref{section:s2i}). 
+%%%%This sounds like contradicting the next paragraph. I think it is not necessary here, it is not a related work, so I am just commenting out.
+%The straightforward extension of existing FA based techniques boils down to solving the satisfiability problem of integer polynomial-exponential constraints, whose decidability is still open (Section~\ref{section:s2i}). 
 
 In principle, FA-based solvers can be extended to support string-number conversion too, but PFA are much more efficient. Extending FA-based approach would require multiple if-then-else statements (e.g., saying that if a transition labeled `0' is taken, then the corresponding number is $0$), which introduces a significant amount of additional predicates that the DPLL engine needs to evaluate. We have confirmed this in our preliminary experiment.}
 
 
 
 \changed{
-PASS\cite{goudong2013pass} uses quantified formulae over arrays with symbolic length to encode string constraints, and a specialized quantifier elimination to solve them. Though it differs from our approach significantly and handling the quantification is expensive, PASS is indeed similar in how finite automata and string-number conversion constraints are translated to formulae. But our translation is in general more efficient because it uses only linear arithmetics. In contrast, PASS translates string constraints to formulae with quantifier and array predicates. We did not compare with PASS empirically. The authors informed us that PASS is no longer maintained and is not open-source.
+PASS \cite{goudong2013pass} uses quantified formulae over arrays with symbolic length to encode string constraints, and a specialized quantifier elimination to solve them. Though it differs from our approach significantly and handling the quantification is expensive, PASS is indeed similar in how finite automata and string-number conversion constraints are translated to formulae. Our translation is in general more efficient because it uses only linear arithmetics. In contrast, PASS translates string constraints to formulae with quantifier and array predicates. We did not compare with PASS empirically. The authors informed us that PASS is no longer maintained and is not open-source.
 }
 
 
