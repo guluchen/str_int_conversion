@@ -1,0 +1,205 @@
+PLDI 2020 Paper #869 Reviews and Comments
+===========================================================================
+Paper #869 Efficient Handling of String-Number Conversion
+
+
+Review #869A
+===========================================================================
+
+Overall merit
+-------------
+B. I support accepting this paper but will not champion it.
+
+Reviewer expertise
+------------------
+Y. Knowledgeable
+
+Paper summary
+-------------
+This paper presents an efficient solver for string-number conversion
+constraints. Such constraints arise when analyzing (e.g., with
+symbolic execution) code transforming strings to numeric values, and
+vice versa, like in JavaScript. The key technical novelty of this
+paper is the new notion of "Parametric Flat Automata" which
+efficiently encode string-number constraints and is used to
+iteratively generate under-approximate constraints when attempting to
+prove constraint satisfiability. The paper also discusses an iterative
+over-approximation procedure using "chain-free string constraints"
+(from [5]). The overall new decision procedure has been implemented as
+an extension of the Z3 SMT solver, is open source, and has been
+evaluated on a set of constraints. When compared to other
+state-of-the-art string constraint solvers, the new solver often
+outperforms these on string-number constraints.
+
+Comments for author
+-------------------
+This paper is very well-written. The presentation keeps a nice balance
+between formality and precision, while many examples illustrate the
+key concepts and provide more intuition.
+
+The new notion of Parametric Flat Automata is a nice insight. In the
+end, this is just a heuristic but, based on the experimental
+evaluation, it seems to work well for the benchmarks
+considered. Moreover, solving string constraints with string-number
+conversions is undecidable in general [14], so all we can hope for
+here are efficient heuristics.
+
+The comparison with related work appears to be thorough. It is too bad
+that the experimental evaluation does not include some DPLL-based
+string solvers.
+
+In Section 9, it would be nice to break down the X results further:
+how many "unknown" vs timeouts vs incorrect results vs crashes? For
+the latter two categories, did this work uncover new bugs in some of
+the solvers? Please clarify.
+
+In Section 9, would using a timeout value different from 10 seconds
+change the results significantly? This question is partly answered in
+the text, but a scatter plot showing the solving time for each
+instance and comparing Z3-PFA with other solvers would provide more
+information.
+
+Overall, this is a nice paper with an interesting contribution on a
+narrow yet practially-motivated topic.
+
+Some minor comments (typos):
+
+- line 232, "is decidable": what is the complexity?
+
+- line 270, "This done": missing 'is'
+
+- line 310, "literatures" -> "the literature"
+
+- line 331, "Section 3." replace . by ,
+
+- section 3, restiction to positive numbers. What about
+floating-points numbers? 
+
+- line 441, "conversing" -> converting
+
+
+
+Review #869B
+===========================================================================
+
+Overall merit
+-------------
+C. I would not accept this paper but will not argue strongly against
+   accepting it.
+
+Reviewer expertise
+------------------
+Y. Knowledgeable
+
+Paper summary
+-------------
+This paper proposes an efficient approach to handle string-number conversions in string solvers. It describes a class of parametric flat automata to handle string constraints. The evaluation shows that the proposed approach outperforms state-of-the-art solvers.
+
+Comments for author
+-------------------
+Implicit string-number conversion is common in dynamic languages such as Javascript. This paper is clearly attacking an interesting, important problem. I generally like this paper. However,  I have several reservations regarding the current submission.
+
+My major concern is the novelty of the proposed technique. The concept of flat automata for solving string constraints has already been proposed [1]. The solver framework based on both over- and under-approximation has also been proposed in [1]. I understand that this paper proposes a parametric version of flat automata (PFA). However, I do not see the key insight of the PFA. Why can't FA be applied in the problem domain since PFA is just FA plus recording the loop size/length?
+
+Second, I can't entirely agree with the stated hardness of handling string-number conversion in solvers. In particular, lines 195-197 state that the challenge of dealing with string-number constraint is that the problem is undecidable. Well, undecidability is an over-used term in this context. Recall that the problem of solving string constraints itself is already very hard (see the undecidability discussion in section 2 of [1]). Therefore, the problem with string-number conversion, intuitively, is undecidable. On the other hand, various string solvers have been proposed in the past. How significant is it to introduce the string-number conversion? With that said, the current paper does not give any constructive argument to discuss the hardness of the problem. I think perhaps a better way is to show that the popular solvers based on FA could not handle the string-number conversion. That gives a strong motivation for PFA as well as this work in general.
+
+In the introduction, the description of the motivating example in Figure 2 is extremely confusing. When discussing the example for the first time (lines 285-300), I don't see why $A_x$ is projected in this way. In the example, we have only $y\in(12)^+$. How exactly do you infer that $A_x$ should have a similar structure?
+
+In the evaluation, it is a bit unfortunate to see that there is no comparison with Trau [1-5]. This is critical. Lines 1039-1040 mention that it is because Trau does not ``support all string functions in our benchmarks, especially string-number conversion.'' This argument is unconvincing. In the evaluation, you can compare your approach against a vanilla Z3. And Trau is implemented on top of Z3 (see section 1 of [1]). Logically, Trau could be extended to handle the conversion (just by ``enabling'' some features in the vanilla Z3). If there is any principle limitation, it's worthwhile to justify it.
+
+
+
+Review #869C
+===========================================================================
+
+Overall merit
+-------------
+B. I support accepting this paper but will not champion it.
+
+Reviewer expertise
+------------------
+Y. Knowledgeable
+
+Paper summary
+-------------
+This work solves string-number conversion problem with a mixture of over- and under- approximation techniques. In over-approximation, the input constraints are being converted into  chain-free fragment, on which UNSAT would indicate UNSAT of the original constraints. If the over-approximation return SAT, they undergo under-approximations. In particular, they use parametric flat automata to model the search space for each variable from which they construct the linear formula to find their assignment. The authors perform two sets of experiments to evaluate Z3-PFA. On benchmarks over basic string constraints, they show Z3-PFA is equally good to CVC4 and Z3. On benchmarks over string-number conversion, they show Z3-PFA is better than any other tool.
+
+Comments for author
+-------------------
+Overall, I feel the problem is clearly explained. Nevertheless, I performed a very quick experiment in which I converted the function *checkLuhn* into C code, and find out KLEE works fine. This demonstrates that the state-of-the-art solvers are capable of handling the path constraints, which left me some negative feelings in the very beginning. Perhaps change the example program?
+
+It would be better if the authors can provide more background to support your claim that string-number conversion is difficult for existing solvers. Is there an empirical study the authors can refer to? or educate the readers why those constraints are hard to solve. Moreover, I'm not clear about the "correct answer" (line 137), do you mean these solvers provide a wrong answer (e.g., return SAT for UNSAT constraints) or just return "unknown"? If they provide a wrong answer, why does it happen?
+
+It is not clear to me how you construct a PFA that is aware of the domain of a constraint. For example, how do you infer that the domain of a constraint to be a binary number, octal number, decimal number or hexadecimal number? For a constraint "var[0] == var[1] && $\forall$ i in [0,len(var)-1], toNum(var[i]) > 9" that is only satisfiable for hexadecimal numbers, how do you know the domain is a hexadecimal number (i.e., [0, f]) as opposed to a decimal number (i.e., [0, 9])? 
+
+At line 894, it is not clear to me how each numeric PFA covers a large and practically significant portion of numerals. In my view, each numeric PFA can only cover one number. 
+
+In the evaluation, you only give the run-time results for the evaluation on *checkLuhn* algorithm. This is rather strange, why don't you also provide solving time in table 1 or table 2? Additionally, why is its timeout budget (120s) different from the previous experiment (10s).
+
+I think [1] is closely related, which I believe you should compare in your evaluation.
+
+In the end, I am a bit struggling to learn the insight of your approach. In essence, why is your approach better than the existing solvers? 
+
+Minors:
+
+At lines 373 to 377, the formal and informal definition of the Parikh image of a word is not consistent. The informal definition claims that it maps each Parikh variable to the number of occurrences of a in w. However, the formal definition does not clearly show it is related to all characters in the alphabet. 
+
+Using PFA will simplify solving the string constraints. However, the performance of the under-approximation depends on the alphabet because the automaton consists of multiple one-way cycles (at line 1002). I can imagine the performance difference in a binary number, octal number, decimal number and hexadecimal number on which the size of each loop in PFA depends(e.g., the size of each loop is 8 for octal numbers). Therefore, would it be beneficial to convert different number systems to binary number systems?
+
+At line 629, it is not clear to me why the variable v_z is required. 
+
+At line 270, "This done" => "This is done"? 
+At line 288, "The variables v_1 , v_2 , v_3 , v_4" seems to be "The variables v_0, v_1 , v_2 , v_3 ". The three sub-figures in figure 2 should have consistent variable names.
+At line 402: "Assume that X ia a set..." => "Assume that X is a set"?
+At line 513: "For an flat FA" => "For a flat FA"?
+at liens 917 and 964: "number PFA" => "numeric PFA"?
+
+
+[1] PASS: String Solving with Parameterized Array and Interval Automaton
+
+
+
+Review #869D
+===========================================================================
+
+Overall merit
+-------------
+A. I will champion accepting this paper.
+
+Reviewer expertise
+------------------
+Y. Knowledgeable
+
+Paper summary
+-------------
+This paper proposes a solver for strings that supports string-number conversion, which is often used in scripting languages such as JavaScript and Python. Existing string solvers have limited support for such constraints. The proposed decision procedure is based on over- and under-approximations. It first checks an over-approximation of the given string constraints based on the chain-free fragment, which is shown to be decidable in prior work and is the largest known decidable fragment. If the over-approximation is UNSAT, then the original problem is too. Otherwise, the solver uses an under-approximation technique to attempt to create a satisfying instance. The main idea is to restrict the search space for each string variable to a pattern captured by a parametric flat automaton (PFA), which defines a sequence of loops, each of a fixed length. This allows translation of the string problem to a linear arithmetic problem, where a satisfying solution directly corresponds to a string solution. Otherwise, the solver changes the PFA to consider more expressive patterns. It gives up after a certain number of attempts.
+
+The paper describes an open-source tool Z3-PFA based on the proposed ideas and a detailed experimental evaluation that shows its effectiveness.
+
+Comments for author
+-------------------
+Strengths:
+
+- String solvers are important for handling verification/analysis of real-world programs, and the targeted class of string-number conversion constraints seems useful.
+
+- The proposed approach is a good combination of prior work on the chain-free fragment with new ideas for under-approximation. In particular, the class of PFA is novel and seems very well-suited for considering string patterns. 
+
+- The experimental evaluation is solid and clearly advances the capabilities of string solvers. Z3-PFA is competitive with CVC4 and Z3 on basic string constraints, and is much better on string-number conversion constraints. 
+
+- The paper is written well and systematically develops the main ideas. The 
+
+Suggestions:
+
+- Although the solver is incomplete (which is not surprising for an undecidable problem in general), it would be useful to learn what heuristics were used in the iterative process of considering more expressive PFA. Was this process partially or fully automated? Do you prioritize among the PFAs of different variables?
+
+- It also seems that there may be some wasted effort when considering larger PFAs iteratively. Is some work re-usable? Could your solver be made incremental over the PFAs?
+
+Detailed comments:
+
+- Section 5, Definition of Flat automata: Please explain what are a_i, a_i^{j-1} etc. 
+
+- Also, please explain requirement 3 that each character in \Sigma appears on at most one transition. Is it at most one transition in the full automata or in each loop?
+
+- Typo: Page 5, line 516/517: “within the a cycle of A” – delete “the”
+
+- Section 8, Page 9, line 913: “many trailing 0’s at the front” – this sounds confusing, although the intent is clear. Perhaps you can clarify if the automaton accepts numeric words with LSB first.

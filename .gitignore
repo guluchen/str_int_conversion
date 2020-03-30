@@ -6,3 +6,15 @@ draft.pdf
 draft.synctex.gz
 draft.blg
 draft.bbl
+final-version/main.pdf
+final-version/main.blg
+final-version/main.bbl
+final-version/main.log
+final-version/main.pdf
+*.log
+final-version/main.pdf
+final-version/comment.cut
+final-version/main.aux
+final-version/main.synctex.gz
+.DS_Store
+final-version/.DS_Store

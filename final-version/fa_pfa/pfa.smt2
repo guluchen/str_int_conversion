@@ -1,0 +1,18 @@
+(declare-const n Int)
+(declare-const s0 Int)
+(declare-const s1 Int)
+(declare-const s2 Int)
+(declare-const s3 Int)
+(declare-const s4 Int)
+(declare-const s5 Int)
+(declare-const s6 Int)
+(declare-const s7 Int)
+(declare-const s8 Int)
+(declare-const s9 Int)
+(declare-const s10 Int)
+
+(assert (= n (+(* 10(+(* 10(+(* 10(+(* 10(+(* 10(+(* 10(+(* 10 (+(* 10 (+ (* 10 s1) s2)) s3))s4)) s5)) s6))s7))s8))s9))s10)))
+(assert (> n 42))
+
+(check-sat)
+(get-model)

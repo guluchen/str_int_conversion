@@ -27,13 +27,14 @@ String-number conversion is an important class of constraints needed for the sym
 \begin{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\hide}[1]{}
-\newcommand{\tool}{{\textsf{Z3-PFA}}}
+\newcommand{\tool}{{\textsf{Z3-Trau}}}
 \newcommand{\dr}{\mathcal{R}}
 \newcommand{\nat}{\mathbb{N}}
 \newcommand{\integers}{\mathbb{Z}}
 \newcommand{\todo}[1]{{\color{blue}TODO: #1}}
 \newcommand{\lh}[1]{{\color{orange}Lukas: #1}}
-\newcommand{\changed}[1]{{\color{orange}#1}}
+\newcommand{\changed}[1]{{\color{blue}#1}}
+
 \newcommand{\yfc}[1]{{\color{blue}YFC: #1}}
 \newcommand{\petr}[1]{{\color{pink}Petr: #1}}
 \newcommand{\chatAt}[2]{\mbox{\textsf{charAt}($#1$, $#2$)}}
@@ -208,7 +209,8 @@ Here ${\it value_0}$ and ${\it last_0}$ are string variables and the others are 
 \end{itemize}
 
 
-Most of the state-of-the-art string constraint solvers provide only very limited support to the combination of above constraints. Even for a simple constraint like the above one, most solvers already fail to provide a correct answer. Therefore, there is an urgent  need for developing efficient techniques for solving such combinations of constraints. 
+Most of the state-of-the-art string constraint solvers provide only very limited support to the combination of above constraints. Even for simple constraints like the above one, most solvers already fail to provide a correct answer. \changed{In Table~\ref{table:checkLuhn} of our evaluation (Section~\ref{section:evaluation}), CVC4 fails to solve constraints corresponding to checkLuhn of more than 6 loop iterations in 2 minutes, Z3 fails to solve the cases corresponding to 4,5,7, and 9 loop iterations, and Z3Str3 fails to solve even the case of 2 loop iterations.}
+Therefore, there is an urgent  need for developing efficient techniques for solving such combinations of constraints. 
 
 
 %Currently, even for the above constraint, which is from a simple program, most of the-state-of-the art solvers fail to provide a correct answer. 
@@ -1496,7 +1498,7 @@ Although it still has a loop, it will not create any exponential component defin
 %Such PFA handles bounded integers (e.g., 10-digits or 64-bits) precisely and under-approximate the possible values of unbounded integers. It works very efficiently because we just need to use linear constraints to characterize the relation between $x$ and $n$. 
 Numeric PFA with these restrictions would satisfy our primary objective, that is, they would induce linear formulae and would ``easily" and completely cover all numerals.
 %
-A last problem still neededs to be solved before they can be efficient in practice. 
+A last problem still needs to be solved before they can be efficient in practice. 
 %
 Recall that the character variables can be assigned $\epsilon$.  
 %

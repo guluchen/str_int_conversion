@@ -12,7 +12,7 @@ The way our theory solver and Z3 interacts is almost standard. Every time when Z
 
 
 
-We compare {\tool} with other state-of-the-art string solvers, namely, CVC4~(45bcf28a)~\cite{cvc4Tool}, and Z3~(\texttt{d95b549ff})~\cite{z3}, \textsf{Z3-str3}~(\texttt{d95b549ff})~\cite{zheng2013z3}. For these tools, we use the GitHub version stated in the parenthesis because their performance are in general better than the corresponding release version. 
+We compare {\tool} with other state-of-the-art string solvers, namely, CVC4~(45bcf28ab)~\cite{cvc4Tool}, and Z3~(\texttt{d95b549ff})~\cite{z3}, \textsf{Z3Str3}~(\texttt{d95b549ff})~\cite{zheng2013z3}. For these tools, we use the GitHub version stated in the parenthesis because their performance are in general better than the corresponding release version. 
 We do not compare with Sloth \cite{sloth} since it does not support length constraints, which occurs in most of our benchmarks. We also do not compare with ABC~\cite{aydin2018parameterized} (a model counter for string constraints), Ostrich~\cite{chen2019decision} and \textsf{Trau+}~\cite{abdulla2019chain}, because they do not support all string functions in our benchmarks, especially string-number conversion.
 
 We perform two sets of experiments. In the first set of experiments, we compare {\tool} with other tools on existing benchmarks over basic string constraints. Those benchmarks do not involve string-number conversion function. In the second set of experiments, we compare {\tool} with other tools on new suites focusing on string-number conversion. Our goals of experiments are the following:
@@ -45,11 +45,9 @@ In the first set of experiments, we use the following benchmark examples:
 		\smallskip
 
 
-	\item LeetCode is from running PyEx over some sample code collected from the LeetCode~\cite{LeetCode} website.
+	\item \changed{ LeetCode is from running PyEx over some sample code collected from the LeetCode~\cite{LeetCode} website, including functions that check if a string is a valid IPv4 or IPv6 address, sum up two binary numbers, check if an input string is an abbreviation of another input string, and decode a sequence of digits to strings according to a given mapping.}
 	
 		\smallskip
-
-
 
 	\item StringFuzz~\cite{blotsky2018stringfuzz}  is generated from the fuzz testing tool of the same name.
 	
@@ -63,77 +61,140 @@ In the second experiment, we compare with tools supporting string-number convers
 All experiments were executed on a machine with 4-core CPU, 8 GiB RAM. The timeout was set to 10s for each test.
 We use the results from {\tool}, CVC4, and Z3 as the reference answer for the validation of the correctness of the results. Occasionally, two of them report inconsistent (one SAT and one UNSAT) answers to the same test. To decide which solver reports the incorrect answer, we developed a validator, which takes the model $I$ returned from the solver who reported SAT, assigns $I(x)$ to all variables $x$ in the test to obtain a modified test, and re-evaluates the modified test by multiple solvers. If the results from all solvers are consistent, we mark the test SAT or UNSAT according to the results. Otherwise, we manually simplify and inspect the test until we get a conclusive result. 
 
-The results of the experiments are summarized in Table~\ref{table:base_benchmark}, Table~\ref{table:str_int_benchmark}, and Table~\ref{table:checkLuhn}. Rows with heading \texttt{SAT}/\texttt{UNSAT} show numbers of solved formulae. Rows with heading $\times$ indicate the number of instances the solver fails (including timeout, report unknown, report incorrect result, or crash).
+The results of the experiments are summarized in Table~\ref{table:base_benchmark}, Table~\ref{table:str_int_benchmark}, and Table~\ref{table:checkLuhn}. Rows with heading \texttt{SAT}/\texttt{UNSAT} show numbers of solved formulae. Rows with heading \texttt{UNKNOWN}, \texttt{TIMEOUT}, or \texttt{ERROR} indicate the number of instances the solver fails to return an answer. \texttt{INCORRECT} shows the number of cases that a tool gives wrong answer\footnote{A correct answer is decided by mainly CVC4, then the consensus of {\tool} or Z3.}.
 
-\begin{table}[h]
-\centering
-\caption{Results of {\tool}, CVC4, Z3, and Z3-str3 on Basic String Constraint benchmarks.}
-\scalebox{0.85}{
-\begin{tabular}{|l r | r r r r |}
-\hline
-\multicolumn{2}{|c}{}                  & {\tool} & CVC4  &Z3 & Z3-str3 \\ \hline
-\multirow{3}{*}{PyEx}		& SAT      &  19468  & 19763 & 16528 &  3030 \\ 
-							& UNSAT    &   3854  &  3834 &  3831 &  3836 \\
-							& $\times$ &   2099  &  1824 &  5062 & 18555 \\ \hline
-\multirow{3}{*}{APLAS}		& SAT      &    131  &   205 &    12 &    37 \\
-							& UNSAT    &    288  &   221 &   100 &   111 \\
-							& $\times$ &    181  &   174 &   488 &   452 \\ \hline
-\multirow{3}{*}{LeetCode}	& SAT      &    881  &   859 &   881 &   670 \\
-							& UNSAT    &   1785  &  1785 &  1785 &  1780 \\
-							& $\times$ &      0  &    22 &     0 &   216 \\ \hline
-\multirow{3}{*}{StringFuzz}	& SAT      &    498  &   671 &   264 &   491 \\
-							& UNSAT    &    319  &   240 &   186 &   192 \\
-							& $\times$ &    248  &   154 &   615 &   382 \\\hline
-\multirow{3}{*}{cvc4\textsubscript{pred}} & SAT & 11 & 11 &   12 &     8 \\
-							& UNSAT    &    820  &   818 &   808 &   772 \\
-							& $\times$ &      4  &     6 &    15 &    55 \\ \hline
-\multirow{3}{*}{cvc4\textsubscript{term}} & SAT & 13 & 8 &     5 &    17 \\
-							& UNSAT    &   1031  &   936 &  1021 &   958 \\
-							& $\times$ &      1  &   101 &    19 &    70 \\ \hline \hline
-\multirow{3}{*}{Total} 		& SAT      &  21002  & 21517 & 17702 &  4253 \\
-							& UNSAT    &   8097  &  7834 &  7731 &  7649 \\
-							& $\times$ &   2533  &  2281 &  6199 & 19730 \\\hline	
-\end{tabular}}
-\label{table:base_benchmark}
-\end{table}
-
-
-
-% latest backup of table 2
 \begin{table}[h]
 \centering
 \caption{Results of {\tool}, CVC4, Z3, and Z3-str3 on String-Number Conversion benchmark.}
 \scalebox{0.8}{
 \begin{tabular}{|l r | r r r r|}
 \hline
-\multicolumn{2}{|c}{}          			   & {\tool} & CVC4  &    Z3  & Z3-str3 \\ \hline
-\multirow{3}{*}{Leetcode}		& SAT      &   2349  &  1543 &  1892  &   217 \\ 
-								& UNSAT    &  16368  & 15676 & 16105  & 15374 \\
-								& $\times$ &    210  &  1708 &   930  &  3336 \\ \hline 
-\multirow{3}{*}{PythonLib}		& SAT      &    886  &   408 &   797  &   201 \\ 
-								& UNSAT    &    720  &   660 &   724  &   644 \\
-								& $\times$ &   1040  &  1578 &  1125  &  1801 \\ \hline
-\multirow{3}{*}{JavaScript}		& SAT      &     20  &     6 &    16  &     4 \\ 
-								& UNSAT    &      0  &     0 &     0  &     0 \\
-								& $\times$ &      0  &    14 &     4  &    16 \\ \hline \hline
-\multirow{3}{*}{Total}			& SAT      &   3255  &  1957 &  2705  &   422 \\ 
-								& UNSAT    &  17088  & 16336 & 16829  & 16018 \\
-								& $\times$ &   1250  &  3300 &  2059  &  5153 \\ \hline
+\multicolumn{2}{|c}{}          			   & {\tool} &  CVC4 &    Z3 & Z3-str3 \\ \hline
+\multirow{6}{*}{Leetcode}		& SAT      &  2392&  1721&  1898&   239 \\ 
+								& UNSAT    & 16393& 15726& 16115& 15396 \\
+								& UNKNOWN  &     0&     0&     0&   623 \\
+								& TIMEOUT  &   142&  1480&   914&  2337 \\
+								& ERROR    &     0&     0&     0&   332 \\
+								& INCORRECT&     1&     0&     0&   108 \\ \hline 
+\multirow{6}{*}{PythonLib}		& SAT      &   670&   579&   914&   206 \\ 
+								& UNSAT    &   720&   667&   724&   644 \\
+								& UNKNOWN  &     0&     0&     0&    45 \\
+								& TIMEOUT  &  1256&  1400&  1008&  1710 \\
+								& ERROR    &     0&     0&     0&    41 \\
+								& INCORRECT&     0&     0&     0&     2 \\ \hline
+\multirow{3}{*}{JavaScript}		& SAT      &    20&     6&    16&     4 \\ 
+								& UNSAT    &     0&     0&     0&     0 \\
+								& TIMEOUT  &     0&    14&     4&    16 \\ \hline \hline
+\multirow{6}{*}{Total}			& SAT      &  3082&  2306&  2828&   449 \\ 
+								& UNSAT    & 17113& 16393& 16839& 16040 \\
+								& UNKNOWN  &     0&     0&     0&   668 \\
+								& TIMEOUT  &  1398&  2894&  1926&  4063 \\
+								& ERROR    &     0&     0&     0&   373 \\
+								& INCORRECT&     1&     0&     0&   110 \\ \hline
 \end{tabular}}
 \label{table:str_int_benchmark}
 \end{table}
+
+
+\begin{table}[h]
+\centering
+\caption{Results of {\tool}, CVC4, Z3, and Z3-str3 on String-Number Conversion benchmark.}
+\scalebox{0.8}{
+\begin{tabular}{|l r | r r r r|}
+\hline
+\multicolumn{2}{|c}{}          			   & {\tool} &  CVC4 &    Z3 & Z3-str3 \\ \hline
+\multirow{6}{*}{Leetcode}		& SAT      &  2392&  1721&  1898&   239 \\ 
+								& UNSAT    & 16393& 15726& 16115& 15396 \\
+								& UNKNOWN  &     0&     0&     0&   623 \\
+								& TIMEOUT  &   142&  1480&   914&  2337 \\
+								& ERROR    &     0&     0&     0&   332 \\
+								& INCORRECT&     1&     0&     0&   108 \\ \hline 
+\multirow{6}{*}{PythonLib}		& SAT      &   670&   579&   914&   206 \\ 
+								& UNSAT    &   720&   667&   724&   644 \\
+								& UNKNOWN  &     0&     0&     0&    45 \\
+								& TIMEOUT  &  1256&  1400&  1008&  1710 \\
+								& ERROR    &     0&     0&     0&    41 \\
+								& INCORRECT&     0&     0&     0&     2 \\ \hline
+\multirow{6}{*}{JavaScript}		& SAT      &    20&     3&    16&     4 \\ 
+								& UNSAT    &     0&     0&     0&     0 \\
+								& UNKNOWN  &     0&     9&     0&     0 \\
+								& TIMEOUT  &     0&     8&     4&    10 \\
+								& ERROR    &     0&     0&     0&     6 \\
+								& INCORRECT&     0&     0&     0&     0 \\ \hline \hline
+\multirow{6}{*}{Total}			& SAT      &  3082&  2306&  2828&   449 \\ 
+								& UNSAT    & 17113& 16393& 16839& 16040 \\
+								& UNKNOWN  &     0&     0&     0&   668 \\
+								& TIMEOUT  &  1398&  2894&  1926&  4063 \\
+								& ERROR    &     0&     0&     0&   373 \\
+								& INCORRECT&     1&     0&     0&   110 \\ \hline
+\end{tabular}}
+\label{table:str_int_benchmark}
+\end{table}
+
+% \begin{table}[h]
+% \centering
+% \caption{Results of {\tool}, CVC4, Z3, and Z3Str3 on Basic String Constraint benchmarks.}
+% \scalebox{0.85}{
+% \begin{tabular}{|l r | r r r r |}
+% \hline
+% \multicolumn{2}{|c}{}                  & {\tool} & CVC4  &Z3 & Z3Str3 \\ \hline
+% \multirow{3}{*}{PyEx}		& SAT      &  19468  & 19763 & 16528 &  3030 \\ 
+% 							& UNSAT    &   3854  &  3834 &  3831 &  3836 \\
+% 							& $\times$ &   2099  &  1824 &  5062 & 18555 \\ \hline
+% \multirow{3}{*}{APLAS}		& SAT      &    131  &   205 &    12 &    37 \\
+% 							& UNSAT    &    288  &   221 &   100 &   111 \\
+% 							& $\times$ &    181  &   174 &   488 &   452 \\ \hline
+% \multirow{3}{*}{LeetCode}	& SAT      &    881  &   859 &   881 &   670 \\
+% 							& UNSAT    &   1785  &  1785 &  1785 &  1780 \\
+% 							& $\times$ &      0  &    22 &     0 &   216 \\ \hline
+% \multirow{3}{*}{StringFuzz}	& SAT      &    498  &   671 &   264 &   491 \\
+% 							& UNSAT    &    319  &   240 &   186 &   192 \\
+% 							& $\times$ &    248  &   154 &   615 &   382 \\\hline
+% \multirow{3}{*}{cvc4\textsubscript{pred}} & SAT & 11 & 11 &   12 &     8 \\
+% 							& UNSAT    &    820  &   818 &   808 &   772 \\
+% 							& $\times$ &      4  &     6 &    15 &    55 \\ \hline
+% \multirow{3}{*}{cvc4\textsubscript{term}} & SAT & 13 & 8 &     5 &    17 \\
+% 							& UNSAT    &   1031  &   936 &  1021 &   958 \\
+% 							& $\times$ &      1  &   101 &    19 &    70 \\ \hline \hline
+% \multirow{3}{*}{Total} 		& SAT      &  21002  & 21517 & 17702 &  4253 \\
+% 							& UNSAT    &   8097  &  7834 &  7731 &  7649 \\
+% 							& $\times$ &   2533  &  2281 &  6199 & 19730 \\\hline	
+% \end{tabular}}
+% \label{table:base_benchmark}
+% \end{table}
+
+% \begin{table}[h]
+% \centering
+% \caption{Results of {\tool}, CVC4, Z3, and Z3Str3 on String-Number Conversion benchmark.}
+% \scalebox{0.8}{
+% \begin{tabular}{|l r | r r r r|}
+% \hline
+% \multicolumn{2}{|c}{}          			   & {\tool} & CVC4  &    Z3  & Z3Str3 \\ \hline
+% \multirow{3}{*}{Leetcode}		& SAT      &   2349  &  1543 &  1892  &   217 \\ 
+% 								& UNSAT    &  16368  & 15676 & 16105  & 15374 \\
+% 								& $\times$ &    210  &  1708 &   930  &  3336 \\ \hline 
+% \multirow{3}{*}{PythonLib}		& SAT      &    886  &   408 &   797  &   201 \\ 
+% 								& UNSAT    &    720  &   660 &   724  &   644 \\
+% 								& $\times$ &   1040  &  1578 &  1125  &  1801 \\ \hline
+% \multirow{3}{*}{JavaScript}		& SAT      &     20  &     6 &    16  &     4 \\ 
+% 								& UNSAT    &      0  &     0 &     0  &     0 \\
+% 								& $\times$ &      0  &    14 &     4  &    16 \\ \hline \hline
+% \multirow{3}{*}{Total}			& SAT      &   3255  &  1957 &  2705  &   422 \\ 
+% 								& UNSAT    &  17088  & 16336 & 16829  & 16018 \\
+% 								& $\times$ &   1250  &  3300 &  2059  &  5153 \\ \hline
+% \end{tabular}}
+% \label{table:str_int_benchmark}
+% \end{table}
 
 
 From Table~\ref{table:base_benchmark}, we can see that the performance of {\tool} is as good as the most competitive tools such as CVC4 and Z3 on basic string constraints. In all of the benchmarks, {\tool} ranked either the 1st or the 2nd on the number of solved (SAT+UNSAT) cases. If we look into scrutiny, for the APLAS and StringFuzz benchmarks, there is a significant difference between {\tool} and the top-ranked tool on the SAT cases. But we believe this is not very important because both these two benchmarks are artificial, either hand-crafted or randomly generated. The more critical ones are those come from program analysis, in which {\tool} has comparable performance to the best tool.
 
 From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all other tools. The total number of failed cases is only a half to Z3, which is ranked the 2nd. In fact, most of the failed tests come from the analysis of one Python core library function that converts an IPv6 address to a number. We generated 2028 tests from this function, and among them around 1000 cases  are too difficult for all solvers.  If we exclude results on this function, then {\tool} has only $218$ failed cases in total. This is significantly better than the 2nd place tool Z3, which fails $942$ cases in total.
 
-We also ran experiments on the String-Number Conversion benchmark with the timeout set to 30s. Provided more time for solving, {\tool} managed to obtain more results and the number of failed cases is reduced to 539, while CVC4 and Z3-str3 got almost the same number of failed cases. Z3 also managed to reduce the number of failed cases to 821. %If we exclude results on the Python core function that converts an IPv6 address to a number mentioned above, {\tool} has only $53$ timeouts in total while z3 has $809$ in total.
+We also ran experiments on the String-Number Conversion benchmark with the timeout set to 30s. Provided more time for solving, {\tool} managed to obtain more results and the number of failed cases is reduced to 539, while CVC4 and Z3Str3 got almost the same number of failed cases. Z3 also managed to reduce the number of failed cases to 821. %If we exclude results on the Python core function that converts an IPv6 address to a number mentioned above, {\tool} has only $53$ timeouts in total while z3 has $809$ in total.
 
 For further details of the experiment, we have encoded the checkLuhn algorithm introduced in Section~\ref{section:introduction} for cases of 2 to 12 loops (digits). We ran these tests additionally to the experiments above with the timeout set to 120s. The result is summarized in Table~\ref{table:checkLuhn}.
-In these tests, {\tool} can solve all problems within 1s while CVC4 only returns a model for cases of 2 to 5 loops and Z3-str3 could not solve any of these problems (either timeout or UNKNOWN). However, Z3 can still solve 7 out of the 11 problems and the problems got timeout are cases for 4, 5, 7, and 9 loops. The behavior of Z3 is not unexpected, since all the problems are satisfiable and sometimes the solver are lucky and went into a branch with a correct model very quickly.
-
-% \todo{Update table with data of timeout=30s}
+In these tests, {\tool} can solve all problems within 1s while CVC4 only returns a model for cases of 2 to 5 loops and Z3Str3 could not solve any of these problems (either timeout or UNKNOWN). However, Z3 can still solve 7 out of the 11 problems and the problems got timeout are cases for 4, 5, 7, and 9 loops. The behavior of Z3 is not unexpected, since all the problems are satisfiable and sometimes the solver are lucky and went into a branch with a correct model very quickly.
 
 \begin{table}[h]
 \centering
@@ -141,21 +202,46 @@ In these tests, {\tool} can solve all problems within 1s while CVC4 only returns
 \scalebox{0.9}{
 \begin{tabular}{| c | c c c c|}
 \hline
-\# of Loops & {\tool} 			   &  CVC4    	 		  &       Z3   			& Z3-str3 \\ \hline
-2 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(0.66s) & \textbf{SAT}(0.23s) & $\times$ \\
-3  			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(1.78s) & \textbf{SAT}(0.13s) & $\times$ \\
-4 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(6.96s) &   $\times$  		& $\times$ \\
-5 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(17.2s) &   $\times$  		& $\times$ \\
-6 			& \textbf{SAT}(0.16s)  &  $\times$  		  & \textbf{SAT}(0.14s) & $\times$ \\
-7 			& \textbf{SAT}(0.24s)  &  $\times$    		  &   $\times$  		& $\times$ \\
-8 			& \textbf{SAT}(0.31s)  &  $\times$   		  & \textbf{SAT}(0.37s) & $\times$ \\
-9 			& \textbf{SAT}(0.26s)  &  $\times$    		  &   $\times$  		& $\times$ \\
-10 			& \textbf{SAT}(0.21s)  &  $\times$    		  & \textbf{SAT}(0.62s) & $\times$ \\
-11 			& \textbf{SAT}(0.23s)  &  $\times$    		  & \textbf{SAT}(0.47s) & $\times$ \\
-12 			& \textbf{SAT}(0.33s)  &  $\times$     		  & \textbf{SAT}(0.47s) & $\times$ \\ \hline
+\# of Loops & {\tool} 			   &  CVC4    	 		  &       Z3   			& Z3Str3 \\ \hline
+2 			& \textbf{SAT}(0.27s)  &  \textbf{SAT}(0.89s) & \textbf{SAT}(0.45s) & \textbf{ERROR} \\
+3  			& \textbf{SAT}(0.29s)  &  \textbf{SAT}(1.17s) & \textbf{SAT}(0.10s) & \textbf{ERROR} \\
+4 			& \textbf{SAT}(0.37s)  &  \textbf{SAT}(4.92s) & \textbf{TIMEOUT}    & \textbf{ERROR} \\
+5 			& \textbf{SAT}(0.39s)  &  \textbf{SAT}(11.27s)& \textbf{TIMEOUT}    & \textbf{ERROR} \\
+6 			& \textbf{SAT}(0.41s)  &  \textbf{TIMEOUT}    & \textbf{SAT}(0.13s) & \textbf{UNKNOWN} \\
+7 			& \textbf{SAT}(0.51s)  &  \textbf{TIMEOUT}    & \textbf{TIMEOUT}    & \textbf{ERROR} \\
+8 			& \textbf{SAT}(0.53s)  &  \textbf{TIMEOUT}    & \textbf{SAT}(0.29s) & \textbf{ERROR} \\
+9 			& \textbf{SAT}(0.63s)  &  \textbf{TIMEOUT}    & \textbf{TIMEOUT}    & \textbf{ERROR} \\
+10 			& \textbf{SAT}(0.69s)  &  \textbf{TIMEOUT}    & \textbf{SAT}(0.48s) & \textbf{TIMEOUT} \\
+11 			& \textbf{SAT}(0.71s)  &  \textbf{TIMEOUT}    & \textbf{SAT}(0.36s) & \textbf{ERROR} \\
+12 			& \textbf{SAT}(0.74s)  &  \textbf{TIMEOUT}    & \textbf{SAT}(0.38s) & \textbf{TIMEOUT} \\ \hline
 \end{tabular}}
 \label{table:checkLuhn}
 \end{table}
+
+
+% \todo{Update table with data of timeout=30s}
+
+% \begin{table}[h]
+% \centering
+% \caption{Comparison of {\tool}, CVC4, Z3, and Z3str3 with checkLuhn problems of 2 to 12 loops.}
+% \scalebox{0.9}{
+% \begin{tabular}{| c | c c c c|}
+% \hline
+% \# of Loops & {\tool} 			   &  CVC4    	 		  &       Z3   			& Z3Str3 \\ \hline
+% 2 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(0.66s) & \textbf{SAT}(0.23s) & $\times$ \\
+% 3  			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(1.78s) & \textbf{SAT}(0.13s) & $\times$ \\
+% 4 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(6.96s) &   $\times$  		& $\times$ \\
+% 5 			& \textbf{SAT}(<0.1s)  &  \textbf{SAT}(17.2s) &   $\times$  		& $\times$ \\
+% 6 			& \textbf{SAT}(0.16s)  &  $\times$  		  & \textbf{SAT}(0.14s) & $\times$ \\
+% 7 			& \textbf{SAT}(0.24s)  &  $\times$    		  &   $\times$  		& $\times$ \\
+% 8 			& \textbf{SAT}(0.31s)  &  $\times$   		  & \textbf{SAT}(0.37s) & $\times$ \\
+% 9 			& \textbf{SAT}(0.26s)  &  $\times$    		  &   $\times$  		& $\times$ \\
+% 10 			& \textbf{SAT}(0.21s)  &  $\times$    		  & \textbf{SAT}(0.62s) & $\times$ \\
+% 11 			& \textbf{SAT}(0.23s)  &  $\times$    		  & \textbf{SAT}(0.47s) & $\times$ \\
+% 12 			& \textbf{SAT}(0.33s)  &  $\times$     		  & \textbf{SAT}(0.47s) & $\times$ \\ \hline
+% \end{tabular}}
+% \label{table:checkLuhn}
+% \end{table}
 
 
 \hide{
@@ -168,7 +254,7 @@ The second benchmark is called APLAS that was created by authors of \textsf{$Kep
 
 The next benchmark is called LeetCode~\cite{LeetCode} that was obtained by extracting constraints from Python's testing solutions provided by LeetCode platform. They provide many programming examples and their solutions gathered from technical interviews for companies. Leetcode consists of 881 satisfiable and 1785 unsatisfiable tests that, like PyEx, contain diverse string constraints.
 
-StringFuzz is our next bechmark that is named after a fuzzer~\cite{StringFuzz} for automatically generating SMT-LIB string constraints. We used StringFuzz to generate 1065 tests including word (dis)equalities, regular membership and arithmetic constraints. 
+StringFuzz is our next benchmark that is named after a fuzzer~\cite{StringFuzz} for automatically generating SMT-LIB string constraints. We used StringFuzz to generate 1065 tests including word (dis)equalities, regular membership and arithmetic constraints. 
 
 The last two benchmarks, called $\text{cvc4}_{\text{pred}}$ and $\text{cvc4}_{\text{term}}$, are obtained from cvc4 group~\cite{termEQ}. This set of benchmarks consists of the verification of term equivalences over strings and includes various string constraints including string-number and number-string conversion constraints.
 
