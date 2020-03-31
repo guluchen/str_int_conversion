@@ -73,7 +73,7 @@ We use the results from {\tool}, CVC4, and Z3 as the reference answer for the va
 \hline
 \multicolumn{2}{|c}{}                  & {\tool} & CVC4  &Z3 & Z3Str3 \\ \hline
 \multirow{6}{*}{PyEx}		& SAT      & 21377& 19899& 16331&  3037 \\
-							            & UNSAT    &  3860&  3848&  3831&  3830 \\
+							            & UNSAT    &  3860&  3848&  3831&  3816 \\
 							            & UNKNOWN  &     0&     0&     0&     7 \\
 							            & TIMEOUT  &  184&  1674&  5259& 16872 \\
 							            & ERROR    &     0&     0&     0&  1675 \\
@@ -100,19 +100,19 @@ We use the results from {\tool}, CVC4, and Z3 as the reference answer for the va
 							& UNSAT    &   822&   818&   808&   774 \\
 							& UNKNOWN  &     0&     0&     0&     4 \\
 							& TIMEOUT  &     0&     6&    15&    38 \\
-							& ERROR    &     0&     0&     0&     9 \\
+							& ERROR    &     0&     0&     0&     11 \\
 							& INCORRECT&     0&     0&     0&     0 \\ \hline
-\multirow{6}{*}{cvc4\textsubscript{term}} & SAT &    10&     8&     5&    16 \\
+\multirow{6}{*}{cvc4\textsubscript{term}} & SAT &    10&     8&     5&    2 \\
 							& UNSAT    &  1032&  1025&  1022&   957 \\
 							& UNKNOWN  &     0&     0&     0&     3 \\
 							& TIMEOUT  &     3&    12&    18&    58 \\
-							& ERROR    &     0&     0&     0&     8 \\
+							& ERROR    &     0&     0&     0&     11 \\
 							& INCORRECT&     0&     0&     0&    14 \\ \hline \hline
-\multirow{6}{*}{Total} 		& SAT      & 22792& 21487& 17496&  4227\\
-							& UNSAT    &  7800&  7721&  7634&  7533\\
+\multirow{6}{*}{Total} 		& SAT      & 22792& 21487& 17496&  4213\\
+							& UNSAT    &  7800&  7721&  7634&  7519\\
 							& UNKNOWN  &     0&     0&     0&   140\\
 							& TIMEOUT  &  436&  1824&  5902& 17422 \\
-							& ERROR    &     4&     0&     0&  1705 \\
+							& ERROR    &     4&     0&     0&  1710\\
 							& INCORRECT&     0&     0&     0&    28 \\\hline
 \end{tabular}}
 \label{table:base_benchmark}}
