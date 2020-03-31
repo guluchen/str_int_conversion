@@ -11,7 +11,7 @@ Even for very simple examples like this one, our tool is the only one that can h
 Other tools (Z3, CVC4, and Z3Str3) timeout or report unknown or error for at least 4 cases.
 
 We found several examples that Z3Str3 reports incorrect answers in the benchmarks involving str-int conversion (see Table 2).
-We also found that Z3 reports incorrect answers in benchmarks involoving str-int conversion in release version 4.7.1 and 4.8.1, and github versions from Dec 30 2019- Mar 16, 2020 (versions 321bad2c8-6ad261e24). But we prefer not to report that because it has been fixed very recently on Mar 18.
+We also found that Z3 reports incorrect answers in benchmarks involving str-int conversion in release version 4.7.1 and 4.8.1, and github versions from Dec 30 2019- Mar 16, 2020 (versions 321bad2c8-6ad261e24). But we prefer not to report that because it has been fixed very recently on Mar 18.
 The version of Z3 we used in the paper does not give incorrect answer.
 
 Below I put a few concrete examples that the bug of Z3 can be reproduced (try it on, for example, the very recent version of Z3 https://github.com/Z3Prover/z3/commit/6ad261e24).
@@ -28,15 +28,14 @@ We added a paragraph in Section 9 to explain it.
 
 Z3-trau is the official name of Z3-PFA, which was created for the double-blind requirement. The tool is still under fast development. We guess maybe the reviewer tried some unstable version where bugs are indeed possible. The bug does not exist in our submitted version. 
 
-Nevertheless, in order to address the reviewer comments, we developed a fully automatic system to run experiments and categorize falled cases to ERROR, INCORRECT, or TIMEOUT. This helps us to find two instances (out of 53227 cases) that Z3-trau reports incorrect results. 
+Nevertheless, in order to address the reviewer comments, we developed a fully automatic system to run experiments and categorize failed cases to ERROR, INCORRECT, or TIMEOUT. This helps us to find two instances (out of 53227 cases) that Z3-trau reports incorrect results. 
 
 *Suggested Changes
 - Suggestions mentioned in the review comments.
 
 - We have updated the tables of the experiments to unfold the X cases into three categories: incorrect, (system) error, and timeout.
-- We have addressed a number of minor comments by reviewers 
-(including e.g. a reference to PASS or a note on the assumed decimal encoding of numerals in a reaction to reviewer C) 
-and fixed typos pointed out by them.
+- We have addressed a number of minor comments by the reviewers 
+(including e.g. a reference to PASS or a note on the assumed decimal encoding of numerals in a reaction to reviewer C). 
 
 
 
