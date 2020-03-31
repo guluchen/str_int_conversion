@@ -73,11 +73,11 @@ We use the results from {\tool}, CVC4, and Z3 as the reference answer for the va
 \hline
 \multicolumn{2}{|c}{}                  & {\tool} & CVC4  &Z3 & Z3Str3 \\ \hline
 \multirow{6}{*}{PyEx}		& SAT      & 21377& 19899& 16331&  3037 \\
-							            & UNSAT    &  3860&  3848&  3831&  3816 \\
-							            & UNKNOWN  &     0&     0&     0&     7 \\
-							            & TIMEOUT  &  184&  1674&  5259& 16872 \\
-							            & ERROR    &     0&     0&     0&  1675 \\
-							            & INCORRECT&     0&     0&     0&    14 \\ \hline
+							& UNSAT    &  3860&  3848&  3831&  3816 \\
+							& UNKNOWN  &     0&     0&     0&     7 \\
+							& TIMEOUT  &   184&  1674&  5259& 16872 \\
+							& ERROR    &     0&     0&     0&  1675 \\
+							& INCORRECT&     0&     0&     0&    14 \\ \hline
 %\multirow{6}{*}{APLAS}		& SAT      &   126&    51&    13&    35 \\
 %							& UNSAT    &   286&   214&   100&   111 \\
 %							& UNKNOWN  &     0&     0&     0&   345 \\
@@ -129,23 +129,26 @@ We use the results from {\tool}, CVC4, and Z3 as the reference answer for the va
 \multirow{6}{*}{Leetcode}		& SAT      &  2501&  1721&  1898&   239 \\ 
 								& UNSAT    & 16394& 15726& 16115& 15288 \\
 								& UNKNOWN  &     0&     0&     0&   623 \\
-								& TIMEOUT  &   32&  1480&   914&  2337 \\
+								& TIMEOUT  &    32&  1480&   914&  2337 \\
 								& ERROR    &     0&     0&     0&   332 \\
 								& INCORRECT&     0&     0&     0&   108 \\ \hline 
-\multirow{6}{*}{PythonLib}		& SAT      &   1922&   579&   914&   206 \\ 
+\multirow{6}{*}{PythonLib}		& SAT      &  1922&   579&   914&   206 \\ 
 								& UNSAT    &   724&   667&   724&   642 \\
 								& UNKNOWN  &     0&     0&     0&    45 \\
-								& TIMEOUT  &  0&  1400&  1008&  1710 \\
+								& TIMEOUT  &     0&  1400&  1008&  1710 \\
 								& ERROR    &     0&     0&     0&    41 \\
 								& INCORRECT&     0&     0&     0&     2 \\ \hline
-\multirow{3}{*}{JavaScript}		& SAT      &    20&     6&    16&     4 \\ 
+\multirow{6}{*}{JavaScript}		& SAT      &    20&     3&    16&     4 \\ 
 								& UNSAT    &     0&     0&     0&     0 \\
-								& TIMEOUT  &     0&    14&     4&    16 \\ \hline \hline
-\multirow{6}{*}{Total}			& SAT      &  4443&  2306&  2828&   449 \\ 
+								& UNKNOWN  &     0&     9&     0&     0 \\
+								& TIMEOUT  &     0&     8&     4&    10 \\
+								& ERROR    &     0&     0&     0&     6 \\
+								& INCORRECT&     0&     0&     0&     0 \\ \hline \hline
+\multirow{6}{*}{Total}			& SAT      &  4443&  2303&  2828&   449 \\ 
 								& UNSAT    & 17118& 16393& 16839& 15930 \\
-								& UNKNOWN  &     0&     0&     0&   668 \\
-								& TIMEOUT  &  32&  2894&  1926&  4063 \\
-								& ERROR    &     0&     0&     0&   373 \\
+								& UNKNOWN  &     0&     9&     0&   668 \\
+								& TIMEOUT  &    32&  2888&  1926&  4057 \\
+								& ERROR    &     0&     0&     0&   379 \\
 								& INCORRECT&     0&     0&     0&   110 \\ \hline
 \end{tabular}}
 \label{table:str_int_benchmark}
