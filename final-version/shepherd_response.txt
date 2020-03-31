@@ -28,7 +28,7 @@ We added a paragraph in Section 9 to explain it.
 
 Z3-trau is the official name of Z3-PFA, which was created for the double-blind requirement. The tool is still under fast development. We guess maybe the reviewer tried some unstable version where bugs are indeed possible. The bug does not exist in our submitted version. 
 
-Nevertheless, in order to address the reviewer comments, we developed a fully automatic system to run experiments and categorise failed cases to ERROR, INCORRECT, or TIMEOUT. This helps us to find two instances (out of 53227 cases) that Z3-trau reports incorrect results. 
+Nevertheless, in order to address the reviewer comments, we developed a fully automatic system to run experiments and categorise failed cases to ERROR, INCORRECT, or TIMEOUT. We update our table with more detailed information.
 
 *Suggested Changes
 - Suggestions mentioned in the review comments.
