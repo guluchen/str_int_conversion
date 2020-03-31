@@ -5,7 +5,7 @@ Below we summarized the changes we made.
 - Please explicitly state the limitations of the current solvers (i.e., clarify the "limited support" mentioned by Reviewer B).
 - Reviewer B tried Z3 on the running example, and Z3 works fine. Please give an example that cannot be handled by Z3 (as well as any other tools considered in this paper).
 
-We emphasis that we mean limited supprot in terms of scalablity.
+We emphasis that we mean by "limited support" is in terms of scalability.
 We added a paragraph to refer the readers to our table 3 of experiments. 
 Even for very simple examples like this one, our tool is the only one that can handle all traces of checkLuhn corresponding to 2~12 loop unfolding.
 Other tools (Z3, CVC4, and Z3Str3) timeout or report unknown or error for at least 4 cases.
@@ -28,13 +28,13 @@ We added a paragraph in Section 9 to explain it.
 
 Z3-trau is the official name of Z3-PFA, which was created for the double-blind requirement. The tool is still under fast development. We guess maybe the reviewer tried some unstable version where bugs are indeed possible. The bug does not exist in our submitted version. 
 
-Nevertheless, in order to address the reviewer comments, we developed a fully automatic system to run experiments and categorize failed cases to ERROR, INCORRECT, or TIMEOUT. This helps us to find two instances (out of 53227 cases) that Z3-trau reports incorrect results. 
+Nevertheless, in order to address the reviewer comments, we developed a fully automatic system to run experiments and categorise failed cases to ERROR, INCORRECT, or TIMEOUT. We have updated our tables with the more detailed information.
 
 *Suggested Changes
 - Suggestions mentioned in the review comments.
 
 - We have updated the tables of the experiments to unfold the X cases into three categories: incorrect, (system) error, and timeout.
-- We have addressed a number of minor comments by the reviewers 
+- We have addressed most of the comments of the reviewers 
 (including e.g. a reference to PASS or a note on the assumed decimal encoding of numerals in a reaction to reviewer C). 
 
 
