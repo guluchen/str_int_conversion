@@ -158,8 +158,8 @@
 
 
 \begin{abstract}
-String-number conversion is an important class of constraints needed for the symbolic execution of string-manipulating programs. In particular solving string constraints with string-number conversion  is necessary  for the analysis of scripting languages such as JavaScript and Python, where string-number conversion is a part of the definition of the core semantics of these languages. However, the state-of-the-art constraint solvers have   limited support to this type of constraint. 
-We propose to overcome these limitations with an approach that can efficiently support both string-number conversion and other common types of string constraints. Experimental results show that it significantly outperforms other state-of-the-art tools on benchmarks that involves string-number conversion.
+String-number conversion is an important class of constraints needed for the symbolic execution of string-manipulating programs. In particular solving string constraints with string-number conversion  is necessary for the analysis of scripting languages such as JavaScript and Python, where string-number conversion is a part of the definition of the core semantics of these languages. \changed{However, solving this type of constraint is very challenging for the state-of-the-art solvers. They usually cannot handle formulae corresponding to longer program traces. 
+We propose in this paper an approach that can efficiently support both string-number conversion and other common types of string constraints.} Experimental results show that it significantly outperforms other state-of-the-art tools on benchmarks that involves string-number conversion.
 \end{abstract}
 
 
@@ -297,12 +297,12 @@ We propose to overcome these limitations with an approach that can efficiently s
 
 
 Symbolic execution is a very popular technique that allows programmers to check the feasibility of a path in a  program, i.e., determining the value of the inputs under which the given path can be executed.
-The path feasibility problem is usually solved by a reduction to the satisfiability of a formula. More precisely, program statements in the path are  translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{Satisfiability Modulo Theory (SMT)} solvers. The types of constraints needed depend on the types of program expressions to be analyzed. Therefore, SMT solvers need to support different combinations of theories so that they can handle a wide range of types.
+The path feasibility problem is usually solved by a reduction to the satisfiability of a formula. More precisely, program statements in the path are  translated to equivalent constraints in static single assignment (SSA) form and then solved by \emph{Satisfiability Modulo Theory (SMT)} solvers. The types of constraints needed depend on the types of program expressions to be analyzed. Therefore, SMT solvers need to support different combinations of theories so that they can handle a wide range of types. 
 
 Among all data types, the \emph{string data type} is omnipresent in modern programming languages. Various security vulnerabilities such as injection and cross-site scripting attack are caused by malicious string values. Therefore, string constraint solving has received considerable attention in the constraint solving community. 
 Operations such as \emph{equality constraints} (e.g. $x.y = y.x$), \emph{regular constraints} (e.g., $x \in (a.b)^*$), and \emph{integer constraints} (e.g., $|x|-|y|>3$), are widely supported by most state-of-the-art string constraint solvers such as, CVC4 \cite{cvc4Tool}, OSTRICH \cite{chen2019decision}, Sloth \cite{sloth},  Trau+ \cite{abdulla2018trau,abdulla2019chain,abdulla2017flatten}, Z3 \cite{z3} and Z3Str3 \cite{berzish2017z3str3}. 
 
-An important class of string operations is  the string-number conversions.  While string length operations are sometimes well supported, converting a string $x$ to an integer $n$ (e.g., using the operation $n = \sti{x}$) or turning an integer value $n$ into its string form $x$ (e.g., using the operation $x = \its{n}$)  suffer from  limited support by the state-of-the-art string constraint solvers. 
+An important class of string operations is  the string-number conversions.  While string length operations are sometimes well supported, converting a string $x$ to an integer $n$ (e.g., using the operation $n = \sti{x}$) or turning an integer value $n$ into its string form $x$ (e.g., using the operation $x = \its{n}$) suffer from limited support \changed{(in terms of the scale of formulae they can handle)} by the state-of-the-art string constraint solvers. 
 
 
 In fact, a code that receives string input tends to need to convert at least some of that input into numbers.
@@ -356,7 +356,7 @@ Here ${\it value_0}$ and ${\it last_0}$ are string variables and the others are 
 \end{itemize}
 
 
-Most of the state-of-the-art string constraint solvers provide   limited support to the combination of above constraints. Even for simple constraints like the above one, most solvers already fail to provide a correct answer. 
+Most of the state-of-the-art string constraint solvers provide limited support to the combination of above constraints.
 \changed{In Table~\ref{table:checkLuhn} of our evaluation (Section~\ref{section:evaluation}), CVC4 fails to solve constraints corresponding to checkLuhn of more than 6 loop iterations in 2 minutes, Z3 fails to solve the cases corresponding to 4,5,7, and 9 loop iterations, and Z3Str3 fails to solve  the case of 2 loop iterations.}
 
 
