@@ -1,13 +1,15 @@
-Thanks again for the clear comments and instructions. 
+Thanks again for the clear comments and instructions.
 Below we summarized the changes we made.
+In the draft, the changes are colored blue.
 
 *Required Changes.
 - Please explicitly state the limitations of the current solvers (i.e., clarify the "limited support" mentioned by Reviewer B).
 - Reviewer B tried Z3 on the running example, and Z3 works fine. Please give an example that cannot be handled by Z3 (as well as any other tools considered in this paper).
 
-We added a paragraph (lines 137-141) to refer the readers to our table 3 of experiments. 
+We emphasis that we mean limited supprot in terms of scalablity.
+We added a paragraph to refer the readers to our table 3 of experiments.
 Even for very simple examples like this one, our tool is the only one that can handle all traces of checkLuhn corresponding to 2~12 loop unfolding.
-Other tools (Z3, CVC4, and Z3Str3) timeout or report unknown for at least 4 cases.
+Other tools (Z3, CVC4, and Z3Str3) timeout or report unknown or error for at least 4 cases.
 
 We found several examples that Z3Str3 reports incorrect answers in the benchmarks involving str-int conversion (see Table 2).
 We also found that Z3 reports incorrect answers in benchmarks involoving str-int conversion in release version 4.7.1 and 4.8.1, and github versions from Dec 30 2019- Mar 16, 2020 (versions 321bad2c8-6ad261e24). But we prefer not to report that because it has been fixed very recently on Mar 18.
@@ -21,15 +23,18 @@ https://github.com/plfm-iis/trauc_benchmarks/blob/master/full_str_int_unsat/py-c
 *Recommended Changes.
 - Please clarify a bit more about the diversity of the Leetcode programs used in the evaluation.
 
-We added a paragraph in Line 1063-1069.
+We added a paragraph in Section 9 to explain it.
 
 - One reviewer actually ran the z3-trau tool on the motivating example. It returns an incorrect result. It would be beneficial to compare against z3-trau in the experiment (and mark all the "incorrect" results).
 
-Z3-trau is the official name of Z3-PFA, which was created for the double-blind requirement. The tool is still under fast development. We guess maybe the reviewer tried some unstable version where bugs are indeed possible. The bug does not exist in our stable version.
+Z3-trau is the official name of Z3-PFA, which was created for the double-blind requirement. The tool is still under fast development. We guess maybe the reviewer tried some unstable version where bugs are indeed possible. The bug reported by Reviewer B does not exist in our submitted version.
+
+Nevertheless, in order to address the reviewer comments, we developed a fully automatic system to run experiments and categorize failed cases to ERROR, INCORRECT, or TIMEOUT. This helps us to find two instances (out of 53227 cases) that Z3-trau reports incorrect results. It has being fixed in a more recent version. It would be grateful if the reviewers allow us to switch to use the more recent results.
 
 *Suggested Changes
 - Suggestions mentioned in the review comments.
 
-We have updated the tables of the experiments to unfold the X cases into three categories: incorrect, (system) error, and timeout
-
-
+- We have updated the tables of the experiments to unfold the X cases into three categories: incorrect, (system) error, and timeout.
+- We have addressed a number of minor comments by reviewers
+(including e.g. a reference to PASS or a note on the assumed decimal encoding of numerals in a reaction to reviewer C)
+and fixed typos pointed out by them.
