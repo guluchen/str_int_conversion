@@ -212,7 +212,7 @@ The results of the experiments are summarized in Table~\ref{table:base_benchmark
 From Table~\ref{table:base_benchmark}, we can see that the performance of {\tool} is as good as that of the most competitive tools such as CVC4 and Z3 on basic string constraints. In all of the benchmarks, {\tool} ranked either the 1st or the 2nd on the number of solved (SAT+UNSAT) cases. On the APLAS and StringFuzz benchmarks that are SAT, {\tool} does not perfomr as well as the best performing tool. We however do not consider this crucial because both of these benchmarks are artificial, either hand-crafted or randomly generated. On the most important benchmarks, those that come from program analysis, {\tool} is comparable to the best performing tool.
 
 \changed{
-From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all other tools. 
+From Table~\ref{table:str_int_benchmark}, we can see that {\tool} significantly outperforms all the other tools. 
 The second best tool, Z3, fails on 38\% more examples. 
 }
 %It fails on twice less cases then Z3, which is ranked the 2nd. In fact, most of the failed tests come from the analysis of one Python core library function that converts an IPv6 address to a number. From around 2028 tests generated from this function, around 1000 tests are too difficult for all solvers.  If we exclude the 2028 tests generated from this function, then {\tool} has only $218$ failed cases in total. This is significantly better than the 2nd place tool Z3, which fails on $942$ cases in total.
