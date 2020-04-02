@@ -418,9 +418,9 @@ Solving string constraint with string-number conversion is a very challenging pr
 In this paper, we propose a framework that efficiently handles string constraints with string-number conversion. Since the problem is provably unsolvable, our framework combines over and under-approximation techniques. The over-approximation is for proving UNSAT when possible, while the under-approximation is for proving SAT when possible. Both over- and under-approximation fall in a decidable fragment of string constraints that  we can efficiently solve. 
 
 
-For ease of presentation, we  use the following toy example \changed{$$\Phi\!=\! \{``0"x\!=\! x``0", \sti{x} \!=\! \sti{y} ,|y|\!>\!|x|, 1000\!<\!|y| \}$$}
-to explain the main ideas behind our decision procedure.  To make our terminology explicit: $\Phi$ states that \changed{$``0"$ concatenated with $x$ is the same as $x$ with $``0"$, the numeric value of the string $x$ is equivalent to that of $y$, $y$ is longer than $x$, and $y$ is longer than $1000$ characters.  Notice that $\Phi$ is satisfiable. E.g., it has a model $x=``00"$ and $y=``0^{1002}"$}.
-\changed{Although this toy example is seemingly trivial, all the string constraint solvers we tried (including Z3, CVC4, and Z3Str3) cannot solve it within 10 minutes. }
+For ease of presentation, we  use the following toy example \changed{$$\Phi\!=\! \{``0"x\!=\! x``0", \sti{x} \!=\! \sti{y} ,|y|\!>\!|x| >1, 1000\!<\!|y| \}$$}
+to explain the main ideas behind our decision procedure.  To make our terminology explicit: $\Phi$ states that \changed{$``0"$ concatenated with $x$ is the same as $x$ with $``0"$, the numeric value of the string $x$ is equivalent to that of $y$, $y$ is longer than $x$,  $y$ is longer than $1000$ characters, and $x$ is longer than 1.  Notice that $\Phi$ is satisfiable. E.g., it has a model $x=``00"$ and $y=``0^{1002}"$}.
+\changed{Although this toy example is seemingly trivial, all the state-of-the-art string constraint solvers we tried (including Z3, CVC4, and Z3Str3) cannot solve it within 10 minutes. }
 
 %Our decision procedure has two steps: 
 \changed{
