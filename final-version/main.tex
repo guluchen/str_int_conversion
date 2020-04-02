@@ -420,9 +420,13 @@ In this paper, we propose a framework that efficiently handles string constraint
 
 For ease of presentation, we  use the following toy example \changed{$$\Phi\!=\! \{``0"x\!=\! x``0", \sti{x} \!=\! \sti{y} ,|y|\!>\!|x|, 1000\!<\!|y| \}$$}
 to explain the main ideas behind our decision procedure.  To make our terminology explicit: $\Phi$ states that \changed{$``0"$ concatenated with $x$ is the same as $x$ with $``0"$, the numeric value of the string $x$ is equivalent to that of $y$, $y$ is longer than $x$, and $y$ is longer than $1000$ characters.  Notice that $\Phi$ is satisfiable. E.g., it has a model $x=``00"$ and $y=``0^{1002}"$}.
+\changed{Although this toy example is seemingly trivial, all the string constraint solvers we tried (including Z3, CVC4, and Z3Str3) cannot solve it within 10 minutes. }
 
-
-Our decision procedure has two steps: the first step consists in over-approximating the set of input constraints into a set that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Observe that we could  over-approximate the input constraint into any decidable fragment, e.g. the acyclic fragment~\cite{abdulla2014string} or the straight-line fragment~\cite{chen2019decision}. Our choice of the chain-free fragment~\cite{abdulla2019chain} is only motivated by the fact that the chain-free fragment is the {\em largest} known decidable fragment for that class of string constraints. In our example, we over-approximate the formula $\Phi$ by converting \changed{$``0"x = x``0"$ to two formulae $\{x_1=``0"x, x_2=x``0"\}$  and replacing the constraint $\sti{x}=\sti{y}$ with $n_x = n_y \wedge (n_x=-1 \vee (n_x\neq -1 \wedge x\in [0-9]^*)) \wedge (n_y=-1 \vee (n_y\neq -1 \wedge y\in [0-9]^*))$)}. 
+%Our decision procedure has two steps: 
+\changed{
+Our new decision procedure solves the example in few seconds.
+%
+It proceeds in two steps:} the first step consists in over-approximating the set of input constraints into a set that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Observe that we could  over-approximate the input constraint into any decidable fragment, e.g. the acyclic fragment~\cite{abdulla2014string} or the straight-line fragment~\cite{chen2019decision}. Our choice of the chain-free fragment~\cite{abdulla2019chain} is only motivated by the fact that the chain-free fragment is the {\em largest} known decidable fragment for that class of string constraints. In our example, we over-approximate the formula $\Phi$ by converting \changed{$``0"x = x``0"$ to two formulae $\{x_1=``0"x, x_2=x``0"\}$  and replacing the constraint $\sti{x}=\sti{y}$ with $n_x = n_y \wedge (n_x=-1 \vee (n_x\neq -1 \wedge x\in [0-9]^*)) \wedge (n_y=-1 \vee (n_y\neq -1 \wedge y\in [0-9]^*))$)}. 
 Observe that if the over-approximation is UNSAT then our decision procedure  declares that the original formula is also UNSAT and terminates. Surprisingly, despite its simplicity, our over-approximation procedure works very well in practice as shown by our experimental results  (in Section \ref{section:evaluation}). Coming back to the formula $\Phi$, the over-approximation module will  return SAT  in this case. 
 
 \begin{figure}
@@ -487,8 +491,6 @@ In the following, we explain the construction of the linear formula using $\Phi$
 The assignment says, for example, that $x$ is the \emph{parametric word} obtained by traversing the loop of $A_x$ once (because $\#v_0 = \#v_1 = 1$), which is $v_0v_1$. Under the assignment $v_0=0$ and $v_1=0$, we obtain $x=``00"$.}
 
 If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables. If not, our procedure changes the PFAs to a more expressive one (by adding more states and transitions) and repeat the analysis.  We report unknown after failing to prove SAT using a certain number of PFAs.
-
-\changed{Although this toy example is seemingly trivial, all the string constraint solvers we tried (including Z3, CVC4, and Z3Str3) cannot solve it with a long timeout (10 min).}
 
 
 \begin{figure}
