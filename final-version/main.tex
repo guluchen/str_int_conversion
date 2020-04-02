@@ -488,7 +488,7 @@ The assignment says, for example, that $x$ is the \emph{parametric word} obtaine
 
 If a model of the produced linear formula is found, then the procedure concludes SAT with an assignment to the string variables. If not, our procedure changes the PFAs to a more expressive one (by adding more states and transitions) and repeat the analysis.  We report unknown after failing to prove SAT using a certain number of PFAs.
 
-
+\changed{Although this toy example is seemingly trivial, all the string constraint solvers we tried (including Z3, CVC4, and Z3Str3) cannot solve it with a long timeout (10 min).}
 
 
 \begin{figure}
