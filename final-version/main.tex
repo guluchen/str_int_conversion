@@ -196,6 +196,9 @@ We propose in this paper an approach that can efficiently support both string-nu
 \usepackage{balance}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
+\clubpenalty = 10000000
+\widowpenalty = 10000000
+\displaywidowpenalty = 1000000
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\hide}[1]{}
 \newcommand{\tool}{{\textsf{Z3-Trau}}}
@@ -204,7 +207,7 @@ We propose in this paper an approach that can efficiently support both string-nu
 \newcommand{\integers}{\mathbb{Z}}
 \newcommand{\todo}[1]{{\color{blue}TODO: #1}}
 \newcommand{\lh}[1]{{\color{orange}Lukas: #1}}
-\newcommand{\changed}[1]{{\color{blue}#1}}
+\newcommand{\changed}[1]{#1}
 
 \newcommand{\yfc}[1]{{\color{blue}YFC: #1}}
 \newcommand{\petr}[1]{{\color{pink}Petr: #1}}
@@ -1036,10 +1039,13 @@ To simplify the presentation, we assume that the variables are pairwise differen
 We also assume that all disequality constraint $t \neq t'$ are already converted to equivalent equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}.
 
 Having made these assumptions, we may proceed follows. First, we build two PFAs $\leftA$ and $\rightA$ that encode the left and the right-hand side word term of the equality constraint $\phi_e$, respectively, by concatenating the restrictions of the individual variables. That is
-\begin{eqnarray*}
-\leftA \defeq& \dr(x_1)\cdot\ldots \cdot \dr(x_n)\\
-\rightA \defeq& \dr(x_{n+1})\cdot\ldots \cdot \dr(x_m)
-\end{eqnarray*}
+	$$\leftA \defeq \dr(x_1)\cdot\ldots \cdot \dr(x_n)\ \ \  \rightA \defeq \dr(x_{n+1})\cdot\ldots \cdot \dr(x_m)$$
+
+
+%\begin{eqnarray*}
+%\leftA \defeq& \dr(x_1)\cdot\ldots \cdot \dr(x_n)\\
+%\rightA \defeq& \dr(x_{n+1})\cdot\ldots \cdot \dr(x_m)
+%\end{eqnarray*}
 The under-approximation of $\phi_e$ is then obtained as their synchronization formula
 $$
 \underf \dr {\phi_e} = \syncfof \leftA \rightA
