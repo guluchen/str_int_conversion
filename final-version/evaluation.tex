@@ -229,7 +229,7 @@ The second best tool, Z3, fails on 50 times more examples.
 As an addition experiment, we have encoded the checkLuhn algorithm introduced in Section~\ref{section:introduction} for the cases with 2 to 12 loops (digits). We ran these tests 
 %additionally to the experiments above 
 with the timeout set to 120s. The result is summarized in Table~\ref{table:checkLuhn}.
-In these tests, {\tool} can solve all problems within 1s while CVC4 only returns a model for cases of 2 to 5 loops and Z3Str3 could not solve any of these problems (either timeout or UNKNOWN). However, Z3 can still solve 7 out of the 11 problems, while timeouting in the cases with 4, 5, 7, and 9 loops. The behavior of Z3 is not entirely unexpected. All the problems are satisfiable and the solver may be lucky to guess the solution quickly. % branch with a correct model quickly.
+In these tests, {\tool} can solve all problems within 1s while CVC4 only returns a model for cases of 2 to 5 loops and Z3Str3 could not solve any of these problems (either TIMEOUT, ERROR, or UNKNOWN). However, Z3 can still solve 5 out of the 11 problems. The behavior of Z3 is not entirely unexpected. All the problems are satisfiable and the solver may be lucky to guess the solution quickly. % branch with a correct model quickly.
 
 \begin{table}[h]
 \changed{
@@ -240,17 +240,17 @@ In these tests, {\tool} can solve all problems within 1s while CVC4 only returns
 \begin{tabular}{| c | c c c c|}
 \hline
 \# of Loops & {\tool} 			   &  CVC4    	 		  &       Z3   			& Z3Str3 \\ \hline
-2 			& \textbf{SAT}(0.27s)  &  \textbf{SAT}(0.89s) & \textbf{SAT}(0.45s) & \textbf{ERROR} \\
-3  			& \textbf{SAT}(0.29s)  &  \textbf{SAT}(1.17s) & \textbf{SAT}(0.10s) & \textbf{ERROR} \\
-4 			& \textbf{SAT}(0.37s)  &  \textbf{SAT}(4.92s) & \textbf{TIMEOUT}    & \textbf{ERROR} \\
-5 			& \textbf{SAT}(0.39s)  &  \textbf{SAT}(11.27s)& \textbf{TIMEOUT}    & \textbf{ERROR} \\
-6 			& \textbf{SAT}(0.41s)  &  \textbf{TIMEOUT}    & \textbf{SAT}(0.13s) & \textbf{UNKNOWN} \\
+2 			& \textbf{SAT}(0.27s)  &  \textbf{SAT}(0.17s) & \textbf{SAT}(0.11s) & \textbf{ERROR} \\
+3  			& \textbf{SAT}(0.29s)  &  \textbf{SAT}(6.94s) & \textbf{SAT}(0.13s) & \textbf{ERROR} \\
+4 			& \textbf{SAT}(0.37s)  &  \textbf{SAT}(4.92s) &  \textbf{SAT}(0.24s)     & \textbf{ERROR} \\
+5 			& \textbf{SAT}(0.39s)  &  \textbf{SAT}(30.86s)&  \textbf{SAT}(0.13s)     & \textbf{ERROR} \\
+6 			& \textbf{SAT}(0.41s)  &  \textbf{TIMEOUT}    &\textbf{TIMEOUT} & \textbf{UNKNOWN} \\
 7 			& \textbf{SAT}(0.51s)  &  \textbf{TIMEOUT}    & \textbf{TIMEOUT}    & \textbf{ERROR} \\
-8 			& \textbf{SAT}(0.53s)  &  \textbf{TIMEOUT}    & \textbf{SAT}(0.29s) & \textbf{ERROR} \\
-9 			& \textbf{SAT}(0.63s)  &  \textbf{TIMEOUT}    & \textbf{TIMEOUT}    & \textbf{ERROR} \\
-10 			& \textbf{SAT}(0.69s)  &  \textbf{TIMEOUT}    & \textbf{SAT}(0.48s) & \textbf{TIMEOUT} \\
-11 			& \textbf{SAT}(0.71s)  &  \textbf{TIMEOUT}    & \textbf{SAT}(0.36s) & \textbf{ERROR} \\
-12 			& \textbf{SAT}(0.74s)  &  \textbf{TIMEOUT}    & \textbf{SAT}(0.38s) & \textbf{TIMEOUT} \\ \hline
+8 			& \textbf{SAT}(0.53s)  &  \textbf{TIMEOUT}    & \textbf{TIMEOUT} & \textbf{ERROR} \\
+9 			& \textbf{SAT}(0.63s)  &  \textbf{TIMEOUT}    &\textbf{SAT}(0.31s)  & \textbf{ERROR} \\
+10 			& \textbf{SAT}(0.69s)  &  \textbf{TIMEOUT}    &  \textbf{TIMEOUT} & \textbf{TIMEOUT} \\
+11 			& \textbf{SAT}(0.71s)  &  \textbf{TIMEOUT}    &  \textbf{TIMEOUT} & \textbf{ERROR} \\
+12 			& \textbf{SAT}(0.74s)  &  \textbf{TIMEOUT}    &  \textbf{TIMEOUT} & \textbf{ERROR} \\ \hline
 \end{tabular}}
 \label{table:checkLuhn}}
 \end{table}
