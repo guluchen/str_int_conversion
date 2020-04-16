@@ -383,7 +383,7 @@ Even, more crucially, in many programming languages, string-number conversion is
 
 
 
-A casual glance at the above code reveals no use of strings at all, but the semantics of field access is somewhat unusual in JavaScript: the arrays are indexed by strings, and numeric indices are converted to strings. This conversion is mandated explicitly by the JavaScript semantics: the 2019 edition of ECMAScript \cite{ecmascript2019ecmascript} requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}). Therefore, any faithful symbolic execution of JavaScript must handle such conversions for even basic array operations to work correctly. Consider the following code snippet that manipulates an array \texttt{x}, with its value shown on the right:
+A casual glance at the above code reveals no use of strings at all, but the semantics of field access is somewhat unusual in JavaScript: The arrays are indexed by strings, and numeric indices are converted to strings. This conversion is mandated explicitly by the JavaScript semantics: The 2019 edition of ECMAScript \cite{ecmascript2019ecmascript} requires that $ToPropertyKey$ be called on the element expression (\S{12.3.2.1}), and $ToPropertyKey$ calls {\tt{ToString}} on that value in all but special cases (\S{7.1.14}). Therefore, any faithful symbolic execution of JavaScript must handle such conversions for even basic array operations to work correctly. Consider the following code snippet that manipulates an array \texttt{x}, with its value shown on the right:
 
 
 \begin{center}
@@ -430,7 +430,7 @@ to explain the main ideas behind our decision procedure.  To make our terminolog
 \changed{
 Our new decision procedure solves the example in few seconds.
 %
-It proceeds in two steps:} the first step consists in over-approximating the set of input constraints into a set that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Observe that we could  over-approximate the input constraint into any decidable fragment, e.g. the acyclic fragment~\cite{abdulla2014string} or the straight-line fragment~\cite{chen2019decision}. Our choice of the chain-free fragment~\cite{abdulla2019chain} is only motivated by the fact that the chain-free fragment is the {\em largest} known decidable fragment for that class of string constraints. In our example, we over-approximate the formula $\Phi$ by converting \changed{$``0"x = x``0"$ to two formulae $\{x_1=``0"x, x_2=x``0"\}$  and replacing the constraint $\sti{x}=\sti{y}$ with $n_x = n_y \wedge (n_x=-1 \vee (n_x\neq -1 \wedge x\in [0-9]^*)) \wedge (n_y=-1 \vee (n_y\neq -1 \wedge y\in [0-9]^*))$)}. 
+It proceeds in two steps:} The first step consists in over-approximating the set of input constraints into a set that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. Observe that we could  over-approximate the input constraint into any decidable fragment, e.g. the acyclic fragment~\cite{abdulla2014string} or the straight-line fragment~\cite{chen2019decision}. Our choice of the chain-free fragment~\cite{abdulla2019chain} is only motivated by the fact that the chain-free fragment is the {\em largest} known decidable fragment for that class of string constraints. In our example, we over-approximate the formula $\Phi$ by converting \changed{$``0"x = x``0"$ to two formulae $\{x_1=``0"x, x_2=x``0"\}$  and replacing the constraint $\sti{x}=\sti{y}$ with $n_x = n_y \wedge (n_x=-1 \vee (n_x\neq -1 \wedge x\in [0-9]^*)) \wedge (n_y=-1 \vee (n_y\neq -1 \wedge y\in [0-9]^*))$)}. 
 Observe that if the over-approximation is UNSAT then our decision procedure  declares that the original formula is also UNSAT and terminates. Surprisingly, despite its simplicity, our over-approximation procedure works very well in practice as shown by our experimental results  (in Section \ref{section:evaluation}). Coming back to the formula $\Phi$, the over-approximation module will  return SAT  in this case. 
 
 \begin{figure}
@@ -689,7 +689,7 @@ Supporting only positive integer is not a strong restriction, since converting f
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-Our decision procedure has two steps: the first step consists in over-approximating the set of input constraints into a set that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. 
+Our decision procedure has two steps: The first step consists in over-approximating the set of input constraints into a set that falls in the chain-free fragment~\cite{abdulla2019chain}, which is decidable. 
 The over-approximation module proceeds as follows: First,  it replaces all string-number conversion constraint $n=\sti{x}$ by $n=-1 \vee (n\neq -1 \wedge x\in [0-9]^*$) to obtain an over-approximation $\Phi$ consisting of only basic string constraints. 
 Then, it over-approximates $\Phi$ to a \emph{chain-free string constraint}~\cite{abdulla2019chain}, 
 which  consists of only integer, membership, and \emph{chain-free} equality constraints. Informally, a set of equality constraints has a \emph{chain} if we can find some circular dependency between the string variables in the equality constraints.
@@ -1035,7 +1035,7 @@ It follows from Corollary~\ref{corollary:pfa} and Lemma~\ref{lemma:synccorrect}.
 
 We now describe the construction of $\underf \dr {\phi_e}$ for an equality constraint $\phi_e\defeq x_0\cdot x_1 \cdots x_n = x_{n+1}\cdot x_{n+2} \cdots x_m$. 
 %
-To simplify the presentation, we assume that the variables are pairwise different, i.e. that $i\neq j \implies x_i \neq x_j$. We may make this assumption without loss of generality, since multiple occurrences of variables in $\phi_e$ can be eliminated: whenever $x_i = x_j$ for $i \neq j$, we may replace $x_j$ by a fresh variable $x_j'$ and conjoin the modified $\phi_e$ with a new equality $x_j = x_j'$. 
+To simplify the presentation, we assume that the variables are pairwise different, i.e. that $i\neq j \implies x_i \neq x_j$. We may make this assumption without loss of generality, since multiple occurrences of variables in $\phi_e$ can be eliminated: Whenever $x_i = x_j$ for $i \neq j$, we may replace $x_j$ by a fresh variable $x_j'$ and conjoin the modified $\phi_e$ with a new equality $x_j = x_j'$. 
 %
 We also assume that all disequality constraint $t \neq t'$ are already converted to equivalent equality constraints and integer constraints in the standard way~\cite{abdulla2015norn}.
 
